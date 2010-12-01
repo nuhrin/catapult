@@ -1,0 +1,26 @@
+using YAML;
+
+namespace YamlDB.Yaml.Events
+{
+	public class SequenceEnd : Event
+	{
+		public SequenceEnd()
+		{
+			base(EventType.SEQUENCE_END_EVENT);
+		}
+
+		internal SequenceEnd.from_raw(RawEvent event)
+			requires(event.type == EventType.SEQUENCE_END_EVENT)
+		{
+			base.from_raw(event);
+		}
+		internal override int NestingIncrease { get { return -1; } }
+
+		internal override RawEvent create_raw_event()
+		{
+			RawEvent event = {0};
+			RawEvent.sequence_end_initialize(ref event);
+			return event;
+		}
+	}
+}
