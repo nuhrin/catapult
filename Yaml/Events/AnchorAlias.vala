@@ -13,7 +13,7 @@ namespace YamlDB.Yaml.Events
 		public string Anchor { get; private set; }
 
 		internal AnchorAlias.from_raw(RawEvent event)
-			requires(event.type == EventType.ALIAS_EVENT)
+			requires(event.type == YAML.EventType.ALIAS_EVENT)
 		{
 			base.from_raw(event);
 			Anchor = event.data.alias.anchor;

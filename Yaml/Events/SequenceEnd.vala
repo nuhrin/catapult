@@ -10,7 +10,7 @@ namespace YamlDB.Yaml.Events
 		}
 
 		internal SequenceEnd.from_raw(RawEvent event)
-			requires(event.type == EventType.SEQUENCE_END_EVENT)
+			requires(event.type == YAML.EventType.SEQUENCE_END_EVENT)
 		{
 			base.from_raw(event);
 		}

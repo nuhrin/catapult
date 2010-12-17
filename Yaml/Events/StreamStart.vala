@@ -12,7 +12,7 @@ namespace YamlDB.Yaml.Events
 		private EncodingType encoding = EncodingType.ANY_ENCODING;
 
 		internal StreamStart.from_raw(RawEvent event)
-			requires(event.type == EventType.STREAM_START_EVENT)
+			requires(event.type == YAML.EventType.STREAM_START_EVENT)
 		{
 			base.from_raw(event);
 		}
@@ -21,7 +21,7 @@ namespace YamlDB.Yaml.Events
 		internal override RawEvent create_raw_event()
 		{
 			RawEvent event = {0};
-			RawEvent.stream_start_initialize(ref event, encoding);
+			RawEvent.stream_start_initialize(ref event, (YAML.EncodingType)encoding);
 			return event;
 		}
 	}

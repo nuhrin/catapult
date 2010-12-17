@@ -26,13 +26,13 @@ namespace YamlDB.Yaml.Events
 		}
 
 		internal Scalar.from_raw(RawEvent event)
-			requires(event.type == EventType.SCALAR_EVENT)
+			requires(event.type == YAML.EventType.SCALAR_EVENT)
 		{
 			base.from_raw(event.data.scalar.anchor, event.data.scalar.tag, event);
 			IsPlainImplicit = (event.data.scalar.plain_implicit != 0);
 			IsQuotedImplicit = (event.data.scalar.quoted_implicit != 0);
 			Value = event.data.scalar.value;
-			Style = event.data.scalar.style;
+			Style = (ScalarStyle)event.data.scalar.style;
 		}
 		internal override int NestingIncrease { get { return 0; } }
 
@@ -40,7 +40,7 @@ namespace YamlDB.Yaml.Events
 		{
 			RawEvent event = {0};
 			RawEvent.scalar_initialize(ref event, (uchar*)Anchor, (uchar*)Tag, (uchar*)Value, (int)Value.length,
-									   IsPlainImplicit, IsQuotedImplicit, Style);
+									   IsPlainImplicit, IsQuotedImplicit, (YAML.ScalarStyle)Style);
 			return event;
 		}
 	}

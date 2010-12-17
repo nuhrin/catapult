@@ -10,9 +10,9 @@ namespace YamlDB.Yaml.Events
 		}
 		internal Event.from_raw(RawEvent event)
 		{
-			Start = event.start_mark;
-			End = event.end_mark;
-			Type = event.type;
+			Start = new Mark.from_raw(event.start_mark);
+			End = new Mark.from_raw(event.end_mark);
+			Type = (EventType)event.type;
 		}
 		public Mark Start { get; private set; }
 		public Mark End { get; private set; }
@@ -34,7 +34,7 @@ namespace YamlDB.Yaml.Events
 		internal override RawEvent create_raw_event()
 		{
 			RawEvent event = RawEvent();
-			event.type = Type;
+			event.type = (YAML.EventType)Type;
 			return event;
 		}
 	}

@@ -10,7 +10,7 @@ namespace YamlDB.Yaml.Events
 		}
 		
 		internal StreamEnd.from_raw(RawEvent event)
-			requires(event.type == EventType.STREAM_END_EVENT)
+			requires(event.type == YAML.EventType.STREAM_END_EVENT)
 		{
 			base.from_raw(event);
 		}

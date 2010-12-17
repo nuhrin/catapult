@@ -44,7 +44,7 @@ namespace YamlDB.Yaml.Events
 
 		public void set_encoding(EncodingType encoding)
 		{
-			emitter.set_encoding(encoding);
+			emitter.set_encoding((YAML.EncodingType)encoding);
 		}
 		public void set_canonical(bool canonical)
 		{
@@ -64,7 +64,7 @@ namespace YamlDB.Yaml.Events
 		}
 		public void set_break(BreakType @break)
 		{
-			emitter.set_break(@break);
+			emitter.set_break((YAML.BreakType)@break);
 		}
 
 

@@ -29,27 +29,27 @@
 [CCode (cprefix="YAML", cheader_filename="yaml.h", lower_case_cprefix="yaml_")]
 namespace YAML {
 
-	public const string DEFAULT_SCALAR_TAG;
-	public const string DEFAULT_SEQUENCE_TAG;
-	public const string DEFAULT_MAPPING_TAG;
-	public const string NULL_TAG;
-	public const string BOOL_TAG;
-	public const string STR_TAG;
-	public const string INT_TAG;
-	public const string FLOAT_TAG;
-	public const string TIMESTAMP_TAG;
-	public const string SEQ_TAG;
-	public const string MAP_TAG;
+	internal const string DEFAULT_SCALAR_TAG;
+	internal const string DEFAULT_SEQUENCE_TAG;
+	internal const string DEFAULT_MAPPING_TAG;
+	internal const string NULL_TAG;
+	internal const string BOOL_TAG;
+	internal const string STR_TAG;
+	internal const string INT_TAG;
+	internal const string FLOAT_TAG;
+	internal const string TIMESTAMP_TAG;
+	internal const string SEQ_TAG;
+	internal const string MAP_TAG;
 
 	[CCode (cprefix="YAML_", cname="yaml_node_type_t", has_type_id=false)]
-	public enum NodeType {
+	internal enum NodeType {
 		NO_NODE,
 		SCALAR_NODE,
 		SEQUENCE_NODE,
 		MAPPING_NODE
 	}
 	[CCode (cprefix="YAML_", cname="yaml_scalar_style_t", has_type_id=false)]
-	public enum ScalarStyle {
+	internal enum ScalarStyle {
 		ANY_SCALAR_STYLE,
 		PLAIN_SCALAR_STYLE,
 		SINGLE_QUOTED_SCALAR_STYLE,
@@ -62,7 +62,7 @@ namespace YAML {
 	/** 
 	 * Sequence styles 
 	 * */
-	public enum SequenceStyle{
+	internal enum SequenceStyle{
 		ANY_SEQUENCE_STYLE ,
 		BLOCK_SEQUENCE_STYLE,
 		FLOW_SEQUENCE_STYLE
@@ -71,7 +71,7 @@ namespace YAML {
 	 * Mapping styles. 
 	 * */
 	[CCode (cprefix="YAML_", cname="yaml_mapping_style_t", has_type_id=false)]
-	public enum MappingStyle {
+	internal enum MappingStyle {
 		ANY_MAPPING_STYLE,
 		BLOCK_MAPPING_STYLE,
 		FLOW_MAPPING_STYLE
@@ -81,7 +81,7 @@ namespace YAML {
 	 * The version directive data. 
 	 * */
 	[CCode (cname="yaml_version_directive_t", has_type_id = false)]
-	public struct VersionDirective {
+	internal struct VersionDirective {
 		public int major;
 		public int minor;
 	}
@@ -90,14 +90,14 @@ namespace YAML {
 	 * The tag directive data. 
 	 * */
 	[CCode (cname = "yaml_tag_directive_t", has_type_id = false)]
-	public struct TagDirective {
+	internal struct TagDirective {
 		public string handle;
 		public string prefix;
 	}
 	/** Line break types. */
 
 	[CCode (cprefix="YAML_", cname="yaml_break_t", has_type_id=false)]
-	public enum BreakType {
+	internal enum BreakType {
 		ANY_BREAK,
 		CR_BREAK,
 		LN_BREAK,
@@ -108,7 +108,7 @@ namespace YAML {
 	/** 
 	 * The pointer position. 
 	 * */
-	public struct Mark {
+	internal struct Mark {
 		public size_t index;
 		public size_t line;
 		public size_t column;
@@ -119,7 +119,7 @@ namespace YAML {
 	}
 
 	[CCode (cname = "yaml_event_type_t", cprefix="YAML_", has_type_id = false)]
-	public enum EventType {
+	internal enum EventType {
 		NO_EVENT,
 
 		STREAM_START_EVENT,
@@ -139,29 +139,29 @@ namespace YAML {
 	}
 
 	[CCode (has_type_id = false)]
-	public struct DocumentTagDirectives {
+	internal struct DocumentTagDirectives {
 		YAML.TagDirective *start;
 		YAML.TagDirective *end;
 	}
 	[CCode (has_type_id = false)]
-	public struct EventDocumentStart {
+	internal struct EventDocumentStart {
 		public YAML.VersionDirective *version_directive;
 		public YAML.DocumentTagDirectives tag_directives;
 		public int implicit;
 	}
 	
 	[CCode (has_type_id = false)]
-	public struct EventDocumentEnd {
+	internal struct EventDocumentEnd {
 		public int implicit;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct EventAlias {
+	internal struct EventAlias {
 		public string anchor;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct EventSequenceStart {
+	internal struct EventSequenceStart {
 		public string anchor;
 		public string tag;
 		public int implicit;
@@ -169,7 +169,7 @@ namespace YAML {
 	}
 
 	[CCode (has_type_id = false)]
-	public struct EventMappingStart {
+	internal struct EventMappingStart {
 		public string anchor;
 		public string tag;
 		public int implicit;
@@ -180,7 +180,7 @@ namespace YAML {
 	 * The scalar parameters (for @c YAML_SCALAR_EVENT). 
 	 * */
 	[CCode (has_type_id = false)]
-	public struct EventScalar {
+	internal struct EventScalar {
 		/* The anchor. */
 		public string anchor;
 		/* The tag. */
@@ -197,7 +197,7 @@ namespace YAML {
 	}
 
 	[CCode (has_type_id=false)]
-	public struct EventData {
+	internal struct EventData {
 		public YAML.EventDocumentStart document_start;
 		public YAML.EventDocumentEnd document_end;
 		public YAML.EventAlias alias;
@@ -210,7 +210,7 @@ namespace YAML {
 			cname="yaml_event_t", 
 			lower_case_cprefix="yaml_event_",
 			destroy_function="yaml_event_delete")]
-	public struct RawEvent {
+	internal struct RawEvent {
 		[CCode (cname="yaml_stream_start_event_initialize")]
 		public static int stream_start_initialize(ref YAML.RawEvent event, YAML.EncodingType encoding);
 
@@ -257,7 +257,7 @@ namespace YAML {
 	 * The stream encoding. 
 	 * */
 	[CCode (cname = "yaml_encoding_t", cprefix="YAML_", has_type_id = false)]
-	public enum EncodingType {
+	internal enum EncodingType {
 		/* Let the parser choose the encoding. */
 		ANY_ENCODING,
 		/* The default UTF-8 encoding. */
@@ -270,7 +270,7 @@ namespace YAML {
 
 	/** Many bad things could happen with the parser and emitter. */
 	[CCode (cname="yaml_error_type_t", prefix="YAML_", has_type_id=false)]
-	public enum ErrorType {
+	internal enum ErrorType {
 		NO_ERROR,
 
 		/* Cannot allocate or reallocate a block of memory. */
@@ -295,7 +295,7 @@ namespace YAML {
 			cname="yaml_parser_t", 
 			lower_case_cprefix="yaml_parser_", 
 			destroy_function="yaml_parser_delete")]
-	public struct Parser {
+	internal struct Parser {
 		public YAML.ErrorType error;
 		public string problem;
 		public size_t problem_offset;
@@ -333,13 +333,13 @@ namespace YAML {
 	}
 
 	[CCode (instance_pos = 0, cname="yaml_write_handler_t")]
-	public delegate int WriteHandler(uchar *buffer, size_t length);
+	internal delegate int WriteHandler(uchar *buffer, size_t length);
 
 	[CCode (has_type_id = false,
 			cname="yaml_emitter_t", 
 			lower_case_cprefix="yaml_emitter_", 
 			destroy_function="yaml_emitter_delete")]
-	public struct Emitter {
+	internal struct Emitter {
 		public YAML.ErrorType error;
 		public string problem;
 

@@ -12,7 +12,7 @@ namespace YamlDB.Yaml.Events
 		public bool IsImplicit { get; private set; }
 
 		internal DocumentEnd.from_raw(RawEvent event)
-			requires(event.type == EventType.DOCUMENT_END_EVENT)
+			requires(event.type == YAML.EventType.DOCUMENT_END_EVENT)
 		{
 			base.from_raw(event);
 			IsImplicit = (event.data.document_end.implicit != 0);

@@ -21,7 +21,7 @@ namespace YamlDB.Yaml.Events
 		public bool IsImplicit { get; private set; }
 
 		internal DocumentStart.from_raw(RawEvent event)
-			requires(event.type == EventType.DOCUMENT_START_EVENT)
+			requires(event.type == YAML.EventType.DOCUMENT_START_EVENT)
 		{
 			base.from_raw(event);
 			IsImplicit = (event.data.document_start.implicit != 0);

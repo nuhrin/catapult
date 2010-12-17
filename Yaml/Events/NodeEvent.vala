@@ -10,7 +10,7 @@ namespace YamlDB.Yaml.Events
 			base(type);
 			initialize(anchor, tag);
 		}
-		protected NodeEvent.from_raw(string? anchor, string? tag, RawEvent event)
+		internal NodeEvent.from_raw(string? anchor, string? tag, RawEvent event)
 		{
 			base.from_raw(event);
 			initialize(anchor, tag);

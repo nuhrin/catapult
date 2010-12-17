@@ -7,6 +7,7 @@ namespace YamlDB.Yaml.Events
 		Parser parser;
 		RawEvent raw_event;
 		Event current_event = new EmptyEvent();
+		bool has_document_context = false;
 
 		public EventReader(FileStream input)
 		{
@@ -32,6 +33,13 @@ namespace YamlDB.Yaml.Events
 					parser.problem, parser.problem_offset, parser.problem_mark.to_string(), parser.context);
 			}
 			current_event = get_parsing_event(raw_event);
+			if (!has_document_context) {
+			 	if (raw_event.type == YAML.EventType.DOCUMENT_START_EVENT)
+					has_document_context = true;
+			} else {
+				if (raw_event.type == YAML.EventType.DOCUMENT_END_EVENT)
+					has_document_context = false;
+			}
 			return true;
 		}
 
@@ -62,18 +70,25 @@ namespace YamlDB.Yaml.Events
 			while(depth > 0);
 		}
 
-		void ensure_stream_start() throws YamlException
+		public void ensure_stream_start() throws YamlException
 		{
-			if (!parser.stream_start_produced)
-			{
+			if (!parser.stream_start_produced) {
 				move_next();
-				assert(raw_event.type == EventType.STREAM_START_EVENT);
+				assert(raw_event.type == YAML.EventType.STREAM_START_EVENT);
+			}
+		}
+		public void ensure_document_context() throws YamlException
+		{
+			ensure_stream_start();
+			if (!has_document_context) {
+				move_next();
+				assert(raw_event.type == YAML.EventType.DOCUMENT_START_EVENT);
 			}
 		}
 
 		Event get_parsing_event(RawEvent event)
 		{
-			switch(event.type) 
+			switch((EventType)event.type) 
 			{
 				case EventType.STREAM_START_EVENT:
 					return new StreamStart.from_raw(event);

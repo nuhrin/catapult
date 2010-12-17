@@ -2,12 +2,18 @@ namespace YamlDB
 {
 	public abstract class YamlObject : Object
 	{			
-		protected virtual string get_tag_name() 
+		protected virtual string? get_tag_name()
 		{
 			return this.get_type().name();			
 		}
-		internal string i_get_tag_name()  { return this.get_tag_name(); }
-		
+		internal string? get_tag()
+		{
+			var tag = get_tag_name();
+			if (tag != null && tag != "")
+				return "!" + tag;
+			return null;
+		}
+
 		protected abstract void emit_yaml(EntityEmitter emitter);	
 		internal void i_emit_yaml(EntityEmitter emitter) { emit_yaml(emitter); }
 		
