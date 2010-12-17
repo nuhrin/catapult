@@ -2,13 +2,13 @@ namespace YamlDB.Helpers
 {
 	public class ValueHelper
 	{
-		public static Value? populate_value<T>(T val)
+		public static Value populate_value<T>(T val)
 		{
-			if (val == null)
-				return null;
-
 			Type type = typeof(T);
 			Value retVal = Value(type);
+			if (val == null)
+				return retVal;
+
 			if (type.is_object())
 				retVal.set_object((Object)val);
 			else if (type.is_enum())

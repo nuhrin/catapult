@@ -71,7 +71,6 @@
     <Compile Include="Yaml\Events\enums.vala" />
     <Compile Include="Yaml\Events\Mark.vala" />
     <Compile Include="Helpers\ValueHelper.vala" />
-    <Compile Include="Helpers\IndirectHelper.vala" />
     <Compile Include="Helpers\IndirectGenerics\IndirectFactory.vala" />
     <Compile Include="Helpers\IndirectGenerics\IndirectUni.vala" />
     <Compile Include="Helpers\IndirectGenerics\IndirectBi.vala" />
@@ -80,6 +79,9 @@
     <Compile Include="Enumerable.vala" />
     <Compile Include="Delegates.vala" />
     <Compile Include="Enumerator.vala" />
+    <Compile Include="Helpers\IndirectGenerics.Gee\IndirectCollection.vala" />
+    <Compile Include="Helpers\IndirectGenerics.Gee\IndirectList.vala" />
+    <Compile Include="Helpers\IndirectGenericsHelper.vala" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
