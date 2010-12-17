@@ -68,6 +68,18 @@
     <Compile Include="Yaml\Events\Event.vala" />
     <Compile Include="Yaml\Events\EventEmitter.vala" />
     <Compile Include="Yaml\libyaml.vapi" />
+    <Compile Include="Yaml\Events\enums.vala" />
+    <Compile Include="Yaml\Events\Mark.vala" />
+    <Compile Include="Helpers\ValueHelper.vala" />
+    <Compile Include="Helpers\IndirectHelper.vala" />
+    <Compile Include="Helpers\IndirectGenerics\IndirectFactory.vala" />
+    <Compile Include="Helpers\IndirectGenerics\IndirectUni.vala" />
+    <Compile Include="Helpers\IndirectGenerics\IndirectBi.vala" />
+    <Compile Include="Helpers\IndirectGenerics\IndirectTri.vala" />
+    <Compile Include="Helpers\IndirectGenerics.Gee\IndirectMap.vala" />
+    <Compile Include="Enumerable.vala" />
+    <Compile Include="Delegates.vala" />
+    <Compile Include="Enumerator.vala" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -90,5 +102,7 @@
     <Folder Include="Helpers\" />
     <Folder Include="Yaml\" />
     <Folder Include="Yaml\Events\" />
+    <Folder Include="Helpers\IndirectGenerics\" />
+    <Folder Include="Helpers\IndirectGenerics.Gee\" />
   </ItemGroup>
 </Project>
