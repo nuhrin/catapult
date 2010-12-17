@@ -5,13 +5,13 @@ namespace YamlDB
 	public class Enumerable<TSource> : Object, Iterable<TSource>
 	{
 		static HashMap<Type, Enumerable<TSource>> empties;
-		public static Enumerable<TSource> Empty<TSource>() {
+		public static Enumerable<TSource> empty<TSource>() {
 			if (empties == null)
 				empties = new HashMap<Type, Enumerable<TSource>>();
 			if (empties.has_key(typeof(TSource)))
 				return empties[typeof(TSource)];
 
-			var empty = new Enumerable<TSource>(Set.empty<TSource>());
+			var empty = new Enumerable<TSource>(Collection.empty<TSource>());
 			empties[typeof(TSource)] = empty;
 			return empty;
 		}
