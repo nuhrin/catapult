@@ -1,6 +1,199 @@
+using Gee;
+using YamlDB.Helpers;
+
 namespace YamlDB
 {
 	public class DataInterface : Object 
 	{
+		public string RootFolder { get; private set; }
+
+		public DataInterface(string root_folder) throws RuntimeException
+		{
+			if (is_valid_foldername(root_folder) == false)
+				throw new RuntimeException.ARGUMENT("Invalid root folder: '%s'", root_folder);
+
+			RootFolder = root_folder;
+		}
+
+		public T create<T>(string? entity_id=null) throws RuntimeException requires(typeof(T).is_a(typeof(Entity.Entity)))
+		{
+			if (entity_id == null)
+				return (T)Object.new(typeof(T));
+
+			if (is_valid_entity_id(entity_id) == false)
+				throw new RuntimeException.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
+			Entity.Entity e = Object.new(typeof(T)) as Entity.Entity;
+			e.set_id(entity_id);
+			return (T)e;
+		}
+
+		public Enumerable<T> load_all<T>() throws RuntimeException, YamlException, FileError requires(typeof(T).is_a(typeof(Entity.Entity)))
+		{
+			//return DataLoadInterface.instance<T>().load_all(this);
+			string data_folder = get_data_folder(typeof(T).name());
+
+			Dir d;
+			try {
+				d = Dir.open(data_folder);
+			} catch (FileError ex) {
+				print("FileError: %s\n", ex.message);
+				return Enumerable.empty<T>();
+			}
+
+			ArrayList<T> entities = new ArrayList<T>();
+			string filename;
+			while ((filename = d.read_name()) != null)
+				entities.add(load<T>(filename));
+
+			return new Enumerable<string>(entities);
+		}
+		public T load<T>(string entity_id, string? data_folder=null) throws RuntimeException, YamlException, FileError
+			requires(typeof(T).is_a(typeof(Entity.Entity)))
+		{
+			return (T)load_internal(entity_id, data_folder, typeof(T));
+		}
+		internal Entity.Entity load_internal(string entity_id, string? data_folder, Type entity_type) throws RuntimeException, FileError, YamlException
+		{
+			if (is_valid_entity_id(entity_id) == false)
+				throw new RuntimeException.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
+
+			string folder = (data_folder != null) ? data_folder : entity_type.name();
+
+			string entity_file = get_entity_file_path(folder, entity_id, false);
+			if (FileUtils.test(entity_file, FileTest.EXISTS) == false)
+				throw new RuntimeException.FILE("%s '%s' not found.", entity_type.name(), entity_id);
+
+			string yaml;
+			if (FileUtils.get_contents(entity_file, out yaml) == false)
+				throw new RuntimeException.FILE("File not found: %s", entity_file);
+			Entity.Entity entity = (Entity.Entity)get_object_of_type(yaml, entity_type);
+			entity.set_id(entity_id);
+			return entity;
+		}
+
+		internal class DataLoadInterface<T>
+		{
+			static HashMap<Type, DataLoadInterface> instances;
+			public static DataLoadInterface<T> instance<T>() {
+				if (instances == null)
+					instances = new HashMap<Type, DataLoadInterface>();
+				if (instances.has_key(typeof(T)))
+					return instances[typeof(T)];
+
+				var instance = new DataLoadInterface<T>();
+				instances[typeof(T)] = instance;
+				return instance;
+			}
+			public Enumerable<T> load_all(DataInterface di) throws RuntimeException
+			{
+				string folder = typeof(T).name();
+				string data_folder = di.get_data_folder(folder);
+				if (FileUtils.test(data_folder, FileTest.EXISTS) == false)
+					return Enumerable.empty<T>();
+
+				Type entity_type = typeof(T);
+				YieldEnumeratorPopulate<T> populate = p=> {
+					Dir d;
+					try {
+						d = Dir.open(data_folder);
+					} catch (FileError ex) {
+						return;
+					}
+
+					string filename;
+					while ((filename = d.read_name()) != null) {
+						Value v = Value(entity_type);
+						v.set_object(di.load_internal(filename, data_folder, entity_type));
+						p.yield_value(v);
+					}
+				};
+				return Enumerable.yielding<T>(populate);
+			}
+		}
+
+		public void save(Entity.Entity entity, string? entity_id=null, string? data_folder=null) throws YamlException, RuntimeException, FileError
+		{
+			string id = entity_id;
+			if (entity_id == null)
+			{
+				id = (entity.ID != null && entity.ID != "") ? entity.ID : entity.i_generate_id();
+				if (is_valid_entity_id(id) == false)
+					throw new RuntimeException.ARGUMENT("Entity could not be saved: Invalid Entity ID: '%s'", id);
+			}
+			if (data_folder == null)
+				data_folder = entity.get_type().name();
+
+//			//if (string.IsNullOrEmpty(entity.ID) == false && entityID != entity.ID)
+//			//	Rename(...);
+//			//		(this would mean updating any references to this entity also)
+//						// save all entity references also?
+//			// only when they have actually changed? how to do this? while keeping data in automatic properties? attribute?
+//
+			string filepath = get_entity_file_path(data_folder, id, true);
+			string yaml = get_yaml(entity);
+			print("yaml:\n%s\n", yaml);
+			FileUtils.set_contents(filepath, yaml + "\n");
+			entity.set_id(id);
+		}
+
+		static bool is_valid_filename(string filename)
+		{
+			if (filename == "")
+				return false;
+			return !RegexHelper.NonWordCharacters.match(filename);
+			//return true;
+		}
+		static bool is_valid_foldername(string folder)
+		{
+			return true;
+			//return is_valid_filename(folder);
+		}
+		static bool is_valid_entity_id(string entity_id)
+		{
+			return is_valid_filename(entity_id);
+		}
+
+		string get_data_folder(string folder) throws RuntimeException
+		{
+			if (folder == "")
+				return RootFolder;
+			if (is_valid_foldername(folder) == false)
+				throw new RuntimeException.ARGUMENT("Invalid folder name: '%s'", folder);
+
+			return Path.build_filename(RootFolder, folder);
+		}
+		string get_entity_file_path(string folder, string entity_id, bool ensure_folder_exists) throws RuntimeException
+		{
+			var data_folder = get_data_folder(folder);
+			if (ensure_folder_exists == true)
+			{
+				if (FileUtils.test(data_folder, FileTest.EXISTS) == false)
+					DirUtils.create_with_parents(data_folder, 0770);
+			}
+			return Path.build_filename(data_folder, entity_id);
+		}
+
+		T get_object<T>(string yaml) throws YamlException
+		{
+			EntityReader reader = new EntityReader.from_string(yaml, this);
+			return reader.read_value<T>();
+		}
+		Object get_object_of_type(string yaml, Type type) throws YamlException
+		{
+			EntityReader reader = new EntityReader.from_string(yaml, this);
+			Object obj = Object.new(type);
+			reader.populate_object(obj);
+			return obj;
+		}
+
+		static string get_yaml(Entity.Entity entity) throws YamlException
+		{
+			StringBuilder sb = new StringBuilder();
+			EntityEmitter emitter = new EntityEmitter.to_string_builder(sb);
+			emitter.emit_object(entity);
+			emitter.flush();
+			return sb.str;
+		}
+
 	}
 }
