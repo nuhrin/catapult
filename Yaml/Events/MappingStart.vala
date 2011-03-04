@@ -6,9 +6,9 @@ namespace YamlDB.Yaml.Events
 	{
 		public MappingStart(string? anchor = null, string? tag = null,
 							bool implicit = true,
-							MappingStyle style = MappingStyle.ANY_MAPPING_STYLE)
+							MappingStyle style = MappingStyle.ANY)
 		{
-			base(anchor, tag, EventType.MAPPING_START_EVENT);
+			base(anchor, tag, EventType.MAPPING_START);
 			IsImplicit = implicit;
 			Style = style;
 		}

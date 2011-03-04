@@ -6,7 +6,7 @@ namespace YamlDB.Yaml.Events
 	{
 		public StreamEnd()
 		{
-			base(EventType.STREAM_END_EVENT);
+			base(EventType.STREAM_END);
 		}
 		
 		internal StreamEnd.from_raw(RawEvent event)

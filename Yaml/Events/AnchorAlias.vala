@@ -7,7 +7,7 @@ namespace YamlDB.Yaml.Events
 	{
 		public AnchorAlias(string anchor)
 		{
-			base(EventType.ALIAS_EVENT);
+			base(EventType.ALIAS);
 			Anchor = anchor;
 		}
 		public string Anchor { get; private set; }

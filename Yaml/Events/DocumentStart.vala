@@ -7,7 +7,7 @@ namespace YamlDB.Yaml.Events
 	{
 		public DocumentStart(VersionDirective? version = null, Iterable<TagDirective>? tag_directives = null, bool implicit = true)
 		{
-			base(EventType.DOCUMENT_START_EVENT);
+			base(EventType.DOCUMENT_START);
 			Version = version;
 			TagDirectives = new ArrayList<TagDirective>();
 			if (tag_directives != null) {

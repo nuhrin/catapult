@@ -67,7 +67,6 @@ namespace YamlDB.Yaml.Events
 			emitter.set_break((YAML.BreakType)@break);
 		}
 
-
 		private int emit_to_string_builder_handler(uchar *buffer, size_t length) {
 			sb.append_len((string)buffer, (ssize_t)length);
 			return 1;

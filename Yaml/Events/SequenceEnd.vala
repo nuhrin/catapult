@@ -6,7 +6,7 @@ namespace YamlDB.Yaml.Events
 	{
 		public SequenceEnd()
 		{
-			base(EventType.SEQUENCE_END_EVENT);
+			base(EventType.SEQUENCE_END);
 		}
 
 		internal SequenceEnd.from_raw(RawEvent event)

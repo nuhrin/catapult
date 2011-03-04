@@ -6,7 +6,7 @@ namespace YamlDB.Yaml.Events
 	{
 		public DocumentEnd(bool implicit)
 		{
-			base(EventType.DOCUMENT_END_EVENT);
+			base(EventType.DOCUMENT_END);
 			IsImplicit = implicit;
 		}
 		public bool IsImplicit { get; private set; }

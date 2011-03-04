@@ -4,11 +4,11 @@ namespace YamlDB.Yaml.Events
 {
 	public class SequenceStart : NodeEvent
 	{
-		public SequenceStart(string? anchor, string? tag,
+		public SequenceStart(string? anchor=null, string? tag=null,
 							bool implicit = true,
-							SequenceStyle style = SequenceStyle.ANY_SEQUENCE_STYLE)
+							SequenceStyle style = SequenceStyle.ANY)
 		{
-			base(anchor, tag, EventType.SEQUENCE_START_EVENT);
+			base(anchor, tag, EventType.SEQUENCE_START);
 			IsImplicit = implicit;
 			Style = style;
 		}

@@ -6,7 +6,7 @@ namespace YamlDB.Yaml.Events
 	{
 		public MappingEnd()
 		{
-			base(EventType.MAPPING_END_EVENT);
+			base(EventType.MAPPING_END);
 		}
 		internal MappingEnd.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.MAPPING_END_EVENT)

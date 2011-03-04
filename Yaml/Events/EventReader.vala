@@ -83,6 +83,7 @@ namespace YamlDB.Yaml.Events
 			if (!has_document_context) {
 				move_next();
 				assert(raw_event.type == YAML.EventType.DOCUMENT_START_EVENT);
+				move_next();
 			}
 		}
 
@@ -90,25 +91,25 @@ namespace YamlDB.Yaml.Events
 		{
 			switch((EventType)event.type) 
 			{
-				case EventType.STREAM_START_EVENT:
+				case EventType.STREAM_START:
 					return new StreamStart.from_raw(event);
-				case EventType.STREAM_END_EVENT:
+				case EventType.STREAM_END:
 					return new StreamEnd.from_raw(event);
-				case EventType.DOCUMENT_START_EVENT:
+				case EventType.DOCUMENT_START:
 					return new DocumentStart.from_raw(event);
-				case EventType.DOCUMENT_END_EVENT:
+				case EventType.DOCUMENT_END:
 					return new DocumentEnd.from_raw(event);
-				case EventType.ALIAS_EVENT:
+				case EventType.ALIAS:
 					return new AnchorAlias.from_raw(event);
-				case EventType.SCALAR_EVENT:
+				case EventType.SCALAR:
 					return new Scalar.from_raw(event);
-				case EventType.SEQUENCE_START_EVENT:
+				case EventType.SEQUENCE_START:
 					return new SequenceStart.from_raw(event);
-				case EventType.SEQUENCE_END_EVENT:
+				case EventType.SEQUENCE_END:
 					return new SequenceEnd.from_raw(event);
-				case EventType.MAPPING_START_EVENT:
+				case EventType.MAPPING_START:
 					return new MappingStart.from_raw(event);
-				case EventType.MAPPING_END_EVENT:
+				case EventType.MAPPING_END:
 					return new MappingEnd.from_raw(event);
 				case EventType.NO_EVENT:
 					return new EmptyEvent();

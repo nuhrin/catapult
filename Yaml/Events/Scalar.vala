@@ -6,9 +6,9 @@ namespace YamlDB.Yaml.Events
 	{
 		public Scalar(string? anchor, string? tag, string value,
 		              bool plain_implicit = true, bool quoted_implicit = true,
-		              ScalarStyle style = ScalarStyle.ANY_SCALAR_STYLE)
+		              ScalarStyle style = ScalarStyle.ANY)
 		{
-			base(anchor, tag, EventType.SCALAR_EVENT);
+			base(anchor, tag, EventType.SCALAR);
 			Value = value;
 			IsPlainImplicit = plain_implicit;
 			IsQuotedImplicit = quoted_implicit;

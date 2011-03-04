@@ -6,7 +6,7 @@ namespace YamlDB.Yaml.Events
 	{
 		public StreamStart(EncodingType encoding = EncodingType.ANY_ENCODING)
 		{
-			base(EventType.STREAM_START_EVENT);
+			base(EventType.STREAM_START);
 			this.encoding = encoding;
 		}
 		private EncodingType encoding = EncodingType.ANY_ENCODING;
