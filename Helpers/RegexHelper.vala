@@ -2,27 +2,20 @@ namespace YamlDB.Helpers
 {
 	public class RegexHelper
 	{
-		static RegexHelper _nonWordChars;
-		public static RegexHelper NonWordCharacters
+		public static unowned RegexHelper NonWordCharacters { get { return get_regex(ref _nonWordChars, """[^\w]+"""); } }
+		static RegexHelper _nonWordChars = null;
+
+		public static unowned RegexHelper NonAlphaNumericCharacters { get { return get_regex(ref _nonAlphaNumericChars, """^[0-9a-zA-Z_\-]+$"""); } }
+		static RegexHelper _nonAlphaNumericChars = null;
+
+		static unowned RegexHelper get_regex(ref RegexHelper value, string regex)
 		{
-			get 
-			{
-				if (_nonWordChars == null)
-					_nonWordChars = new RegexHelper("""[^\w]+""");
-				return _nonWordChars;
-			}
+			if (value == null)
+				value = new RegexHelper(regex);
+			return value;
 		}
-		static RegexHelper _nonAlphaNumeric;
-		public static RegexHelper NonAlphaNumericCharacters
-		{
-			get
-			{
-				if (_nonAlphaNumeric == null)
-					_nonAlphaNumeric = new RegexHelper("""^[0-9a-zA-Z_\-]+$""");
-				return _nonAlphaNumeric;				
-			}
-		}
-		
+
+
 		Regex regex;
 		public RegexHelper(string regex)
 		{
