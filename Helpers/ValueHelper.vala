@@ -48,7 +48,7 @@ namespace YamlDB.Helpers
 
 			return retVal;
 		}
-		public static T extract_value<T>(Value val) requires(val.holds(typeof(T))) {
+		public static T extract_value<T>(Value val) {
 			Type type = typeof(T);
 			if (type.is_object())
 				return (T)val.get_object();
