@@ -4,6 +4,20 @@ namespace YamlDB.Helpers.IndirectGenerics.Gee
 {
 	public class IndirectList<A> : IndirectCollection<A>
 	{
+		public new global::Gee.List create(Type type) requires(type.is_a(typeof(global::Gee.List)))
+		{
+			if (type == typeof(ArrayList))
+				return new ArrayList<A>();
+			else if (type == typeof(LinkedList))
+				return new LinkedList<A>();
+			else if (type == typeof(AbstractList))
+				return new ArrayList<A>();
+			else if (type == typeof(global::Gee.List))
+				return new ArrayList<A>();
+
+			assert_not_reached();
+		}
+
 		public new global::Gee.List empty() { return global::Gee.List.empty<A>(); }
 
 		public new Value get(global::Gee.List obj, int index)
