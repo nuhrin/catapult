@@ -4,6 +4,12 @@ namespace YamlDB
 	{
 		PARSE,
 		EMIT,
-		EVENT_TYPE
+		EVENT_TYPE,
+		INTERNAL
+	}
+	public errordomain RuntimeException
+	{
+		ARGUMENT,
+		FILE
 	}
 }
