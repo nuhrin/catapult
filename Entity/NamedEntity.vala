@@ -10,23 +10,21 @@ namespace YamlDB.Entity
 		{
 			if (Name == "")
 				return "";
-			return RegexHelper.NonWordCharacters.replace(Name, "");			
+			return RegexHelper.NonWordCharacters.replace(Name, "").down();			
 		}
 		
-		protected override void emit_yaml(EntityEmitter emitter)
+		protected override void emit_yaml(EntityEmitter emitter) throws YamlException
 		{
-			assert_not_reached();
-//			emitter.StartMapping(null, GetTag(), false, MappingStyle.Any);
-//			emitter.EmitProperty("Name", Name as object);
-//			
-//			foreach(PropertyData property in this.GetType().GetAllPropertyData())
-//			{
-//				if (property.Name != "Name" && property.CanWrite == true)
-//					emitter.EmitProperty(this, property);
-//			}
-//					
-//			emitter.EndMapping();
-
+			emitter.start_mapping(this.get_tag(), false);
+			emitter.emit_property(this, "Name");
+			unowned ObjectClass klass = this.get_class();
+	    	var properties = klass.list_properties();
+	    	foreach(var prop in properties)
+	    	{
+		    	if (prop.name != "Name")
+		    		emitter.emit_property(this, prop.get_name());
+	    	}
+			emitter.end_mapping();
 		}
 //		public override string ToString ()
 //		{
