@@ -1,4 +1,5 @@
 using Gee;
+using YamlDB.Helpers;
 
 namespace YamlDB
 {
@@ -83,6 +84,57 @@ namespace YamlDB
 			i.remove();
 			while (!is_match(i.get()))
 				i.remove();
+		}
+	}
+
+	public delegate void YieldEnumeratorPopulate<T>(YieldEnumerator.Populator<T> populator);
+	public class YieldEnumerator<T> : Object, Iterator<T>
+	{
+		YieldEnumeratorPopulate<T> populate;
+		bool population_started;
+		bool population_finished;
+		T current;
+
+		public YieldEnumerator(YieldEnumeratorPopulate<T> populate_delegate) {
+			populate = populate_delegate;
+		}
+
+		public bool next() {
+			assert_not_reached();
+		}
+
+		public bool has_next() {
+			assert_not_reached();
+		}
+		public bool first()
+		{
+			assert_not_reached();
+		}
+
+		public new T get() {
+			assert_not_reached();
+		}
+
+		public void remove() {
+			assert_not_reached();
+		}
+
+		public class Populator<T>
+		{
+			YieldEnumerator<T> e;
+			internal Populator(YieldEnumerator<T> enumerator) {
+				e = enumerator;
+			}
+	
+			public signal void item_yielded(T item);
+
+			public void yield_item(T item) {
+				item_yielded(item);
+			}
+			public void yield_value(Value value) {
+				T v = ValueHelper.extract_value(value);
+				yield_item(v);
+			}
 		}
 	}
 }
