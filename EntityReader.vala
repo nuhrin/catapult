@@ -20,7 +20,7 @@ namespace YamlDB
 			this.data_interface = data_interface;
 		}
 
-		public T read_value<T>(T example=null) throws YamlException
+		public T read_value<T>(T example=null) throws YamlError
 		{
 			Value? inval = null;
 			if (example != null)
@@ -29,17 +29,17 @@ namespace YamlDB
 			return ValueHelper.extract_value<T>(v);
 		}
 
-		public void populate_object(Object obj) throws YamlException
+		public void populate_object(Object obj) throws YamlError
 		{
 			ReadValue(null, obj);
 		}
-		public void populate_object_properties(Object obj) throws YamlException
+		public void populate_object_properties(Object obj) throws YamlError
 		{
 			reader.ensure_document_context();
 			PopulateObjectProperties(obj);
 		}
 
-		Value ReadValue(Type? type=null, Value? inval=null) throws YamlException
+		Value ReadValue(Type? type=null, Value? inval=null) throws YamlError
 		{
 			reader.ensure_stream_start();
 			Type? intype = type;
@@ -78,9 +78,9 @@ namespace YamlDB
 						break;
 				}
 			}
-			throw new YamlException.PARSE("Expected scalar, mapping, or sequence, got %s", reader.Current.to_string());
+			throw new YamlError.PARSE("Expected scalar, mapping, or sequence, got %s", reader.Current.to_string());
 		}
-		Value ReadScalar(Type? type=null) throws YamlException
+		Value ReadScalar(Type? type=null) throws YamlError
 		{
 			reader.ensure_document_context();
 			Scalar scalar = reader.get<Scalar>();
@@ -99,11 +99,11 @@ namespace YamlDB
 			if (t == typeof(string))
 				v.set_string(scalar.Value);
 			else if (t == typeof(int))
-				v.set_int(scalar.Value.to_int());
+				v.set_int(int.parse(scalar.Value));
 			else if (t == typeof(bool))
-				v.set_boolean(scalar.Value.to_bool());
+				v.set_boolean(bool.parse(scalar.Value));
 			else if (t == typeof(double))
-				v.set_double(scalar.Value.to_double());
+				v.set_double(double.parse(scalar.Value));
 			else if (t == typeof(DateTime))
 			{
 				var tv = TimeVal();
@@ -112,11 +112,11 @@ namespace YamlDB
 			}
 
 			else
-				throw new YamlException.PARSE("Unsupported attempt to parse Type '%s' from a Yaml Scalar.", t.name());
+				throw new YamlError.PARSE("Unsupported attempt to parse Type '%s' from a Yaml Scalar.", t.name());
 
 			return v;
 		}
-		Value ReadMapping(Type? type=null, Value? inval=null) throws YamlException
+		Value ReadMapping(Type? type=null, Value? inval=null) throws YamlError
 		{
 			reader.ensure_document_context();
 			MappingStart mapping = reader.get<MappingStart>();
@@ -167,7 +167,7 @@ namespace YamlDB
 
 			return v;
 		}
-		void PopulateObjectProperties(Object obj) throws YamlException
+		void PopulateObjectProperties(Object obj) throws YamlError
 		{
 			Type type = obj.get_type();
 			reader.get<MappingStart>();
@@ -175,7 +175,7 @@ namespace YamlDB
 				string propertyName = reader.get<Scalar>().Value;
 				ParamSpec pspec = ((ObjectClass)type.class_peek()).find_property(propertyName);
 				if (pspec == null) {
-					throw new YamlException.PARSE("Entity parse error: property '%s' not found on type '%s'",
+					throw new YamlError.PARSE("Entity parse error: property '%s' not found on type '%s'",
 						propertyName, type.name());
 				}
 
@@ -187,7 +187,7 @@ namespace YamlDB
 				// TODO: actually implement the property setter correctly
 			}
 		}
-		Value? ReadSequence(Type? type=null, Value? inval=null) throws YamlException
+		Value? ReadSequence(Type? type=null, Value? inval=null) throws YamlError
 		{
 			reader.ensure_document_context();
 			SequenceStart sequence = reader.get<SequenceStart>();
@@ -228,7 +228,7 @@ namespace YamlDB
 			return v;
 		}
 
-		Value ReadValueSupportingEntityReference(Type? type=null, Value? inval=null) throws YamlException
+		Value ReadValueSupportingEntityReference(Type? type=null, Value? inval=null) throws YamlError
 		{
 			if (type != null && type.is_a(typeof(Entity.Entity)))
 			{

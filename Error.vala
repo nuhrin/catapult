@@ -1,13 +1,13 @@
 namespace YamlDB
 {
-	public errordomain YamlException
+	public errordomain YamlError
 	{
 		PARSE,
 		EMIT,
 		EVENT_TYPE,
 		INTERNAL
 	}
-	public errordomain RuntimeException
+	public errordomain RuntimeError
 	{
 		ARGUMENT,
 		FILE

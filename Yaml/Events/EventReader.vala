@@ -23,13 +23,13 @@ namespace YamlDB.Yaml.Events
 
 		public Event Current { get { return current_event; } }
 				
-		public bool move_next() throws YamlException
+		public bool move_next() throws YamlError
 		{
 			if (parser.stream_end_produced)
 				return false;
 			if (!parser.parse(out raw_event)) 
 			{
-				throw new YamlException.PARSE("EventParser error: %s at %u(%s)\nError Context: '%s'",
+				throw new YamlError.PARSE("EventParser error: %s at %u(%s)\nError Context: '%s'",
 					parser.problem, parser.problem_offset, parser.problem_mark.to_string(), parser.context);
 			}
 			current_event = get_parsing_event(raw_event);
@@ -43,12 +43,12 @@ namespace YamlDB.Yaml.Events
 			return true;
 		}
 
-		public T get<T>() throws YamlException
+		public T get<T>() throws YamlError
 		{
 			ensure_stream_start();
 			if (!(typeof(T).is_a(current_event.get_type())))
 			{
-				throw new YamlException.EVENT_TYPE("Expected '%s' got '%s' (%s)\nContext: '%s'",
+				throw new YamlError.EVENT_TYPE("Expected '%s' got '%s' (%s)\nContext: '%s'",
 					typeof(T).name(), current_event.get_type().name(), 
 					parser.context_mark.to_string(), parser.context);
 			}
@@ -57,7 +57,7 @@ namespace YamlDB.Yaml.Events
 			return event;
 		}
 
-		public void skip() throws YamlException
+		public void skip() throws YamlError
 		{
 			ensure_stream_start();
 			int depth = 0;
@@ -70,14 +70,14 @@ namespace YamlDB.Yaml.Events
 			while(depth > 0);
 		}
 
-		public void ensure_stream_start() throws YamlException
+		public void ensure_stream_start() throws YamlError
 		{
 			if (!parser.stream_start_produced) {
 				move_next();
 				assert(raw_event.type == YAML.EventType.STREAM_START_EVENT);
 			}
 		}
-		public void ensure_document_context() throws YamlException
+		public void ensure_document_context() throws YamlError
 		{
 			ensure_stream_start();
 			if (!has_document_context) {

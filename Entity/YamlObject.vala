@@ -18,11 +18,11 @@ namespace YamlDB
 			return null;
 		}
 
-		protected abstract void emit_yaml(EntityEmitter emitter) throws YamlException;
-		internal void i_emit_yaml(EntityEmitter emitter) throws YamlException { emit_yaml(emitter); }
+		protected abstract void emit_yaml(EntityEmitter emitter) throws YamlError;
+		internal void i_emit_yaml(EntityEmitter emitter) throws YamlError { emit_yaml(emitter); }
 		
-		protected abstract Object read_yaml(EntityReader reader) throws YamlException;
-		internal Object i_read_yaml(EntityReader reader) throws YamlException { return read_yaml(reader); }
+		protected abstract Object read_yaml(EntityReader reader) throws YamlError;
+		internal Object i_read_yaml(EntityReader reader) throws YamlError { return read_yaml(reader); }
 		
 		protected abstract void populate_entity_data(Object yamlData);
 		internal void i_populate_entity_data(Object yamlData) { populate_entity_data(yamlData); }			

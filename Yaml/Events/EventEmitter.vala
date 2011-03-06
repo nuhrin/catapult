@@ -24,21 +24,21 @@ namespace YamlDB.Yaml.Events
 			sb = null;
 		}
 
-		public void emit(Event event) throws YamlException
+		public void emit(Event event) throws YamlError
 		{
 			RawEvent raw_event = event.create_raw_event();
 			if (!emitter.emit(ref raw_event))
 			{
-				throw new YamlException.EMIT("EventEmitter error: %s", emitter.problem);
+				throw new YamlError.EMIT("EventEmitter error: %s", emitter.problem);
 			}
 			RawEvent.clean(ref raw_event);
 		}
 
-		public void flush() throws YamlException
+		public void flush() throws YamlError
 		{
 			if (!emitter.flush())
 			{
-				throw new YamlException.EMIT("EventEmitter error: %s", emitter.problem);
+				throw new YamlError.EMIT("EventEmitter error: %s", emitter.problem);
 			}
 		}
 

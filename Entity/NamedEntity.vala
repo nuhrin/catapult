@@ -13,7 +13,7 @@ namespace YamlDB.Entity
 			return RegexHelper.NonWordCharacters.replace(Name, "").down();			
 		}
 		
-		protected override void emit_yaml(EntityEmitter emitter) throws YamlException
+		protected override void emit_yaml(EntityEmitter emitter) throws YamlError
 		{
 			emitter.start_mapping(this.get_tag(), false);
 			emitter.emit_property(this, "Name");

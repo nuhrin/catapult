@@ -29,7 +29,7 @@ namespace YamlDB
 		bool has_stream_context = false;
 		EncodingType encoding;
 
-		public void start_document(bool implicit = true) throws YamlException
+		public void start_document(bool implicit = true) throws YamlError
 		{
 			if (has_stream_context == false) {
 				emitter.emit(new StreamStart(encoding));
@@ -40,55 +40,55 @@ namespace YamlDB
 			emitter.emit(new DocumentStart(null, null, implicit));
 			has_document_context = true;
 		}
-		public void end_document(bool implicit = true) throws YamlException
+		public void end_document(bool implicit = true) throws YamlError
 		{
 			if (has_document_context == false)
 				return;
 			emitter.emit(new DocumentEnd(implicit));
 			has_document_context = false;
 		}
-		public void start_mapping(string? tag=null, bool isImplicit=true, MappingStyle style=YamlDB.Yaml.Events.MappingStyle.ANY, string? anchor=null) throws YamlException
+		public void start_mapping(string? tag=null, bool isImplicit=true, MappingStyle style=YamlDB.Yaml.Events.MappingStyle.ANY, string? anchor=null) throws YamlError
 		{
 			ensure_document_context();
 			emitter.emit(new MappingStart(anchor, tag, isImplicit, style));
 		}
-		public void end_mapping() throws YamlException
+		public void end_mapping() throws YamlError
 		{
 			ensure_document_context();
 			emitter.emit(new MappingEnd());
 		}
-		public void start_sequence(string? tag=null, bool isImplicit=true, SequenceStyle style=YamlDB.Yaml.Events.SequenceStyle.ANY, string? anchor=null) throws YamlException
+		public void start_sequence(string? tag=null, bool isImplicit=true, SequenceStyle style=YamlDB.Yaml.Events.SequenceStyle.ANY, string? anchor=null) throws YamlError
 		{
 			ensure_document_context();
 			emitter.emit(new SequenceStart(anchor, tag, isImplicit, style));
 		}
-		public void end_sequence() throws YamlException
+		public void end_sequence() throws YamlError
 		{
 			ensure_document_context();
 			emitter.emit(new SequenceEnd());
 		}
 
-		public void emit<T>(T value) throws YamlException
+		public void emit<T>(T value) throws YamlError
 		{
 			Value val = ValueHelper.extract_value<T>(value);
 			emit_value(val);
 		}
-		public void emit_value(Value value) throws YamlException
+		public void emit_value(Value value) throws YamlError
 		{
 			ensure_document_context();
 			EmitValue(value);
 		}
-		public void emit_object(Object obj) throws YamlException
+		public void emit_object(Object obj) throws YamlError
 		{
 			ensure_document_context();
 			EmitObject(obj);
 		}
-		public void emit_properties(Object obj) throws YamlException
+		public void emit_properties(Object obj) throws YamlError
 		{
 			ensure_document_context();
 			EmitObjectProperties(obj);
 		}
-		public void emit_property(Object obj, string property_name) throws YamlException
+		public void emit_property(Object obj, string property_name) throws YamlError
 		{
 			ensure_document_context();
 			EmitObjectProperty(obj, property_name);
@@ -98,25 +98,25 @@ namespace YamlDB
 			emitter.flush();
 		}
 
-		void ensure_document_context() throws YamlException
+		void ensure_document_context() throws YamlError
 		{
 			if (has_document_context == false)
 				start_document();
 		}
 
-		void EmitNull() throws YamlException
+		void EmitNull() throws YamlError
 		{
 			emitter.emit(new Scalar(null, Constants.Tag.NULL, "", false, false, ScalarStyle.PLAIN));
 		}
 
-		void EmitValue(Value value) throws YamlException
+		void EmitValue(Value value) throws YamlError
 		{
-			Type type = value.type();
-			if (type.is_object())
+			if (value.holds(typeof(Object)))
 			{
 				EmitObject(value.get_object());
 				return;
 			}
+			Type type = value.type();
 			if (type.is_flags()) {
 //				throw new YamlException.INTERNAL("emitting flags value not currently supported, due to bugs in FlagsClass api (can't get at FlagsValue instances).");
 				emitter.emit(new SequenceStart());
@@ -186,12 +186,17 @@ namespace YamlDB
 						str_value = tv.to_iso8601();
 						tag = Constants.Tag.TIMESTAMP;
 					}
+				} else {
+					debug("Unsupported BOXED type: %s", type.name());
+					assert_not_reached();
 				}
 			}
 			else if (type.is_classed())
-				debug("Is Classed: "+type.name());
-			else
+				debug("Is Classed: %s", type.name());
+			else {
+				debug("Unsupported type: %s", type.name());
 				assert_not_reached();
+			}
 
 			if (str_value != null)
 				emitter.emit(new Scalar(anchor, tag, str_value));
@@ -199,7 +204,7 @@ namespace YamlDB
 				EmitNull();
 		}
 
-		void EmitObject(Object obj) throws YamlException
+		void EmitObject(Object obj) throws YamlError
 		{
 			// if YamlObject, emit that
 			if (obj is YamlObject)
@@ -246,7 +251,7 @@ namespace YamlDB
 			end_mapping();
 		}
 
-		void EmitObjectProperties(Object obj) throws YamlException
+		void EmitObjectProperties(Object obj) throws YamlError
 		{
 			unowned ObjectClass klass = obj.get_class();
 	    	var properties = klass.list_properties();
@@ -262,7 +267,7 @@ namespace YamlDB
 	    		}
 	    	}
 		}
-		void EmitObjectProperty(Object obj, string name) throws YamlException
+		void EmitObjectProperty(Object obj, string name) throws YamlError
 		{
 			var prop = obj.get_class().find_property(name);
 			if (prop != null && (prop.flags & ParamFlags.READWRITE) == ParamFlags.READWRITE) {
@@ -273,7 +278,7 @@ namespace YamlDB
 			}
 		}
 
-		void EmitValueSupportingEntityReference(Value value) throws YamlException
+		void EmitValueSupportingEntityReference(Value value) throws YamlError
 		{
 			Type type = value.type();
 			if (type.is_a(typeof(Entity.Entity)))
