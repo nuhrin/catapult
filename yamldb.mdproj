@@ -14,6 +14,7 @@
       <Packages>
         <ProjectPackage file="/usr/share/vala/vapi/glib-2.0.vapi" name="glib-2.0" IsProject="false" />
         <ProjectPackage file="/usr/share/vala/vapi/gee-1.0.vapi" name="gee-1.0" IsProject="false" />
+        <ProjectPackage file="/usr/local/share/vala-0.12/vapi/gio-2.0.vapi" name="gio-2.0" IsProject="false" />
       </Packages>
     </Packages>
   </PropertyGroup>
@@ -21,7 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug</OutputPath>
     <CodeGeneration>
-      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="false" OptimizationLevel="0" ExtraCompilerArguments="--Xcc=&quot;-lyaml&quot;" DefineSymbols="DEBUG MONODEVELOP" EnableMultithreading="false" ctype="ValaCompilationParameters" />
+      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="false" OptimizationLevel="0" ExtraCompilerArguments="--save-temps --Xcc=&quot;-lyaml&quot;" DefineSymbols="DEBUG MONODEVELOP" EnableMultithreading="false" ctype="ValaCompilationParameters" />
     </CodeGeneration>
     <SourceDirectory>.</SourceDirectory>
     <Output>
@@ -30,6 +31,11 @@
     <Build>
       <Build target="SharedLibrary" />
     </Build>
+    <Includes>
+      <Includes>
+        <Include>..\..\..\..\..\..\..\usr\local\share\vala-0.12\vapi</Include>
+      </Includes>
+    </Includes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
@@ -51,7 +57,6 @@
     <Compile Include="EntityEmitter.vala" />
     <Compile Include="Entity\YamlObject.vala" />
     <Compile Include="Entity\NamedEntity.vala" />
-    <Compile Include="Exception.vala" />
     <Compile Include="Helpers\RegexHelper.vala" />
     <Compile Include="Yaml\Events\NodeEvent.vala" />
     <Compile Include="Yaml\Events\SequenceStart.vala" />
@@ -82,6 +87,8 @@
     <Compile Include="Helpers\IndirectGenerics.Gee\IndirectCollection.vala" />
     <Compile Include="Helpers\IndirectGenerics.Gee\IndirectList.vala" />
     <Compile Include="Helpers\IndirectGenericsHelper.vala" />
+    <Compile Include="Yaml\Constants.vala" />
+    <Compile Include="Error.vala" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
