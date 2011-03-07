@@ -281,9 +281,9 @@ namespace YamlDB
 		void EmitValueSupportingEntityReference(Value value) throws YamlError
 		{
 			Type type = value.type();
-			if (type.is_a(typeof(Entity.Entity)))
+			if (type.is_a(typeof(Entity)))
 			{
-				var entity = (Entity.Entity)value.get_object();
+				var entity = (Entity)value.get_object();
 				string id = entity.ID;
 				if (id == null)
 					id = entity.i_generate_id();

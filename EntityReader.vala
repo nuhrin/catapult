@@ -230,7 +230,7 @@ namespace YamlDB
 
 		Value ReadValueSupportingEntityReference(Type? type=null, Value? inval=null) throws YamlError
 		{
-			if (type != null && type.is_a(typeof(Entity.Entity)))
+			if (type != null && type.is_a(typeof(Entity)))
 			{
 				string entityId = reader.get<Scalar>().Value;
 				return data_interface.load_internal(entityId, null, type);

@@ -15,19 +15,19 @@ namespace YamlDB
 			RootFolder = root_folder;
 		}
 
-		public T create<T>(string? entity_id=null) throws RuntimeError requires(typeof(T).is_a(typeof(Entity.Entity)))
+		public T create<T>(string? entity_id=null) throws RuntimeError requires(typeof(T).is_a(typeof(Entity)))
 		{
 			if (entity_id == null)
 				return (T)Object.new(typeof(T));
 
 			if (is_valid_entity_id(entity_id) == false)
 				throw new RuntimeError.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
-			Entity.Entity e = Object.new(typeof(T)) as Entity.Entity;
+			Entity e = Object.new(typeof(T)) as Entity;
 			e.set_id(entity_id);
 			return (T)e;
 		}
 
-		public Enumerable<T> load_all<T>() throws RuntimeError, YamlError, FileError requires(typeof(T).is_a(typeof(Entity.Entity)))
+		public Enumerable<T> load_all<T>() throws RuntimeError, YamlError, FileError requires(typeof(T).is_a(typeof(Entity)))
 		{
 			//return DataLoadInterface.instance<T>().load_all(this);
 			string data_folder = get_data_folder(typeof(T).name());
@@ -48,11 +48,11 @@ namespace YamlDB
 			return new Enumerable<T>(entities);
 		}
 		public T load<T>(string entity_id, string? data_folder=null) throws RuntimeError, YamlError, FileError
-			requires(typeof(T).is_a(typeof(Entity.Entity)))
+			requires(typeof(T).is_a(typeof(Entity)))
 		{
 			return (T)load_internal(entity_id, data_folder, typeof(T));
 		}
-		internal Entity.Entity load_internal(string entity_id, string? data_folder, Type entity_type) throws RuntimeError, FileError, YamlError
+		internal Entity load_internal(string entity_id, string? data_folder, Type entity_type) throws RuntimeError, FileError, YamlError
 		{
 			if (is_valid_entity_id(entity_id) == false)
 				throw new RuntimeError.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
@@ -66,7 +66,7 @@ namespace YamlDB
 			string yaml;
 			if (FileUtils.get_contents(entity_file, out yaml) == false)
 				throw new RuntimeError.FILE("File not found: %s", entity_file);
-			Entity.Entity entity = (Entity.Entity)get_object_of_type(yaml, entity_type);
+			Entity entity = (Entity)get_object_of_type(yaml, entity_type);
 			entity.set_id(entity_id);
 			return entity;
 		}
@@ -111,7 +111,7 @@ namespace YamlDB
 			}
 		}
 
-		public void save(Entity.Entity entity, string? entity_id=null, string? data_folder=null) throws YamlError, RuntimeError, FileError
+		public void save(Entity entity, string? entity_id=null, string? data_folder=null) throws YamlError, RuntimeError, FileError
 		{
 			string id = entity_id;
 			if (entity_id == null)
@@ -186,7 +186,7 @@ namespace YamlDB
 			return obj;
 		}
 
-		static string get_yaml(Entity.Entity entity) throws YamlError
+		static string get_yaml(Entity entity) throws YamlError
 		{
 			StringBuilder sb = new StringBuilder();
 			EntityEmitter emitter = new EntityEmitter.to_string_builder(sb);
