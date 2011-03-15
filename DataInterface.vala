@@ -5,7 +5,8 @@ namespace YamlDB
 {
 	public class DataInterface : Object 
 	{
-		public string RootFolder { get; private set; }
+		Yaml.NodeBuilder builder;
+		Yaml.NodeParser parser;
 
 		public DataInterface(string root_folder) throws RuntimeError
 		{
@@ -13,7 +14,10 @@ namespace YamlDB
 				throw new RuntimeError.ARGUMENT("Invalid root folder: '%s'", root_folder);
 
 			RootFolder = root_folder;
+			builder = new Yaml.NodeBuilder();
+			parser = new Yaml.NodeParser(this);
 		}
+		public string RootFolder { get; private set; }
 
 		public T create<T>(string? entity_id=null) throws RuntimeError requires(typeof(T).is_a(typeof(Entity)))
 		{
@@ -66,50 +70,52 @@ namespace YamlDB
 			string yaml;
 			if (FileUtils.get_contents(entity_file, out yaml) == false)
 				throw new RuntimeError.FILE("File not found: %s", entity_file);
-			Entity entity = (Entity)get_object_of_type(yaml, entity_type);
+
+			var document = new Yaml.DocumentReader.from_string(yaml).read_document();
+			Entity entity = (Entity)parser.parse_value_of_type(document.Root, entity_type);
 			entity.set_id(entity_id);
 			return entity;
 		}
 
-		internal class DataLoadInterface<T>
-		{
-			static HashMap<Type, DataLoadInterface> instances;
-			public static DataLoadInterface<T> instance<T>() {
-				if (instances == null)
-					instances = new HashMap<Type, DataLoadInterface>();
-				if (instances.has_key(typeof(T)))
-					return instances[typeof(T)];
-
-				var instance = new DataLoadInterface<T>();
-				instances[typeof(T)] = instance;
-				return instance;
-			}
-			public Enumerable<T> load_all(DataInterface di) throws RuntimeError
-			{
-				string folder = typeof(T).name();
-				string data_folder = di.get_data_folder(folder);
-				if (FileUtils.test(data_folder, FileTest.EXISTS) == false)
-					return Enumerable.empty<T>();
-
-				Type entity_type = typeof(T);
-				YieldEnumeratorPopulate<T> populate = p=> {
-					Dir d;
-					try {
-						d = Dir.open(data_folder);
-					} catch (FileError ex) {
-						return;
-					}
-
-					string filename;
-					while ((filename = d.read_name()) != null) {
-						Value v = Value(entity_type);
-						v.set_object(di.load_internal(filename, data_folder, entity_type));
-						p.yield_value(v);
-					}
-				};
-				return Enumerable.yielding<T>(populate);
-			}
-		}
+//		internal class DataLoadInterface<T>
+//		{
+//			static HashMap<Type, DataLoadInterface> instances;
+//			public static DataLoadInterface<T> instance<T>() {
+//				if (instances == null)
+//					instances = new HashMap<Type, DataLoadInterface>();
+//				if (instances.has_key(typeof(T)))
+//					return instances[typeof(T)];
+//
+//				var instance = new DataLoadInterface<T>();
+//				instances[typeof(T)] = instance;
+//				return instance;
+//			}
+//			public Enumerable<T> load_all(DataInterface di) throws RuntimeError, FileError, YamlError
+//			{
+//				string folder = typeof(T).name();
+//				string data_folder = di.get_data_folder(folder);
+//				if (FileUtils.test(data_folder, FileTest.EXISTS) == false)
+//					return Enumerable.empty<T>();
+//
+//				Type entity_type = typeof(T);
+//				YieldEnumeratorPopulate<T> populate = p=> {
+//					Dir d;
+//					try {
+//						d = Dir.open(data_folder);
+//					} catch (FileError ex) {
+//						return;
+//					}
+//
+//					string filename;
+//					while ((filename = d.read_name()) != null) {
+//						Value v = Value(entity_type);
+//						v.set_object(di.load_internal(filename, data_folder, entity_type));
+//						p.yield_value(v);
+//					}
+//				};
+//				return Enumerable.yielding<T>(populate);
+//			}
+//		}
 
 		public void save(Entity entity, string? entity_id=null, string? data_folder=null) throws YamlError, RuntimeError, FileError
 		{
@@ -173,25 +179,14 @@ namespace YamlDB
 			return Path.build_filename(data_folder, entity_id);
 		}
 
-		T get_object<T>(string yaml) throws YamlError
-		{
-			EntityReader reader = new EntityReader.from_string(yaml, this);
-			return reader.read_value<T>();
-		}
-		Object get_object_of_type(string yaml, Type type) throws YamlError
-		{
-			EntityReader reader = new EntityReader.from_string(yaml, this);
-			Object obj = Object.new(type);
-			reader.populate_object(obj);
-			return obj;
-		}
-
-		static string get_yaml(Entity entity) throws YamlError
+		string get_yaml(Entity entity) throws YamlError
 		{
 			StringBuilder sb = new StringBuilder();
-			EntityEmitter emitter = new EntityEmitter.to_string_builder(sb);
-			emitter.emit_object(entity);
-			emitter.flush();
+			var writer = new Yaml.DocumentWriter.to_string_builder(sb);
+			var node = entity.i_build_yaml_node(this.builder);
+			var document = new Yaml.Document(node);
+			writer.write_document(document);
+			writer.flush();
 			return sb.str;
 		}
 

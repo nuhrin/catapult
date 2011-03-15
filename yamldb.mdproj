@@ -52,8 +52,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DataInterface.vala" />
-    <Compile Include="EntityReader.vala" />
-    <Compile Include="EntityEmitter.vala" />
     <Compile Include="Helpers\RegexHelper.vala" />
     <Compile Include="Yaml\Events\NodeEvent.vala" />
     <Compile Include="Yaml\Events\SequenceStart.vala" />
@@ -70,7 +68,6 @@
     <Compile Include="Yaml\Events\Event.vala" />
     <Compile Include="Yaml\Events\EventEmitter.vala" />
     <Compile Include="Yaml\libyaml.vapi" />
-    <Compile Include="Yaml\Events\enums.vala" />
     <Compile Include="Yaml\Events\Mark.vala" />
     <Compile Include="Helpers\ValueHelper.vala" />
     <Compile Include="Helpers\IndirectGenerics\IndirectFactory.vala" />
@@ -88,6 +85,20 @@
     <Compile Include="Error.vala" />
     <Compile Include="Entity.vala" />
     <Compile Include="YamlObject.vala" />
+    <Compile Include="IYamlObject.vala" />
+    <Compile Include="Yaml\Document.vala" />
+    <Compile Include="Yaml\Node.vala" />
+    <Compile Include="Yaml\ScalarNode.vala" />
+    <Compile Include="Yaml\MappingNode.vala" />
+    <Compile Include="Yaml\SequenceNode.vala" />
+    <Compile Include="Yaml\NodeList.vala" />
+    <Compile Include="Yaml\DocumentReader.vala" />
+    <Compile Include="Yaml\Events\EventEnums.vala" />
+    <Compile Include="Yaml\Enums.vala" />
+    <Compile Include="Yaml\DocumentWriter.vala" />
+    <Compile Include="Yaml\NodeBuilder.vala" />
+    <Compile Include="Yaml\NodeParser.vala" />
+    <Compile Include="Yaml\OrderedMappingSet.vala" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -106,7 +117,6 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <Folder Include="Entity\" />
     <Folder Include="Helpers\" />
     <Folder Include="Yaml\" />
     <Folder Include="Yaml\Events\" />

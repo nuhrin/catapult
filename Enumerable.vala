@@ -42,6 +42,12 @@ namespace YamlDB
 		{
 			return new Enumerable<TSource>.from_iterator(new Enumerator<TSource>(iter, predicate));
 		}
+		public Enumerable<TSource> sort(CompareFunc<TSource> compare)
+		{
+			var list = this.to_list();
+			list.sort((GLib.CompareFunc?)compare);
+			return new Enumerable<TSource>(list);
+		}
 
 		public TSource first() {
 			var list = iterable as Gee.List<TSource>;

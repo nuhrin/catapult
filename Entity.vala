@@ -10,23 +10,24 @@ namespace YamlDB
 		internal string i_generate_id() { return this.generate_id(); }
 		internal void set_id(string id) { this.ID = id; }
 
-		protected override void emit_yaml(EntityEmitter emitter) throws YamlError
+		protected override string get_yaml_tag()
 		{
-			emitter.start_mapping(this.get_tag(), false);
-			emitter.emit_properties(this);
-			emitter.end_mapping();
+			return this.get_type().name();
 		}
 
-		protected override Object read_yaml(EntityReader reader) throws YamlError
+		protected override Yaml.Node build_yaml_node(Yaml.NodeBuilder builder)
 		{
-			reader.populate_object_properties(this);
-			return this;
+			return builder.build_object_mapping(this);
 		}
-		
-		protected override void populate_entity_data (Object yamlData)
-		{			
+		protected override bool apply_yaml_node(Yaml.Node node, Yaml.NodeParser parser)
+		{
+			var mapping = node as Yaml.MappingNode;
+			if (mapping != null) {
+				parser.populate_object(mapping, this);
+				return true;
+			}
+			return false;
 		}
-		
 	}
 
 	public abstract class NamedEntity : Entity
@@ -39,19 +40,18 @@ namespace YamlDB
 				return "";
 			return RegexHelper.NonWordCharacters.replace(Name, "").down();
 		}
-
-		protected override void emit_yaml(EntityEmitter emitter) throws YamlError
+		protected override Yaml.Node build_yaml_node(Yaml.NodeBuilder builder)
 		{
-			emitter.start_mapping(this.get_tag(), false);
-			emitter.emit_property(this, "Name");
-			unowned ObjectClass klass = this.get_class();
-	    	var properties = klass.list_properties();
-	    	foreach(var prop in properties)
-	    	{
-		    	if (prop.name != "Name")
-		    		emitter.emit_property(this, prop.get_name());
-	    	}
-			emitter.end_mapping();
+			var mapping = new Yaml.MappingNode();
+			mapping.Mappings.ScalarKeyCompareFunc = (a,b)=> {
+				if (a.Value == "Name")
+					return -1;
+				else if (b.Value == "Name")
+					return 1;
+				return 0;
+			};
+			builder.populate_object_mapping(mapping, this);
+			return mapping;
 		}
 	}
 }

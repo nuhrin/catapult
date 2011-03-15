@@ -5,7 +5,7 @@ namespace YamlDB.Yaml.Events
 	public class Scalar : NodeEvent
 	{
 		public Scalar(string? anchor, string? tag, string value,
-		              bool plain_implicit = true, bool quoted_implicit = true,
+		              bool plain_implicit = true, bool quoted_implicit = false,
 		              ScalarStyle style = ScalarStyle.ANY)
 		{
 			base(anchor, tag, EventType.SCALAR);

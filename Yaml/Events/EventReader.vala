@@ -18,7 +18,7 @@ namespace YamlDB.Yaml.Events
 		public EventReader.from_string(string yaml)
 		{
 			parser = Parser();
-			parser.set_input_string(yaml, yaml.size());
+			parser.set_input_string(yaml, yaml.length);
 		}
 
 		public Event Current { get { return current_event; } }
@@ -77,14 +77,19 @@ namespace YamlDB.Yaml.Events
 				assert(raw_event.type == YAML.EventType.STREAM_START_EVENT);
 			}
 		}
-		public void ensure_document_context() throws YamlError
+		public void ensure_document_start() throws YamlError
 		{
 			ensure_stream_start();
 			if (!has_document_context) {
 				move_next();
 				assert(raw_event.type == YAML.EventType.DOCUMENT_START_EVENT);
-				move_next();
 			}
+		}
+		public void ensure_document_context() throws YamlError
+		{
+			ensure_document_start();
+			if (raw_event.type == YAML.EventType.DOCUMENT_START_EVENT)
+				move_next();
 		}
 
 		Event get_parsing_event(RawEvent event)
