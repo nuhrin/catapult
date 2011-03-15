@@ -42,12 +42,11 @@ namespace YamlDB
 		{
 			return new Enumerable<TSource>.from_iterator(new Enumerator<TSource>(iter, predicate));
 		}
-		public Enumerable<TSource> sort(CompareFunc<TSource> compare)
+		public Enumerable<TSource> concat(Iterable<TSource> other)
 		{
-			var list = this.to_list();
-			list.sort((GLib.CompareFunc?)compare);
-			return new Enumerable<TSource>(list);
+			return new Enumerable<TSource>.from_iterator(new ConcatEnumerator<TSource>(iter, other.iterator()));
 		}
+
 
 		public TSource first() {
 			var list = iterable as Gee.List<TSource>;
@@ -93,6 +92,14 @@ namespace YamlDB
 		public int size_where(Predicate<TSource> predicate) {
 			return this.where(predicate).size();
 		}
+
+		public Enumerable<TSource> sort(CompareFunc<TSource> compare)
+		{
+			var list = this.to_list();
+			list.sort((GLib.CompareFunc?)compare);
+			return new Enumerable<TSource>(list);
+		}
+
 
 		public Gee.List<TSource> to_list() {
 			Gee.List<TSource> list;

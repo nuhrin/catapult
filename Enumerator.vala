@@ -87,6 +87,60 @@ namespace YamlDB
 		}
 	}
 
+	public class ConcatEnumerator<T> : Object, Iterator<T>
+	{
+		Iterator<T> iterator_a;
+		Iterator<T> iterator_b;
+		bool on_b;
+
+		public ConcatEnumerator(Iterator<T> iterator_a, Iterator<T> iterator_b)
+		{
+			this.iterator_a = iterator_a;
+			this.iterator_b = iterator_b;
+			on_b = false;
+		}
+
+		public bool next() {
+			if (on_b == true)
+				return iterator_b.next();
+
+			bool retVal = iterator_a.next();
+			if (retVal == false) {
+				on_b = true;
+				retVal = iterator_b.next();
+			}
+			return retVal;
+		}
+
+		public bool has_next() {
+			if (on_b == true)
+				return iterator_b.has_next();
+			return iterator_a.has_next() || iterator_b.has_next();
+		}
+		public bool first()
+		{
+			bool retVal = iterator_a.first();
+			if (retVal == false) {
+				on_b = true;
+				retVal = iterator_b.first();
+			}
+			return retVal;
+		}
+
+		public new T get() {
+			return (on_b == false)
+				? iterator_a.get()
+				: iterator_b.get();
+		}
+
+		public void remove() {
+			if (on_b == false)
+				iterator_a.remove();
+			else
+				iterator_b.remove();
+		}
+	}
+
 	public delegate void YieldEnumeratorPopulate<T>(YieldEnumerator.Populator<T> populator);
 	public class YieldEnumerator<T> : Object, Iterator<T>
 	{

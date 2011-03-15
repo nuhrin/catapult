@@ -13,11 +13,7 @@ namespace YamlDB.Yaml
 		public CompareFunc<ScalarNode>? ScalarKeyCompareFunc { get; set; }
 
 		public Enumerable<Node> sorted_keys() {
-			var list = new ArrayList<Node>();
-			list.add_all(scalar_keys().to_list());
-			list.add_all(sequence_keys().to_list());
-			list.add_all(mapping_keys().to_list());
-			return new Enumerable<Node>(list);
+			return scalar_keys().concat(sequence_keys()).concat(mapping_keys());
 		}
 
 		public Enumerable<ScalarNode> scalar_keys() {
