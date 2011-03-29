@@ -16,29 +16,50 @@ namespace YamlDB.Yaml
 			return scalar_keys().concat(sequence_keys()).concat(mapping_keys());
 		}
 
+//		public Enumerable<ScalarNode> scalar_keys() {
+//			if (ScalarKeyCompareFunc != null) {
+//				return new Enumerable<Node>(this.keys)
+//					.where(p=>p.Type == NodeType.SCALAR)
+//					.select<ScalarNode>(p=>(ScalarNode)p)
+//					.sort(KeyAddedOrderComparison)
+//					.sort(ScalarKeyCompareFunc);
+//			}
+//			return new Enumerable<Node>(this.keys)
+//				.where(p=>p.Type == NodeType.SCALAR)
+//				.select<ScalarNode>(p=>(ScalarNode)p)
+//				.sort(KeyAddedOrderComparison);
+//		}
+//		public Enumerable<MappingNode> mapping_keys() {
+//			return new Enumerable<Node>(this.keys)
+//				.where(p=>p.Type == NodeType.MAPPING)
+//				.select<MappingNode>(p=>(MappingNode)p)
+//				.sort(KeyAddedOrderComparison);
+//		}
+//		public Enumerable<SequenceNode> sequence_keys() {
+//			return new Enumerable<Node>(this.keys)
+//				.where(p=>p.Type == NodeType.SEQUENCE)
+//				.select<SequenceNode>(p=>(SequenceNode)p)
+//				.sort(KeyAddedOrderComparison);
+//		}
 		public Enumerable<ScalarNode> scalar_keys() {
 			if (ScalarKeyCompareFunc != null) {
 				return new Enumerable<Node>(this.keys)
-					.where(p=>p.Type == NodeType.SCALAR)
-					.select<ScalarNode>(p=>(ScalarNode)p)
+					.of_type<ScalarNode>()
 					.sort(KeyAddedOrderComparison)
 					.sort(ScalarKeyCompareFunc);
 			}
 			return new Enumerable<Node>(this.keys)
-				.where(p=>p.Type == NodeType.SCALAR)
-				.select<ScalarNode>(p=>(ScalarNode)p)
+				.of_type<ScalarNode>()
 				.sort(KeyAddedOrderComparison);
 		}
 		public Enumerable<MappingNode> mapping_keys() {
 			return new Enumerable<Node>(this.keys)
-				.where(p=>p.Type == NodeType.MAPPING)
-				.select<MappingNode>(p=>(MappingNode)p)
+				.of_type<MappingNode>()
 				.sort(KeyAddedOrderComparison);
 		}
 		public Enumerable<SequenceNode> sequence_keys() {
 			return new Enumerable<Node>(this.keys)
-				.where(p=>p.Type == NodeType.SEQUENCE)
-				.select<SequenceNode>(p=>(SequenceNode)p)
+				.of_type<SequenceNode>()
 				.sort(KeyAddedOrderComparison);
 		}
 
