@@ -81,7 +81,17 @@ namespace YamlDB.Yaml
 			Value v = Value(t);
 			if (scalar.Tag == YAML.NULL_TAG)
 				return v;
-			if (t == typeof(string))
+			if (t.is_flags()) {
+				unowned FlagsValue? flags_value = ((FlagsClass)t.class_ref()).get_value_by_nick(scalar.Value);
+				if (flags_value != null)
+					v.set_flags(flags_value.value);
+			}
+			else if (t.is_enum()) {
+				var enum_value = ((EnumClass)type.class_ref()).get_value_by_nick(scalar.Value);
+				if (enum_value != null)
+					v.set_enum(enum_value.value);
+			}
+			else if (t == typeof(string))
 				v.set_string(scalar.Value);
 			else if (t == typeof(int))
 				v.set_int(int.parse(scalar.Value));
@@ -197,6 +207,16 @@ namespace YamlDB.Yaml
 					indirect_collection.add(collection, element);
 				}
 				v.set_object(collection);
+			} else if (t.is_flags()) {
+				var flags_class = ((FlagsClass)t.class_ref());
+				uint? flags = null;
+				foreach(var scalar in sequence.Items.scalars()) {
+					unowned FlagsValue? flags_value = flags_class.get_value_by_nick(scalar.Value);
+					if (flags_value != null)
+						flags = (flags == null) ? flags_value.value : ((uint)flags) | flags_value.value;
+				}
+				if (flags != null)
+					v.set_flags(flags);
 			} else {
 				debug("Unsupported sequence type: %s", t.name());
 				assert_not_reached();

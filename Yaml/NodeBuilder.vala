@@ -48,17 +48,22 @@ namespace YamlDB.Yaml
 
 			Type type = value.type();
 			if (type.is_flags()) {
+				uint flags = value.get_flags();
+				FlagsClass klass = (FlagsClass)type.class_ref();
 				var sequenceNode = new SequenceNode();
-				var klass = (FlagsClass)type.class_ref();
-				foreach(unowned FlagsValue val in klass.values)
-					sequenceNode.Items.add(new ScalarNode(null, Constants.Tag.STR, val.value_name));
+				foreach(var val in klass.values) {
+					if ((flags & val.value) == val.value)
+						sequenceNode.Items.add(new ScalarNode(null, Constants.Tag.STR, val.value_nick));
+				}
+				if (sequenceNode.Items.size == 1)
+					return sequenceNode.Items[0];
 				return sequenceNode;
 			}
 			string anchor = null; // TODO: support anchors during build?
 			string tag = Constants.Tag.STR;
 			string str_value = null;
 			if (type.is_enum())
-				str_value = ((EnumClass)type.class_ref()).get_value(value.get_enum()).value_name;
+				str_value = ((EnumClass)type.class_ref()).get_value(value.get_enum()).value_nick;
 			else if (type == typeof(string))
 				str_value = value.get_string();
 			else if (type == typeof(char))
@@ -105,7 +110,6 @@ namespace YamlDB.Yaml
 				str_value = value.get_gtype().name().dup();
 
 			else if (type.is_a(Type.BOXED)) {
-				debug("Got BOXED type: "+type.name());
 				if (type.is_a(typeof(DateTime))) {
 					DateTime? dt = (DateTime?)value.get_boxed();
 					var local = dt.to_local();
