@@ -49,7 +49,7 @@ namespace YamlDB.Yaml
 			Type type = value.type();
 			if (type.is_flags()) {
 				uint flags = value.get_flags();
-				FlagsClass klass = (FlagsClass)type.class_ref();
+				GLibPatch.FlagsClass klass = (GLibPatch.FlagsClass)type.class_ref();
 				var sequenceNode = new SequenceNode();
 				foreach(var val in klass.values) {
 					if ((flags & val.value) == val.value)

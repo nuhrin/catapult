@@ -82,7 +82,7 @@ namespace YamlDB.Yaml
 			if (scalar.Tag == YAML.NULL_TAG)
 				return v;
 			if (t.is_flags()) {
-				unowned FlagsValue? flags_value = ((FlagsClass)t.class_ref()).get_value_by_nick(scalar.Value);
+				unowned GLibPatch.FlagsValue? flags_value = ((GLibPatch.FlagsClass)t.class_ref()).get_value_by_nick(scalar.Value);
 				if (flags_value != null)
 					v.set_flags(flags_value.value);
 			}
@@ -208,10 +208,10 @@ namespace YamlDB.Yaml
 				}
 				v.set_object(collection);
 			} else if (t.is_flags()) {
-				var flags_class = ((FlagsClass)t.class_ref());
+				var flags_class = ((GLibPatch.FlagsClass)t.class_ref());
 				uint? flags = null;
 				foreach(var scalar in sequence.Items.scalars()) {
-					unowned FlagsValue? flags_value = flags_class.get_value_by_nick(scalar.Value);
+					unowned GLibPatch.FlagsValue? flags_value = flags_class.get_value_by_nick(scalar.Value);
 					if (flags_value != null)
 						flags = (flags == null) ? flags_value.value : ((uint)flags) | flags_value.value;
 				}
