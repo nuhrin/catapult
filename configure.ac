@@ -50,8 +50,3 @@ AC_CONFIG_FILES([
 	vapi/Makefile
 ])
 AC_OUTPUT
-
-#	src/Yaml/Makefile
-#	src/Helpers/IndirectGenerics/Makefile
-#	src/Helpers/IndirectGenerics.Gee/Makefile
-#	src/Yaml/Events/Makefile
