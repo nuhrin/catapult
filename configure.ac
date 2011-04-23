@@ -1,4 +1,4 @@
-AC_INIT([yamldb], m4_esyscmd([build-aux/git-version-gen .tarball-version]), [nuhrin@oceanic.to], [yamldb])
+AC_INIT([yamldb],[m4_esyscmd(build-aux/git-version-gen .tarball-version)],[nuhrin@oceanic.to],[yamldb])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
@@ -13,7 +13,7 @@ AM_MAINTAINER_MODE
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_DISABLE_STATIC
-AC_PROG_LIBTOOL
+LT_INIT
 
 AM_PROG_VALAC([0.11.0])
 AC_SUBST(VALAC)
