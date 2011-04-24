@@ -19,7 +19,7 @@ AM_PROG_VALAC([0.11.0])
 AC_SUBST(VALAC)
 AC_SUBST(VALAFLAGS)
 
-AC_SEARCH_LIBS([yaml_emitdter_emit], [yaml], [use_local_yaml=no], [use_local_yaml=yes])
+AC_SEARCH_LIBS([yaml_emitter_emit], [yaml], [use_local_yaml=no], [use_local_yaml=yes])
 if test "$use_local_yaml" = "yes"; then
 	AC_DEFINE(YAML_VERSION_MAJOR, 0, [Define the major version number.])
 	AC_DEFINE(YAML_VERSION_MINOR, 1, [Define the minor version number.])
