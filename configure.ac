@@ -61,6 +61,7 @@ AS_IF([test "x$enable_doc" != xno],
 AC_CONFIG_FILES([
 	yamldb.pc
 	Makefile
+	libyaml/Makefile
 	src/Makefile
 	doc/Makefile
 	vapi/Makefile
