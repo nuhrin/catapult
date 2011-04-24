@@ -14,7 +14,7 @@ lib_LTLIBRARIES = \
   $(NULL)
 
 libyamldb_la_VALASOURCES = \
-  DataInterface.vala \
+	DataInterface.vala \
 	Delegates.vala \
 	Entity.vala \
 	Enumerable.vala \
@@ -64,17 +64,32 @@ libyamldb_la_VALASOURCES = \
 	YamlObject.vala \
 	$(NULL)
 
+if USE_LOCAL_YAML
+YAML_SOURCES = \
+	../libyaml/yaml_private.h \
+	../libyaml/api.c \
+	../libyaml/reader.c \
+	../libyaml/scanner.c \
+	../libyaml/parser.c \
+	../libyaml/loader.c \
+	../libyaml/writer.c \
+	../libyaml/emitter.c \
+	../libyaml/dumper.c \
+	$(NULL)
+endif
+
 libyamldb_la_SOURCES = \
+  $(YAML_SOURCES) \
   libyamldb_la_vala.stamp \
   $(libyamldb_la_VALASOURCES:.vala=.c) \
   $(NULL)
-
 
 libyamldb_la_vala.stamp: $(libyamldb_la_VALASOURCES)
 	$(VALA_V)$(VALAC) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --pkg gee-1.0 --pkg gobject-patch --pkg config -H yamldb.h --library yamldb $^
 	@touch $@
  
 libyamldb_la_LIBADD = \
+  $(YAML_LIBS) \
   $(GLIB_LIBS) \
   $(GEE_LIBS) \
   $(NULL)

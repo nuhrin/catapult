@@ -7,16 +7,17 @@ DOC_SUBDIR = \
 endif
 
 SUBDIRS = \
-	src \
-	vapi \
-	$(DOC_SUBDIR) \
-	$(NULL)
+  src \
+  vapi \
+  $(DOC_SUBDIR) \
+  $(NULL)
 
 DIST_SUBDIRS = \
-	doc \
+  libyaml \
+  doc \
   src \
-	vapi \
-	$(NULL)
+  vapi \
+  $(NULL)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = yamldb.pc

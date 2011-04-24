@@ -19,6 +19,22 @@ AM_PROG_VALAC([0.11.0])
 AC_SUBST(VALAC)
 AC_SUBST(VALAFLAGS)
 
+AC_SEARCH_LIBS([yaml_emitdter_emit], [yaml], [use_local_yaml=no], [use_local_yaml=yes])
+if test "$use_local_yaml" = "yes"; then
+	AC_DEFINE(YAML_VERSION_MAJOR, 0, [Define the major version number.])
+	AC_DEFINE(YAML_VERSION_MINOR, 1, [Define the minor version number.])
+	AC_DEFINE(YAML_VERSION_PATCH, 2, [Define the patch version number.])
+	AC_DEFINE(YAML_VERSION_STRING, "0.1.2", [Define the version string.])
+	AC_HEADER_STDC
+	AC_CHECK_HEADERS([stdlib.h])
+	AC_C_CONST
+	AC_TYPE_SIZE_T
+else
+	YAML_LIBS=$LIBS
+	AC_SUBST(YAML_LIBS)
+fi
+AM_CONDITIONAL(USE_LOCAL_YAML, test x$use_local_yaml = xyes)
+
 GLIB_REQUIRED=2.16.0
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED)
 AC_SUBST(GLIB_CFLAGS)
