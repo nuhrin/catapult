@@ -116,11 +116,6 @@ namespace Catapult.Yaml
 					dt.strftime(buffer, "%x");
 					str_value = (string)buffer;
 					tag = Constants.Tag.TIMESTAMP;
-				}
-				else if (type == typeof(DateTime)) {
-					DateTime? dt = (DateTime?)value.get_boxed();
-					str_value = dt.format("%x %X");
-					tag = Constants.Tag.TIMESTAMP;
 				} else {
 					debug("Unsupported BOXED type: %s", type.name());
 					assert_not_reached();

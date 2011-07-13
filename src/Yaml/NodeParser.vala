@@ -110,13 +110,6 @@ namespace Catapult.Yaml
 				}
 				v = d;
 			}
-			else if (t == typeof(DateTime))
-			{
-				var tv = TimeVal();
-				tv.from_iso8601(scalar.Value);
-				v = new DateTime.from_timeval_local(tv);
-			}
-
 			else
 				return default_value;
 
@@ -280,7 +273,6 @@ namespace Catapult.Yaml
 			predefinedTypes.set(YAML.FLOAT_TAG, typeof(double));
 			predefinedTypes.set(YAML.INT_TAG, typeof(int));
 			predefinedTypes.set(YAML.STR_TAG, typeof(string));
-			predefinedTypes.set(YAML.TIMESTAMP_TAG, typeof(DateTime));
 		}
 
 	}
