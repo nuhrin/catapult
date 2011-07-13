@@ -1,7 +1,7 @@
 using Gee;
-using YamlDB.Yaml.Events;
+using Catapult.Yaml.Events;
 
-namespace YamlDB.Yaml
+namespace Catapult.Yaml
 {
 	public class DocumentWriter
 	{
@@ -9,12 +9,12 @@ namespace YamlDB.Yaml
 		EncodingType encoding;
 		bool has_stream_context = false;
 
-		public DocumentWriter(FileStream output, EncodingType encoding = YamlDB.Yaml.Events.EncodingType.ANY_ENCODING)
+		public DocumentWriter(FileStream output, EncodingType encoding = Catapult.Yaml.Events.EncodingType.ANY_ENCODING)
 		{
 			emitter = new EventEmitter(output);
 			this.encoding = encoding;
 		}
-		public DocumentWriter.to_string_builder(StringBuilder sb, EncodingType encoding = YamlDB.Yaml.Events.EncodingType.ANY_ENCODING)
+		public DocumentWriter.to_string_builder(StringBuilder sb, EncodingType encoding = Catapult.Yaml.Events.EncodingType.ANY_ENCODING)
 		{
 			emitter = new EventEmitter.to_string_builder(sb);
 			this.encoding = encoding;

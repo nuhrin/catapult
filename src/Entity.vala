@@ -1,6 +1,6 @@
-using YamlDB.Helpers;
+using Catapult.Helpers;
 
-namespace YamlDB
+namespace Catapult
 {
 	public abstract class Entity : YamlObject
 	{		

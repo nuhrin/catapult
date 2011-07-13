@@ -1,4 +1,4 @@
-AC_INIT([yamldb],[m4_esyscmd(build-aux/git-version-gen .tarball-version)],[nuhrin@oceanic.to],[yamldb])
+AC_INIT([catapult],[m4_esyscmd(build-aux/git-version-gen .tarball-version)],[nuhrin@oceanic.to],[catapult])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
@@ -59,7 +59,7 @@ AS_IF([test "x$enable_doc" != xno],
 
 
 AC_CONFIG_FILES([
-	yamldb.pc
+	catapult.pc
 	Makefile
 	libyaml/Makefile
 	src/Makefile

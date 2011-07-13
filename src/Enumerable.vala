@@ -1,6 +1,6 @@
 using Gee;
 
-namespace YamlDB
+namespace Catapult
 {
 	public class Enumerable<TSource> : Object, Iterable<TSource>
 	{

@@ -1,7 +1,7 @@
 using Gee;
-using YamlDB.Yaml.Events;
+using Catapult.Yaml.Events;
 
-namespace YamlDB.Yaml
+namespace Catapult.Yaml
 {
 	public class DocumentReader
 	{

@@ -1,4 +1,4 @@
-namespace YamlDB.Yaml.Events
+namespace Catapult.Yaml.Events
 {
 	public enum BreakType {
 		ANY,

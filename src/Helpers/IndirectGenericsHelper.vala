@@ -1,8 +1,8 @@
 using Gee;
-using YamlDB.Helpers.IndirectGenerics;
-using YamlDB.Helpers.IndirectGenerics.Gee;
+using Catapult.Helpers.IndirectGenerics;
+using Catapult.Helpers.IndirectGenerics.Gee;
 
-namespace YamlDB.Helpers
+namespace Catapult.Helpers
 {
 	public class IndirectGenericsHelper
 	{

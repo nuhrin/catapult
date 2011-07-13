@@ -1,7 +1,7 @@
 using Gee;
-using YamlDB.Helpers;
+using Catapult.Helpers;
 
-namespace YamlDB
+namespace Catapult
 {
 	public class Enumerator<T> : Object, Iterator<T>
 	{

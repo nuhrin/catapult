@@ -1,6 +1,6 @@
-using YamlDB.Helpers;
+using Catapult.Helpers;
 
-namespace YamlDB.Yaml
+namespace Catapult.Yaml
 {
 	public abstract class Node : Object
 	{

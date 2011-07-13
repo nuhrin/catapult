@@ -20,7 +20,7 @@ DIST_SUBDIRS = \
   $(NULL)
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = yamldb.pc
+pkgconfig_DATA = catapult.pc
 
 all: version.h
 
@@ -55,7 +55,7 @@ CLEANFILES = \
 	$(NULL)
 
 EXTRA_DIST = \
-	yamldb.pc.in \
+	catapult.pc.in \
 	.version \
 	build-aux/git-version-gen \
 	build-aux/gitlog-to-changelog \

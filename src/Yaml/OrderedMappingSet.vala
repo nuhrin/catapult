@@ -1,6 +1,6 @@
 using Gee;
 
-namespace YamlDB.Yaml
+namespace Catapult.Yaml
 {
 	public class OrderedMappingSet : HashMap<Node, Node>
 	{

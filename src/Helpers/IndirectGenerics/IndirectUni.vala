@@ -1,4 +1,4 @@
-namespace YamlDB.Helpers.IndirectGenerics
+namespace Catapult.Helpers.IndirectGenerics
 {
 	public abstract class IndirectUni<A> : Object
 	{

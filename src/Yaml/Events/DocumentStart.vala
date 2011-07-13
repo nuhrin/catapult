@@ -1,7 +1,7 @@
 using YAML;
 using Gee;
 
-namespace YamlDB.Yaml.Events
+namespace Catapult.Yaml.Events
 {
 	public class DocumentStart : Event
 	{

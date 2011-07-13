@@ -1,7 +1,7 @@
 using Gee;
-using YamlDB.Helpers;
+using Catapult.Helpers;
 
-namespace YamlDB.Yaml
+namespace Catapult.Yaml
 {
 	public class NodeBuilder
 	{

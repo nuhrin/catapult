@@ -1,7 +1,7 @@
 using YAML;
-using YamlDB.Helpers;
+using Catapult.Helpers;
 
-namespace YamlDB.Yaml.Events
+namespace Catapult.Yaml.Events
 {
 	public class Mark : Object
 	{

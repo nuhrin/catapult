@@ -1,6 +1,6 @@
 using Gee;
 
-namespace YamlDB.Helpers.IndirectGenerics
+namespace Catapult.Helpers.IndirectGenerics
 {
 	public class IndirectFactory
 	{

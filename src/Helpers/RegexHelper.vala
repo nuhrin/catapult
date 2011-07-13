@@ -1,4 +1,4 @@
-namespace YamlDB.Helpers
+namespace Catapult.Helpers
 {
 	public class RegexHelper
 	{

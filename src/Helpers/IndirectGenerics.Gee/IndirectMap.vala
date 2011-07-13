@@ -1,6 +1,6 @@
 using Gee;
 
-namespace YamlDB.Helpers.IndirectGenerics.Gee
+namespace Catapult.Helpers.IndirectGenerics.Gee
 {
 	public class IndirectMap<A,B> : IndirectBi<A,B>
 	{

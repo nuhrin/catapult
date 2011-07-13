@@ -1,5 +1,5 @@
 
-namespace YamlDB.Yaml
+namespace Catapult.Yaml
 {
 	public class ScalarNode : Node
 	{

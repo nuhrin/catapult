@@ -1,4 +1,4 @@
-namespace YamlDB
+namespace Catapult
 {
 	public delegate void Action<T>(T arg);
 

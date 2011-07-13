@@ -1,6 +1,6 @@
 using YAML;
 
-namespace YamlDB.Yaml.Events
+namespace Catapult.Yaml.Events
 {
 	public abstract class Event : Object
 	{
@@ -22,7 +22,7 @@ namespace YamlDB.Yaml.Events
 
 		internal abstract RawEvent create_raw_event();
 
-		public virtual string to_string() { return "[%s]".printf(this.get_type().name().replace("YamlDBEvents", "")); }
+		public virtual string to_string() { return "[%s]".printf(this.get_type().name().replace("CatapultYamlEvents", "")); }
 	}
 	public class EmptyEvent : Event
 	{

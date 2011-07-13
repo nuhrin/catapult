@@ -7,13 +7,13 @@ AM_CPPFLAGS = \
   $(GEE_CFLAGS) \
   $(NULL)
 
-BUILT_SOURCES = libyamldb_la_vala.stamp
+BUILT_SOURCES = libcatapult_la_vala.stamp
 
 lib_LTLIBRARIES = \
-  libyamldb.la
+  libcatapult.la
   $(NULL)
 
-libyamldb_la_VALASOURCES = \
+libcatapult_la_VALASOURCES = \
 	DataInterface.vala \
 	Delegates.vala \
 	Entity.vala \
@@ -78,17 +78,17 @@ YAML_SOURCES = \
 	$(NULL)
 endif
 
-libyamldb_la_SOURCES = \
+libcatapult_la_SOURCES = \
   $(YAML_SOURCES) \
-  libyamldb_la_vala.stamp \
-  $(libyamldb_la_VALASOURCES:.vala=.c) \
+  libcatapult_la_vala.stamp \
+  $(libcatapult_la_VALASOURCES:.vala=.c) \
   $(NULL)
 
-libyamldb_la_vala.stamp: $(libyamldb_la_VALASOURCES)
-	$(VALA_V)$(VALAC) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --pkg gee-1.0 --pkg gobject-patch --pkg config -H yamldb.h --library yamldb $^
+libcatapult_la_vala.stamp: $(libcatapult_la_VALASOURCES)
+	$(VALA_V)$(VALAC) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --pkg gee-1.0 --pkg gobject-patch --pkg config -H catapult.h --library catapult $^
 	@touch $@
  
-libyamldb_la_LIBADD = \
+libcatapult_la_LIBADD = \
   $(YAML_LIBS) \
   $(GLIB_LIBS) \
   $(GEE_LIBS) \
@@ -99,23 +99,23 @@ libyamldb_la_LIBADD = \
 #  -no-undefined \
 #  $(NULL)
 
-yamldbincludedir = $(includedir)/yamldb
+catapultincludedir = $(includedir)/catapult
 
-yamldbinclude_HEADERS = \
-  yamldb.h \
+catapultinclude_HEADERS = \
+  catapult.h \
   $(NULL)
 
 vapidir = $(datadir)/vala/vapi
 
 dist_vapi_DATA = \
-  yamldb.vapi \
+  catapult.vapi \
   $(NULL)
 
-EXTRA_DIST = $(libyamldb_la_VALASOURCES) yamldb.vapi libyamldb_la_vala.stamp
+EXTRA_DIST = $(libcatapult_la_VALASOURCES) catapult.vapi libcatapult_la_vala.stamp
 
 MAINTAINERCLEANFILES = \
-  yamldb.vapi \
-  yamldb.h \
-  $(libyamldb_la_VALASOURCES:.vala=.c) \
+  catapult.vapi \
+  catapult.h \
+  $(libcatapult_la_VALASOURCES:.vala=.c) \
   $(NULL)
 

@@ -30,6 +30,6 @@ stamp-h1
 .tarball-version
 .version
 
-src/yamldb.vapi
+src/catapult.vapi
 
 *~

@@ -1,6 +1,6 @@
 using YAML;
 
-namespace YamlDB.Yaml.Events
+namespace Catapult.Yaml.Events
 {
 	public class MappingEnd : Event
 	{

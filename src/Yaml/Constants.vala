@@ -1,4 +1,4 @@
-namespace YamlDB.Yaml
+namespace Catapult.Yaml
 {
 	public class Constants
 	{

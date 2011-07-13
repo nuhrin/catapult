@@ -1,4 +1,4 @@
-namespace YamlDB
+namespace Catapult
 {
 	public interface IYamlObject : Object
 	{			
