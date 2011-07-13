@@ -99,6 +99,17 @@ namespace YamlDB.Yaml
 				v.set_boolean(bool.parse(scalar.Value));
 			else if (t == typeof(double))
 				v.set_double(double.parse(scalar.Value));
+			else if (t == typeof(Date))
+			{
+				Date d = Date();
+				d.set_parse(scalar.Value);
+				if (d.valid() == false) {
+					debug("Could not parse GDate from '%s'", scalar.Value);
+					d = Date();
+					d.set_time_t(0);
+				}
+				v = d;
+			}
 			else if (t == typeof(DateTime))
 			{
 				var tv = TimeVal();

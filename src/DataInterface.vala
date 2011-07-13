@@ -3,7 +3,7 @@ using YamlDB.Helpers;
 
 namespace YamlDB
 {
-	public class DataInterface : Object 
+	public class DataInterface : Object
 	{
 		Yaml.NodeBuilder builder;
 		Yaml.NodeParser parser;
@@ -33,23 +33,27 @@ namespace YamlDB
 
 		public Enumerable<T> load_all<T>() throws RuntimeError, YamlError, FileError requires(typeof(T).is_a(typeof(Entity)))
 		{
-			//return DataLoadInterface.instance<T>().load_all(this);
-			string data_folder = get_data_folder(typeof(T).name());
-
+			return load_all_of_type(typeof(T)).of_type<T>();
+		}
+		public Enumerable<Entity> load_all_of_type(Type entity_type) throws RuntimeError, YamlError, FileError requires(entity_type.is_a(typeof(Entity)))
+		{
+			string type_name = entity_type.name();
+			string data_folder = get_data_folder(type_name);
 			Dir d;
 			try {
 				d = Dir.open(data_folder);
 			} catch (FileError ex) {
 				print("FileError: %s\n", ex.message);
-				return Enumerable.empty<T>();
+				return Enumerable.empty<Entity>();
 			}
 
-			ArrayList<T> entities = new ArrayList<T>();
+			ArrayList<Entity> entities = new ArrayList<Entity>();
 			string filename;
-			while ((filename = d.read_name()) != null)
-				entities.add(load<T>(filename));
+			while ((filename = d.read_name()) != null) {
+				entities.add(load_internal(filename, type_name, entity_type));
+			}
 
-			return new Enumerable<T>(entities);
+			return new Enumerable<Entity>(entities);
 		}
 		public T load<T>(string entity_id, string? data_folder=null) throws RuntimeError, YamlError, FileError
 			requires(typeof(T).is_a(typeof(Entity)))
@@ -74,6 +78,7 @@ namespace YamlDB
 			var document = new Yaml.DocumentReader.from_string(yaml).read_document();
 			Entity entity = (Entity)parser.parse_value_of_type(document.Root, entity_type);
 			entity.set_id(entity_id);
+
 			return entity;
 		}
 

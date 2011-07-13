@@ -110,14 +110,17 @@ namespace YamlDB.Yaml
 				str_value = value.get_gtype().name().dup();
 
 			else if (type.is_a(Type.BOXED)) {
-				if (type.is_a(typeof(DateTime))) {
+				if (type == typeof(Date)) {
+					Date? dt = (Date?)value.get_boxed();
+					var buffer = new char[64];
+					dt.strftime(buffer, "%x");
+					str_value = (string)buffer;
+					tag = Constants.Tag.TIMESTAMP;
+				}
+				else if (type == typeof(DateTime)) {
 					DateTime? dt = (DateTime?)value.get_boxed();
-					var local = dt.to_local();
-					TimeVal tv;
-					if (local.to_timeval(out tv)) {
-						str_value = tv.to_iso8601();
-						tag = Constants.Tag.TIMESTAMP;
-					}
+					str_value = dt.format("%x %X");
+					tag = Constants.Tag.TIMESTAMP;
 				} else {
 					debug("Unsupported BOXED type: %s", type.name());
 					assert_not_reached();
