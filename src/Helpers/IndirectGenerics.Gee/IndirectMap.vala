@@ -46,7 +46,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 		{
 			A k = ValueHelper.extract_value<A>(key);
 			B v = (obj as Map<A,B>).get(k);
-			return ValueHelper.populate_value<B>(v);
+			return v;
 		}
 
 		public Value[] get_keys(Map obj)
@@ -56,7 +56,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 			int index = 0;
 			foreach(A key in map.keys)
 			{
-				values[index] = ValueHelper.populate_value<A>(key);
+				values[index] = key;
 				index++;
 			}
 			return values;

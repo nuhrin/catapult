@@ -84,7 +84,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 			Value[] values = new Value[collection.size];
 			int index = 0;
 			foreach(A value in collection) {
-				values[index] = ValueHelper.populate_value<A>(value);
+				values[index] = value;
 				index++;
 			}
 			return values;

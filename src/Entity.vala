@@ -3,9 +3,9 @@ using Catapult.Helpers;
 namespace Catapult
 {
 	public abstract class Entity : YamlObject
-	{		
+	{
 		public string ID { get; private set; }
-		
+
 		protected abstract string generate_id();
 		internal string i_generate_id() { return this.generate_id(); }
 		internal void set_id(string id) { this.ID = id; }
@@ -36,7 +36,7 @@ namespace Catapult
 
 		protected override string generate_id()
 		{
-			if (Name == "")
+			if (Name == null || Name == "")
 				return "";
 			return RegexHelper.NonWordCharacters.replace(Name, "").down();
 		}
