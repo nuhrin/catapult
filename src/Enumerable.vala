@@ -103,11 +103,12 @@ namespace Catapult
 
 		public Enumerable<TSource> sort(CompareFunc<TSource> compare)
 		{
-			var list = this.to_list();
+			var list = new ArrayList<TSource>();
+			foreach(var item in this)
+				list.add(item);
 			list.sort((GLib.CompareFunc?)compare);
 			return new Enumerable<TSource>(list);
 		}
-
 
 		public Gee.List<TSource> to_list() {
 			Gee.List<TSource> list;
