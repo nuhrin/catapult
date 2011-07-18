@@ -217,7 +217,7 @@ namespace Catapult.Yaml
 			if (type.is_a(typeof(Entity)))
 			{
 				var entity = (Entity)value.get_object();
-				string id = entity.ID;
+				string id = entity.id;
 				if (id == null)
 					id = entity.i_generate_id();
 				return BuildValue(id);

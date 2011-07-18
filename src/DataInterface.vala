@@ -27,7 +27,7 @@ namespace Catapult
 			if (is_valid_entity_id(entity_id) == false)
 				throw new RuntimeError.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
 			Entity e = Object.new(typeof(T)) as Entity;
-			e.set_id(entity_id);
+			e.i_set_id(entity_id);
 			return (T)e;
 		}
 
@@ -77,7 +77,7 @@ namespace Catapult
 
 			var document = new Yaml.DocumentReader.from_string(yaml).read_document();
 			Entity entity = (Entity)parser.parse_value_of_type(document.Root, entity_type);
-			entity.set_id(entity_id);
+			entity.i_set_id(entity_id);
 
 			return entity;
 		}
@@ -127,7 +127,7 @@ namespace Catapult
 			string id = entity_id;
 			if (entity_id == null)
 			{
-				id = (entity.ID != null && entity.ID != "") ? entity.ID : entity.i_generate_id();
+				id = (entity.id != null && entity.id != "") ? entity.id : entity.i_generate_id();
 				if (is_valid_entity_id(id) == false)
 					throw new RuntimeError.ARGUMENT("Entity could not be saved: Invalid Entity ID: '%s'", id);
 			}
@@ -144,7 +144,7 @@ namespace Catapult
 			string yaml = get_yaml(entity);
 			print("yaml:\n%s\n", yaml);
 			FileUtils.set_contents(filepath, yaml + "\n");
-			entity.set_id(id);
+			entity.i_set_id(id);
 		}
 
 		static bool is_valid_filename(string filename)
