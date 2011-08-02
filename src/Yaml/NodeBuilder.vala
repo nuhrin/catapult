@@ -41,12 +41,16 @@ namespace Catapult.Yaml
 			node.Items.add(valueNode);
 		}
 
-
 		Node BuildValue(Value value) {
 			if (value.holds(typeof(Object)))
 				return BuildObject(value.get_object());
 
 			Type type = value.type();
+			if (type == typeof(void *)) {
+				type = Type.from_instance(value.peek_pointer());
+				if (Value.type_compatible(type, typeof(Object)))
+					return BuildObject((Object)value.get_pointer());
+			}
 			if (type.is_flags()) {
 				uint flags = value.get_flags();
 				GLibPatch.FlagsClass klass = (GLibPatch.FlagsClass)type.class_ref();
