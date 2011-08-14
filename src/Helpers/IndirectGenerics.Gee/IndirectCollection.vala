@@ -83,10 +83,20 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 			var collection = (obj as Collection<A>);
 			Value[] values = new Value[collection.size];
 			int index = 0;
-			foreach(A value in collection) {
-				values[index] = value;
+			var type = typeof(A);
+			foreach(A item in collection) {
+				Value typed_value = Value(typeof(A));
+				if (type == typeof(string))
+					typed_value.take_string((string)item);
+				else if (type.is_object())
+					typed_value.take_object((Object)item);
+				else
+					typed_value = item;
+
+				values[index] = typed_value;
 				index++;
 			}
+
 			return values;
 		}
 	}
