@@ -46,11 +46,20 @@ namespace Catapult.Yaml
 				return BuildObject(value.get_object());
 
 			Type type = value.type();
-			if (type == typeof(void *)) {
-				type = Type.from_instance(value.peek_pointer());
-				if (Value.type_compatible(type, typeof(Object)))
-					return BuildObject((Object)value.get_pointer());
-			}
+//~ 			if (type == typeof(void *)) {
+//~ 				debug("before peek...");
+//~ 				var pointer = value.peek_pointer();
+//~ 				debug("pointer: %d", (int)pointer);
+//~ 				if (pointer == null) {
+//~ 					debug("null pointer...");
+//~ 					return BuildNull();
+//~ 				}
+//~ 				type = Type.from_instance(pointer);
+//~ 				debug("after from_instance:");
+//~ 				debug("pointer to %s...", type.name());
+//~ 				if (Value.type_compatible(type, typeof(Object)))
+//~ 					return BuildObject((Object)value.get_pointer());
+//~ 			}
 			if (type.is_flags()) {
 				uint flags = value.get_flags();
 				GLibPatch.FlagsClass klass = (GLibPatch.FlagsClass)type.class_ref();
