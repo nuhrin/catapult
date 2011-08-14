@@ -153,7 +153,7 @@ namespace Catapult
 			internal Populator(YieldEnumerator<T> enumerator) {
 				e = enumerator;
 			}
-	
+
 			public signal void item_yielded(T item);
 
 			public void yield_item(T item) {

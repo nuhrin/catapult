@@ -81,6 +81,13 @@ namespace Catapult
 			return this.where(predicate).last();
 		}
 
+		public bool any() {
+			return iterator().first();
+		}
+		public bool any_where(Predicate<TSource> predicate) {
+			return this.where(predicate).any();
+		}
+
 		public int size() {
 			Collection col = iterable as Collection;
 			if (col != null)
