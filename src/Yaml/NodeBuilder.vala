@@ -5,43 +5,44 @@ namespace Catapult.Yaml
 {
 	public class NodeBuilder
 	{
-		public Node build<T>(T value)
-		{
+		public Node build<T>(T value) {
 			Value val = ValueHelper.extract_value<T>(value);
 			return build_value(val);
 		}
 
-		public Node build_value(Value value)
-		{
-			return BuildValue(value);
+		public Node build_value(Value value) {
+			return BuildValueAssert(value);
 		}
 
-		public Node build_yaml_object(IYamlObject yaml_object)
-		{
+		public Node build_yaml_object(IYamlObject yaml_object) {
 			return yaml_object.i_build_yaml_node(this);
 		}
-		public MappingNode build_object_mapping(Object obj)
-		{
+		public MappingNode build_object_mapping(Object obj) {
 			return BuildObjectMapping(obj);
 		}
-		public void populate_object_mapping(MappingNode node, Object obj)
-		{
+		public void populate_object_mapping(MappingNode node, Object obj) {
 			PopulateObjectMapping(node, obj);
 		}
 		public bool add_object_mapping(MappingNode node, Object obj, ParamSpec property) {
 			return AddObjectPropertyMapping(node, obj, property);
 		}
 		public void add_mapping(MappingNode node, Value key, Value value) {
-			var keyNode = BuildValueSupportingEntityReference(key);
-			var valueNode = BuildValueSupportingEntityReference(value);
-			node.Mappings[keyNode] = valueNode;
+			try {
+				var keyNode = BuildValueSupportingEntityReference(key);
+				var valueNode = BuildValueSupportingEntityReference(value);
+				node.Mappings[keyNode] = valueNode;
+			} catch (Error e) {
+				debug(e.message);
+				assert_not_reached();
+			}
 		}
 		public void add_sequence_value(SequenceNode node, Value value) {
-			var valueNode = BuildValueSupportingEntityReference(value);
+			var valueNode = BuildValueAssertSupportingEntityReference(value);
 			node.Items.add(valueNode);
 		}
 
-		Node BuildValue(Value value) {
+		Node BuildValue(Value value) throws RuntimeError
+		{
 			if (value.holds(typeof(Object)))
 				return BuildObject(value.get_object());
 
@@ -130,15 +131,15 @@ namespace Catapult.Yaml
 					str_value = (string)buffer;
 					tag = Constants.Tag.TIMESTAMP;
 				} else {
-					debug("Unsupported BOXED type: %s", type.name());
-					assert_not_reached();
+					throw new RuntimeError.ARGUMENT("Unsupported BOXED type: " + type.name());
+					//assert_not_reached();
 				}
 			}
 			else if (type.is_classed())
 				debug("Is Classed: %s", type.name());
 			else {
-				debug("Unsupported type: %s", type.name());
-				assert_not_reached();
+				throw new RuntimeError.ARGUMENT("Unsupported type: " + type.name());
+				//assert_not_reached();
 			}
 
 			if (str_value != null)
@@ -168,8 +169,8 @@ namespace Catapult.Yaml
 				foreach(var key in keys)
 				{
 					var val = indirectMap.get(map, key);
-					var keyNode = BuildValueSupportingEntityReference(key);
-					var valueNode = BuildValueSupportingEntityReference(val);
+					var keyNode = BuildValueAssertSupportingEntityReference(key);
+					var valueNode = BuildValueAssertSupportingEntityReference(val);
 					mappingNode.Mappings[keyNode] = valueNode;
 				}
 				return mappingNode;
@@ -183,7 +184,7 @@ namespace Catapult.Yaml
 
 				var sequenceNode = new SequenceNode();
 				foreach(var value in values) {
-					var node = BuildValueSupportingEntityReference(value);
+					var node = BuildValueAssertSupportingEntityReference(value);
 					sequenceNode.Items.add(node);
 				}
 				return sequenceNode;
@@ -214,17 +215,18 @@ namespace Catapult.Yaml
 		bool AddObjectPropertyMapping(MappingNode node, Object obj, ParamSpec property)
 		{
 			if ((property.flags & ParamFlags.READWRITE) == ParamFlags.READWRITE) {
-				var keyNode = BuildValue(property.name);
+				var keyNode = BuildValueAssert(property.name);
 				Value existing_prop_value = Value(property.value_type);
 				obj.get_property(property.name, ref existing_prop_value);
-				var valueNode = BuildValueSupportingEntityReference(existing_prop_value);
+				Node valueNode = null;
+				valueNode = BuildValueAssertSupportingEntityReference(existing_prop_value, obj);
 				node.Mappings[keyNode] = valueNode;
 				return true;
 			}
 			return false;
 		}
 
-		Node BuildValueSupportingEntityReference(Value value)
+		Node BuildValueSupportingEntityReference(Value value) throws RuntimeError
 		{
 			Type type = value.type();
 			if (type.is_a(typeof(Entity)))
@@ -236,6 +238,30 @@ namespace Catapult.Yaml
 				return BuildValue(id);
 			}
 			return BuildValue(value);
+		}
+		Node BuildValueAssert(Value value) {
+			try {
+				return BuildValue(value);
+			} catch (Error e) {
+				debug(e.message);
+				assert_not_reached();
+			}
+		}
+		Node BuildValueAssertSupportingEntityReference(Value value, Object? obj=null) {
+			try {
+				return BuildValueSupportingEntityReference(value);
+			} catch (Error e) {
+				if (obj != null) {
+					var yobj = obj as IYamlObject;
+					if (yobj != null) {
+						var node = yobj.i_build_unhandled_value_node(this, value);
+						if (node != null)
+							return node;
+					}
+				}
+				debug(e.message);
+				assert_not_reached();
+			}
 		}
 	}
 }

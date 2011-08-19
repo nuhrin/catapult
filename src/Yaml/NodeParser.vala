@@ -35,7 +35,7 @@ namespace Catapult.Yaml
 		}
 
 
-		Value ParseValue(Node node, Type? type=null, Value? default_value=null) {
+		Value ParseValue(Node node, Type? type=null, Value? default_value=null, bool use_default_for_scalar=true) {
 			Type? intype = type;
 			Object invalObj = null;
 			if (default_value != null)
@@ -57,7 +57,7 @@ namespace Catapult.Yaml
 			switch(node.Type)
 			{
 				case NodeType.SCALAR:
-					return ParseScalar(node as ScalarNode, intype, default_value);
+					return ParseScalar(node as ScalarNode, intype, default_value, use_default_for_scalar);
 				case NodeType.MAPPING:
 					return ParseMapping(node as MappingNode, intype, default_value);
 				case NodeType.SEQUENCE:
@@ -68,7 +68,7 @@ namespace Catapult.Yaml
 			return default_value;
 		}
 
-		Value ParseScalar(ScalarNode scalar, Type? type=null, Value? default_value=null)
+		Value ParseScalar(ScalarNode scalar, Type? type=null, Value? default_value=null, bool use_default=true)
 		{
 			Type t;
 			if (type == null) {
@@ -95,6 +95,8 @@ namespace Catapult.Yaml
 				v.set_string(scalar.Value);
 			else if (t == typeof(int))
 				v.set_int(int.parse(scalar.Value));
+			else if (t == typeof(uint))
+				v.set_uint((uint)int.parse(scalar.Value));
 			else if (t == typeof(bool))
 				v.set_boolean(bool.parse(scalar.Value));
 			else if (t == typeof(double))
@@ -111,10 +113,11 @@ namespace Catapult.Yaml
 				v = d;
 			}
 			else
-				return default_value;
+				return (use_default) ? default_value : Value(typeof(Fail));
 
 			return v;
 		}
+		class Fail {}
 
 		Value ParseMapping(MappingNode mapping, Type? type=null, Value? default_value=null)
 		{
@@ -177,8 +180,21 @@ namespace Catapult.Yaml
 			if ((property.flags & ParamFlags.READWRITE) == ParamFlags.READWRITE) {
 				Value existing_prop_value = Value(property.value_type);
 				obj.get_property(property.name, ref existing_prop_value);
-				Value new_prop_value = ParseValueSupportingEntityReference(mapping.Mappings[keyNode], property.value_type, existing_prop_value);
-				obj.set_property(property.name, new_prop_value);
+				var value_node = mapping.Mappings[keyNode];
+				Value new_prop_value = ParseValueSupportingEntityReference(value_node, property.value_type, existing_prop_value, false);
+				if (new_prop_value.holds(property.value_type) == false && obj != null) {
+					bool parsed = false;
+					var yobj = obj as IYamlObject;
+					if (yobj != null) {
+						parsed = yobj.i_apply_unhandled_value_node(value_node, property.name, this);
+					}
+					if (parsed == false) {
+						debug("Parse error: failed to parse property '%s' on type %s", keyNode.Value, obj.get_type().name());
+						return false;
+					}
+				} else {
+					obj.set_property(property.name, new_prop_value);
+				}
 				return true;
 			}
 			return false;
@@ -229,7 +245,7 @@ namespace Catapult.Yaml
 			return v;
 		}
 
-		Value ParseValueSupportingEntityReference(Node node, Type? type=null, Value? default_value=null)
+		Value ParseValueSupportingEntityReference(Node node, Type? type=null, Value? default_value=null, bool use_default_for_scalar=true)
 		{
 			if (type != null && type.is_a(typeof(Entity)))
 			{
@@ -243,7 +259,7 @@ namespace Catapult.Yaml
 					}
 				}
 			}
-			return ParseValue(node, type, default_value);
+			return ParseValue(node, type, default_value, use_default_for_scalar);
 		}
 
 		public static Type? get_tag_type(string tag)
