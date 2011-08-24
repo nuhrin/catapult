@@ -46,7 +46,15 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 		{
 			A k = ValueHelper.extract_value<A>(key);
 			B v = (obj as Map<A,B>).get(k);
-			return v;
+			var type = typeof(B);
+			Value typed_value = Value(type);
+			if (type == typeof(string))
+				typed_value.take_string((string)v);
+			else if (type.is_object())
+				typed_value.take_object((Object)v);
+			else
+				typed_value = v;
+			return typed_value;
 		}
 
 		public Value[] get_keys(Map obj)
@@ -54,9 +62,18 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 			var map = (obj as Map<A,B>);
 			Value[] values = new Value[map.size];
 			int index = 0;
+			var type = typeof(A);
 			foreach(A key in map.keys)
 			{
-				values[index] = key;
+				Value typed_value = Value(type);
+				if (type == typeof(string))
+					typed_value.take_string((string)key);
+				else if (type.is_object())
+					typed_value.take_object((Object)key);
+				else
+					typed_value = key;
+
+				values[index] = typed_value;
 				index++;
 			}
 			return values;

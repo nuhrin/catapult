@@ -85,7 +85,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 			int index = 0;
 			var type = typeof(A);
 			foreach(A item in collection) {
-				Value typed_value = Value(typeof(A));
+				Value typed_value = Value(type);
 				if (type == typeof(string))
 					typed_value.take_string((string)item);
 				else if (type.is_object())
