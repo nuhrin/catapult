@@ -142,7 +142,7 @@ namespace Catapult
 //
 			string filepath = get_entity_file_path(data_folder, id, true);
 			string yaml = get_yaml(entity);
-			print("yaml:\n%s\n", yaml);
+			//print("yaml:\n%s\n", yaml);
 			FileUtils.set_contents(filepath, yaml + "\n");
 			entity.i_set_id(id);
 		}
