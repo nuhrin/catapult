@@ -71,11 +71,12 @@ namespace Catapult
 			if (FileUtils.test(entity_file, FileTest.EXISTS) == false)
 				throw new RuntimeError.FILE("%s '%s' not found.", entity_type.name(), entity_id);
 
-			string yaml;
-			if (FileUtils.get_contents(entity_file, out yaml) == false)
+			var file = FileStream.open(entity_file, "r");
+			if (file == null)
 				throw new RuntimeError.FILE("File not found: %s", entity_file);
 
-			var document = new Yaml.DocumentReader.from_string(yaml).read_document();
+			var document = new Yaml.DocumentReader(file).read_document();
+
 			Entity entity = (Entity)parser.parse_value_of_type(document.Root, entity_type);
 			entity.i_set_id(entity_id);
 
