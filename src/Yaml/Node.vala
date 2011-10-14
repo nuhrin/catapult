@@ -1,3 +1,4 @@
+using YAML;
 using Catapult.Helpers;
 
 namespace Catapult.Yaml
@@ -15,6 +16,11 @@ namespace Catapult.Yaml
 		internal Node.from_event(Events.NodeEvent event) {
 			Anchor = event.Anchor;
 			Tag = event.Tag;
+		}
+		internal Node.from_raw(RawEvent event)
+		{
+			Anchor = event.data.scalar.anchor;
+			Tag = event.data.scalar.tag;
 		}
 		public string? Anchor { get; private set; }
 		public string? Tag { get; private set; }

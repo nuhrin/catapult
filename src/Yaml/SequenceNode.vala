@@ -1,3 +1,5 @@
+using YAML;
+
 namespace Catapult.Yaml
 {
 	public class SequenceNode : Node
@@ -15,6 +17,14 @@ namespace Catapult.Yaml
 			base.from_event(event);
 			IsImplicit = event.IsImplicit;
 			Style = event.Style;
+			Items = new NodeList();
+		}
+		internal SequenceNode.from_raw(RawEvent event)
+			requires(event.type == YAML.EventType.SEQUENCE_START_EVENT)
+		{
+			base.from_raw(event);
+			IsImplicit = (event.data.sequence_start.implicit != 0);
+			Style = (SequenceStyle)event.data.sequence_start.style;
 			Items = new NodeList();
 		}
 		public bool IsImplicit { get; private set; }

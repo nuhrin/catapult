@@ -8,7 +8,7 @@ namespace Catapult.Yaml.Events
 		{
 			base(EventType.STREAM_END);
 		}
-		
+
 		internal StreamEnd.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.STREAM_END_EVENT)
 		{

@@ -21,8 +21,8 @@ namespace Catapult.Yaml.Events
 		public override bool IsCanonical { get { return !IsPlainImplicit && !IsQuotedImplicit; } }
 
 		public override string to_string()
-		{ 
-			return "[%s, Value: %s]".printf(this.get_type().name(), Value); 
+		{
+			return "[Scalar, Value: %s]".printf(Value);
 		}
 
 		internal Scalar.from_raw(RawEvent event)

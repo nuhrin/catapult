@@ -22,12 +22,12 @@ namespace Catapult.Yaml.Events
 		}
 
 		public Event Current { get { return current_event; } }
-				
+
 		public bool move_next() throws YamlError
 		{
 			if (parser.stream_end_produced)
 				return false;
-			if (!parser.parse(out raw_event)) 
+			if (!parser.parse(out raw_event))
 			{
 				throw new YamlError.PARSE("EventParser error: %s at %u(%s)\nError Context: '%s'",
 					parser.problem, parser.problem_offset, parser.problem_mark.to_string(), parser.context);
@@ -49,7 +49,7 @@ namespace Catapult.Yaml.Events
 			if (!(typeof(T).is_a(current_event.get_type())))
 			{
 				throw new YamlError.EVENT_TYPE("Expected '%s' got '%s' (%s)\nContext: '%s'",
-					typeof(T).name(), current_event.get_type().name(), 
+					typeof(T).name(), current_event.get_type().name(),
 					parser.context_mark.to_string(), parser.context);
 			}
 			T event = (T)current_event;
@@ -94,7 +94,7 @@ namespace Catapult.Yaml.Events
 
 		Event get_parsing_event(RawEvent event)
 		{
-			switch((EventType)event.type) 
+			switch((EventType)event.type)
 			{
 				case EventType.STREAM_START:
 					return new StreamStart.from_raw(event);
@@ -122,8 +122,8 @@ namespace Catapult.Yaml.Events
 					assert_not_reached();
 			}
 		}
-		
-		
-		
+
+
+
 	}
 }

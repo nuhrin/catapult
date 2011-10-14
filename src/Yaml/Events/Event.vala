@@ -16,7 +16,7 @@ namespace Catapult.Yaml.Events
 		}
 		public Mark Start { get; private set; }
 		public Mark End { get; private set; }
-		
+
 		public EventType Type { get; private set; }
 		internal abstract int NestingIncrease { get; }
 

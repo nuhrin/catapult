@@ -1,3 +1,4 @@
+using YAML;
 
 namespace Catapult.Yaml
 {
@@ -16,6 +17,14 @@ namespace Catapult.Yaml
 			base.from_event(event);
 			IsImplicit = event.IsImplicit;
 			Style = event.Style;
+			Mappings = new OrderedMappingSet();
+		}
+		internal MappingNode.from_raw(RawEvent event)
+			requires(event.type == YAML.EventType.MAPPING_START_EVENT)
+		{
+			base.from_raw(event);
+			IsImplicit = (event.data.mapping_start.implicit != 0);
+			Style = (MappingStyle)event.data.mapping_start.style;
 			Mappings = new OrderedMappingSet();
 		}
 		public bool IsImplicit { get; private set; }

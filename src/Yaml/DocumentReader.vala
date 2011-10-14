@@ -1,28 +1,29 @@
 using Gee;
 using Catapult.Yaml.Events;
+using YAML;
 
 namespace Catapult.Yaml
 {
 	public class DocumentReader
 	{
-		EventReader reader;
+		Parser parser;
+		RawEvent raw_event;
+		bool has_document_context = false;
 
-		public DocumentReader(FileStream input)
-		{
-			reader = new EventReader(input);
+		public DocumentReader(FileStream input) {
+			parser = Parser();
+			parser.set_input_file(input);
 		}
-		public DocumentReader.from_string(string yaml)
-		{
-			reader = new EventReader.from_string(yaml);
-		}
-		internal DocumentReader.from_event_reader(EventReader reader) {
-			this.reader = reader;
+		public DocumentReader.from_string(string yaml) {
+			parser = Parser();
+			parser.set_input_string(yaml, yaml.length);
 		}
 
 		public Gee.List<Document> read_all_documents() throws YamlError
 		{
 			var list = new ArrayList<Document>();
-			while(reader.Current.Type != EventType.STREAM_END) {
+			ensure_stream_start();
+			while(raw_event.type != YAML.EventType.STREAM_END_EVENT) {
 				var document = read_document();
 				list.add(document);
 			}
@@ -31,49 +32,87 @@ namespace Catapult.Yaml
 
 		public Document read_document() throws YamlError
 		{
-			reader.ensure_document_start();
-			var start = reader.get<DocumentStart>();
+			ensure_document_start();
+			bool isImplicit = (raw_event.data.document_start.implicit != 0);
+			move_next();
 			Node root = read_node();
-			Document document = new Document.from_event(root, start);
-			reader.get<DocumentEnd>();
+			Document document = new Document(root, isImplicit);
+			move_next(); // document end
 			return document;
 		}
 		Node read_node() throws YamlError
 		{
-			switch(reader.Current.Type) {
-				case EventType.SCALAR:
-					var scalar = reader.get<Scalar>();
-					return new ScalarNode.from_event(scalar);
-				case EventType.MAPPING_START:
-					return read_mapping_node();
-				case EventType.SEQUENCE_START:
-					return read_sequence_node();
+			Node node = null;
+			switch(raw_event.type) {
+				case YAML.EventType.SCALAR_EVENT:
+					node = new ScalarNode.from_raw(raw_event);
+					break;
+				case YAML.EventType.MAPPING_START_EVENT:
+					node = read_mapping_node();
+					break;
+				case YAML.EventType.SEQUENCE_START_EVENT:
+					node = read_sequence_node();
+					break;
 				default:
-					throw new YamlError.PARSE("Expected scalar, mapping start, or sequence start, got %s", reader.Current.to_string());
+					throw new YamlError.PARSE("Expected scalar, mapping start, or sequence start");
 			}
+			move_next();
+			return node;
 		}
 		MappingNode read_mapping_node() throws YamlError
 		{
-			var start = reader.get<MappingStart>();
-			var mapping = new MappingNode.from_event(start);
-			while (reader.Current.Type != EventType.MAPPING_END) {
+			var mapping = new MappingNode.from_raw(raw_event);
+			move_next();
+			while (raw_event.type != YAML.EventType.MAPPING_END_EVENT) {
 				var key = read_node();
 				var val = read_node();
 				mapping.Mappings[key] = val;
 			}
-			reader.get<MappingEnd>();
 			return mapping;
 		}
 		SequenceNode read_sequence_node() throws YamlError
 		{
-			var start = reader.get<SequenceStart>();
-			var sequence = new SequenceNode.from_event(start);
-			while (reader.Current.Type != EventType.SEQUENCE_END) {
+			var sequence = new SequenceNode.from_raw(raw_event);
+			move_next();
+			while (raw_event.type != YAML.EventType.SEQUENCE_END_EVENT) {
 				var node = read_node();
 				sequence.Items.add(node);
 			}
-			reader.get<SequenceEnd>();
 			return sequence;
+		}
+
+		void ensure_stream_start() throws YamlError
+		{
+			if (!parser.stream_start_produced) {
+				move_next();
+				assert(raw_event.type == YAML.EventType.STREAM_START_EVENT);
+			}
+		}
+		void ensure_document_start() throws YamlError
+		{
+			ensure_stream_start();
+			if (!has_document_context) {
+				move_next();
+				assert(raw_event.type == YAML.EventType.DOCUMENT_START_EVENT);
+			}
+		}
+		bool move_next() throws YamlError
+		{
+			if (parser.stream_end_produced)
+				return false;
+			if (!parser.parse(out raw_event))
+			{
+				throw new YamlError.PARSE("EventParser error: %s at %u(%s)\nError Context: '%s'",
+					parser.problem, parser.problem_offset, parser.problem_mark.to_string(), parser.context);
+			}
+			if (!has_document_context) {
+			 	if (raw_event.type == YAML.EventType.DOCUMENT_START_EVENT)
+					has_document_context = true;
+			} else {
+				if (raw_event.type == YAML.EventType.DOCUMENT_END_EVENT)
+					has_document_context = false;
+			}
+			return true;
 		}
 	}
 }

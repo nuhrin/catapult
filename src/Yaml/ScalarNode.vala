@@ -1,3 +1,4 @@
+using YAML;
 
 namespace Catapult.Yaml
 {
@@ -19,6 +20,15 @@ namespace Catapult.Yaml
 			IsPlainImplicit = event.IsPlainImplicit;
 			IsQuotedImplicit = event.IsQuotedImplicit;
 			Style = event.Style;
+		}
+		internal ScalarNode.from_raw(RawEvent event)
+			requires(event.type == YAML.EventType.SCALAR_EVENT)
+		{
+			base.from_raw(event);
+			IsPlainImplicit = (event.data.scalar.plain_implicit != 0);
+			IsQuotedImplicit = (event.data.scalar.quoted_implicit != 0);
+			Value = event.data.scalar.value;
+			Style = (ScalarStyle)event.data.scalar.style;
 		}
 		public string Value { get; private set; }
 		public bool IsPlainImplicit { get; private set; }
