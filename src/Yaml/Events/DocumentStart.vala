@@ -24,16 +24,16 @@ namespace Catapult.Yaml.Events
 			requires(event.type == YAML.EventType.DOCUMENT_START_EVENT)
 		{
 			base.from_raw(event);
-			IsImplicit = (event.data.document_start.implicit != 0);
-			if (event.data.document_start.version_directive != null) {
+			IsImplicit = (event.document_start_implicit != 0);
+			if (event.document_start_version_directive != null) {
 				Version = VersionDirective(
-					event.data.document_start.version_directive.major,
-					event.data.document_start.version_directive.minor);
+					event.document_start_version_directive.major,
+					event.document_start_version_directive.minor);
 			}
 			TagDirectives = new ArrayList<TagDirective>();
 			YAML.TagDirective *tag;
-			for (tag = event.data.document_start.tag_directives.start;
-	             tag != event.data.document_start.tag_directives.end;
+			for (tag = event.document_start_tag_directives_start;
+	             tag != event.document_start_tag_directives_end;
 				 tag ++)
 			{
 				TagDirectives.add(new TagDirective(tag.handle, tag.prefix));

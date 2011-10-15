@@ -2,8 +2,7 @@ namespace Catapult.Helpers
 {
 	public class ValueHelper
 	{
-		public static Value populate_value<T>(T val)
-		{
+		public static Value populate_value<T>(T val) {
 			Type type = typeof(T);
 			Value retVal = Value(type);
 			if (val == null)
@@ -44,7 +43,7 @@ namespace Catapult.Helpers
 //			else if (type == typeof(double))
 //				retVal.set_double(val);
 			else
-				assert_not_reached();
+				error("Unsupported type: %s", type.name());
 
 			return retVal;
 		}
@@ -90,7 +89,7 @@ namespace Catapult.Helpers
 				debug("Got BOXED type: "+type.name());
 			if (type.is_classed())
 				debug("Is Classed: "+type.name());
-			assert_not_reached();
+			error("Unsupported type: %s", type.name());
 		}
 	}
 }

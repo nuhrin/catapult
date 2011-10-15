@@ -19,9 +19,9 @@ namespace Catapult.Yaml.Events
 		internal MappingStart.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.MAPPING_START_EVENT)
 		{
-			base.from_raw(event.data.mapping_start.anchor, event.data.mapping_start.tag, event);
-			IsImplicit = (event.data.mapping_start.implicit != 0);
-			Style = (MappingStyle)event.data.mapping_start.style;
+			base.from_raw(event.mapping_start_anchor, event.mapping_start_tag, event);
+			IsImplicit = (event.mapping_start_implicit != 0);
+			Style = (MappingStyle)event.mapping_start_style;
 		}
 		internal override int NestingIncrease { get { return 1; } }
 

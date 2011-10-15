@@ -11,12 +11,6 @@ namespace Catapult.Yaml
 			IsImplicit = event.IsImplicit;
 			Root = root;
 		}
-		internal Document.from_raw(Node root, YAML.RawEvent event)
-			requires(event.type == YAML.EventType.DOCUMENT_START_EVENT)
-		{
-			IsImplicit = (event.data.document_start.implicit != 0);
-			Root = root;
-		}
 		public bool IsImplicit { get; private set; }
 		public Node Root { get; private set; }
 

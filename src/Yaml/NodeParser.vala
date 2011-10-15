@@ -265,9 +265,9 @@ namespace Catapult.Yaml
 		public static Type? get_tag_type(string tag)
 		{
 			if (tagTypeMappings.has_key(tag) == true)
-				return tagTypeMappings[tag];
+				return (Type?)tagTypeMappings[tag];
 			if (predefinedTypes.has_key(tag) == true)
-				return predefinedTypes[tag];
+				return (Type?)predefinedTypes[tag];
 
 			return null;
 		}

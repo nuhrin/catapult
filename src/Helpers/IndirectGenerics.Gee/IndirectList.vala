@@ -23,7 +23,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 		public new Value get(global::Gee.List obj, int index)
 		{
 			A v = (obj as global::Gee.List<A>).get(index);
-			return v;
+			return ValueHelper.populate_value<A>(v);
 		}
 		public new void set(global::Gee.List obj, int index, Value value)
 		{
@@ -43,7 +43,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 		public Value remove_at(global::Gee.List obj, int index)
 		{
 			A v = (obj as global::Gee.List<A>).remove_at(index);
-			return v;
+			return ValueHelper.populate_value<A>(v);
 		}
 		public global::Gee.List<A>? slice(global::Gee.List obj, int start, int stop)
 		{
@@ -52,12 +52,12 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 		public Value first(global::Gee.List obj)
 		{
 			A v = (obj as global::Gee.List<A>).first();
-			return v;
+			return ValueHelper.populate_value<A>(v);
 		}
 		public Value last(global::Gee.List obj)
 		{
 			A v = (obj as global::Gee.List<A>).last();
-			return v;
+			return ValueHelper.populate_value<A>(v);
 		}
 	}
 }

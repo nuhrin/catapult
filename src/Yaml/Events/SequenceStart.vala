@@ -19,9 +19,9 @@ namespace Catapult.Yaml.Events
 		internal SequenceStart.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.SEQUENCE_START_EVENT)
 		{
-			base.from_raw(event.data.sequence_start.anchor, event.data.sequence_start.tag, event);
-			IsImplicit = (event.data.sequence_start.implicit != 0);
-			Style = (SequenceStyle)event.data.sequence_start.style;
+			base.from_raw(event.sequence_start_anchor, event.sequence_start_tag, event);
+			IsImplicit = (event.sequence_start_implicit != 0);
+			Style = (SequenceStyle)event.sequence_start_style;
 		}
 		internal override int NestingIncrease { get { return 1; } }
 

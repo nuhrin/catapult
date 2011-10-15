@@ -53,7 +53,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 			else if (type.is_object())
 				typed_value.take_object((Object)v);
 			else
-				typed_value = v;
+				typed_value = ValueHelper.populate_value<A>(v);
 			return typed_value;
 		}
 
@@ -71,7 +71,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 				else if (type.is_object())
 					typed_value.take_object((Object)key);
 				else
-					typed_value = key;
+					typed_value = ValueHelper.populate_value<A>(key);
 
 				values[index] = typed_value;
 				index++;

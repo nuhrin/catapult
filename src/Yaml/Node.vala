@@ -19,8 +19,8 @@ namespace Catapult.Yaml
 		}
 		internal Node.from_raw(RawEvent event)
 		{
-			Anchor = event.data.scalar.anchor;
-			Tag = event.data.scalar.tag;
+			Anchor = event.scalar_anchor;
+			Tag = event.scalar_tag;
 		}
 		public string? Anchor { get; private set; }
 		public string? Tag { get; private set; }

@@ -23,8 +23,8 @@ namespace Catapult.Yaml
 			requires(event.type == YAML.EventType.SEQUENCE_START_EVENT)
 		{
 			base.from_raw(event);
-			IsImplicit = (event.data.sequence_start.implicit != 0);
-			Style = (SequenceStyle)event.data.sequence_start.style;
+			IsImplicit = (event.sequence_start_implicit != 0);
+			Style = (SequenceStyle)event.sequence_start_style;
 			Items = new NodeList();
 		}
 		public bool IsImplicit { get; private set; }

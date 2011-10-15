@@ -25,10 +25,10 @@ namespace Catapult.Yaml
 			requires(event.type == YAML.EventType.SCALAR_EVENT)
 		{
 			base.from_raw(event);
-			IsPlainImplicit = (event.data.scalar.plain_implicit != 0);
-			IsQuotedImplicit = (event.data.scalar.quoted_implicit != 0);
-			Value = event.data.scalar.value;
-			Style = (ScalarStyle)event.data.scalar.style;
+			IsPlainImplicit = (event.scalar_plain_implicit != 0);
+			IsQuotedImplicit = (event.scalar_quoted_implicit != 0);
+			Value = event.scalar_value;
+			Style = (ScalarStyle)event.scalar_style;
 		}
 		public string Value { get; private set; }
 		public bool IsPlainImplicit { get; private set; }

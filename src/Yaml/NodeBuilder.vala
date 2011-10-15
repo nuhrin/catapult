@@ -6,7 +6,7 @@ namespace Catapult.Yaml
 	public class NodeBuilder
 	{
 		public Node build<T>(T value) {
-			Value val = ValueHelper.extract_value<T>(value);
+			Value val = ValueHelper.populate_value<T>(value);
 			return build_value(val);
 		}
 

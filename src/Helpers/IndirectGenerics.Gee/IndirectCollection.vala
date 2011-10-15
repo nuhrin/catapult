@@ -91,7 +91,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 				else if (type.is_object())
 					typed_value.take_object((Object)item);
 				else
-					typed_value = item;
+					typed_value = ValueHelper.populate_value<A>(item);
 
 				values[index] = typed_value;
 				index++;

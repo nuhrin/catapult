@@ -28,11 +28,11 @@ namespace Catapult.Yaml.Events
 		internal Scalar.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.SCALAR_EVENT)
 		{
-			base.from_raw(event.data.scalar.anchor, event.data.scalar.tag, event);
-			IsPlainImplicit = (event.data.scalar.plain_implicit != 0);
-			IsQuotedImplicit = (event.data.scalar.quoted_implicit != 0);
-			Value = event.data.scalar.value;
-			Style = (ScalarStyle)event.data.scalar.style;
+			base.from_raw(event.scalar_anchor, event.scalar_tag, event);
+			IsPlainImplicit = (event.scalar_plain_implicit != 0);
+			IsQuotedImplicit = (event.scalar_quoted_implicit != 0);
+			Value = event.scalar_value;
+			Style = (ScalarStyle)event.scalar_style;
 		}
 		internal override int NestingIncrease { get { return 0; } }
 

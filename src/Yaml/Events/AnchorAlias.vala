@@ -16,7 +16,7 @@ namespace Catapult.Yaml.Events
 			requires(event.type == YAML.EventType.ALIAS_EVENT)
 		{
 			base.from_raw(event);
-			Anchor = event.data.alias.anchor;
+			Anchor = event.alias_anchor;
 			if (RegexHelper.NonAlphaNumericCharacters.match(Anchor))
 				error("Anchor value must contain alphanumerical characters only: %s.", Anchor);
 		}

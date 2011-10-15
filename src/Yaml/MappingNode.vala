@@ -23,8 +23,8 @@ namespace Catapult.Yaml
 			requires(event.type == YAML.EventType.MAPPING_START_EVENT)
 		{
 			base.from_raw(event);
-			IsImplicit = (event.data.mapping_start.implicit != 0);
-			Style = (MappingStyle)event.data.mapping_start.style;
+			IsImplicit = (event.mapping_start_implicit != 0);
+			Style = (MappingStyle)event.mapping_start_style;
 			Mappings = new OrderedMappingSet();
 		}
 		public bool IsImplicit { get; private set; }

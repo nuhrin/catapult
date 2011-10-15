@@ -15,9 +15,9 @@
  * Lesser General Public License for more details.
 
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to 
+ * License along with this library; if not, write to
  *
- * the Free Software Foundation, Inc., 
+ * the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
  * Author:
@@ -59,16 +59,16 @@ namespace YAML {
 	}
 
 	[CCode (cprefix="YAML_", cname="yaml_sequence_style_t", has_type_id=false)]
-	/** 
-	 * Sequence styles 
+	/**
+	 * Sequence styles
 	 * */
 	internal enum SequenceStyle{
 		ANY_SEQUENCE_STYLE ,
 		BLOCK_SEQUENCE_STYLE,
 		FLOW_SEQUENCE_STYLE
 	}
-	/** 
-	 * Mapping styles. 
+	/**
+	 * Mapping styles.
 	 * */
 	[CCode (cprefix="YAML_", cname="yaml_mapping_style_t", has_type_id=false)]
 	internal enum MappingStyle {
@@ -77,8 +77,8 @@ namespace YAML {
 		FLOW_MAPPING_STYLE
 	}
 
-	/** 
-	 * The version directive data. 
+	/**
+	 * The version directive data.
 	 * */
 	[CCode (cname="yaml_version_directive_t", has_type_id = false)]
 	internal struct VersionDirective {
@@ -86,8 +86,8 @@ namespace YAML {
 		public int minor;
 	}
 
-	/** 
-	 * The tag directive data. 
+	/**
+	 * The tag directive data.
 	 * */
 	[CCode (cname = "yaml_tag_directive_t", has_type_id = false)]
 	internal struct TagDirective {
@@ -105,8 +105,8 @@ namespace YAML {
 	}
 
 	[CCode (cname="yaml_mark_t", has_type_id = false)]
-	/** 
-	 * The pointer position. 
+	/**
+	 * The pointer position.
 	 * */
 	internal struct Mark {
 		public size_t index;
@@ -138,78 +138,102 @@ namespace YAML {
 		MAPPING_END_EVENT
 	}
 
-	[CCode (has_type_id = false)]
+	[CCode(cname="struct { yaml_encoding_t encoding; }", has_type_id=false)]
+	internal struct EventStreamStart {
+		public EncodingType encoding;
+	}
+
+	[CCode(cname="struct { yaml_tag_directive_t *start; yaml_tag_directive_t *end; }", has_type_id=false)]
 	internal struct DocumentTagDirectives {
 		YAML.TagDirective *start;
 		YAML.TagDirective *end;
 	}
-	[CCode (has_type_id = false)]
+	[CCode(cname="struct { yaml_version_directive_t *version_directive; struct { yaml_tag_directive_t *start; yaml_tag_directive_t *end; } tag_directives; int implicit; }", has_type_id=false)]
 	internal struct EventDocumentStart {
 		public YAML.VersionDirective *version_directive;
 		public YAML.DocumentTagDirectives tag_directives;
 		public int implicit;
 	}
-	
-	[CCode (has_type_id = false)]
+
+	[CCode(has_type_id=false)]
 	internal struct EventDocumentEnd {
+		[CCode(cname="event.data.document_end.implicit")]
 		public int implicit;
 	}
 
-	[CCode (has_type_id = false)]
+	[CCode(has_type_id=false)]
 	internal struct EventAlias {
+		[CCode(cname="event.data.alias.anchor")]
 		public string anchor;
 	}
 
-	[CCode (has_type_id = false)]
-	internal struct EventSequenceStart {
+	[CCode(has_type_id=false)]
+	internal struct EventScalar {
+		/* The anchor. */
+		[CCode(cname="event.data.scalar.anchor")]
 		public string anchor;
+		/* The tag. */
+		[CCode(cname="event.data.scalar.tag")]
 		public string tag;
+		/* The scalar value. */
+		[CCode(cname="event.data.scalar.value")]
+		public string value;
+		/* The length of the scalar value. */
+		[CCode(cname="event.data.scalar.length")]
+		public size_t length;
+		/* Is the tag optional for the plain style? */
+		[CCode(cname="event.data.scalar.plain_implicit")]
+		public int plain_implicit;
+		/* Is the tag optional for any non-plain style? */
+		[CCode(cname="event.data.scalar.quoted_implicit")]
+		public int quoted_implicit;
+		[CCode(cname="event.data.scalar.style")]
+		public ScalarStyle style;
+	}
+
+	[CCode(has_type_id=false)]
+	internal struct EventSequenceStart {
+		[CCode(cname="event.data.sequence_start.anchor")]
+		public string anchor;
+		[CCode(cname="event.data.sequence_start.tag")]
+		public string tag;
+		[CCode(cname="event.data.sequence_start.implicit")]
 		public int implicit;
+		[CCode(cname="event.data.sequence_start.style")]
 		public YAML.SequenceStyle style;
 	}
 
-	[CCode (has_type_id = false)]
+	[CCode(has_type_id=false)]
 	internal struct EventMappingStart {
+		[CCode(cname="event.data.mapping_start.anchor")]
 		public string anchor;
+		[CCode(cname="event.data.mapping_start.tag")]
 		public string tag;
+		[CCode(cname="data.mapping_start.implicit")]
 		public int implicit;
+		[CCode(cname="data.mapping_start.style")]
 		public YAML.MappingStyle style;
-	}
-
-	/** 
-	 * The scalar parameters (for @c YAML_SCALAR_EVENT). 
-	 * */
-	[CCode (has_type_id = false)]
-	internal struct EventScalar {
-		/* The anchor. */
-		public string anchor;
-		/* The tag. */
-		public string tag;
-		/* The scalar value. */
-		public string value;
-		/* The length of the scalar value. */
-		public size_t length;
-		/* Is the tag optional for the plain style? */
-		public int plain_implicit;
-		/* Is the tag optional for any non-plain style? */
-		public int quoted_implicit;
-		public ScalarStyle style;
 	}
 
 	[CCode (has_type_id=false)]
 	internal struct EventData {
+		[CCode(cname="event.data.stream_start")]
+		public YAML.EventStreamStart stream_start;
+		[CCode(cname="event.data.document_start")]
 		public YAML.EventDocumentStart document_start;
+		[CCode(cname="event.data.document_end")]
 		public YAML.EventDocumentEnd document_end;
+		[CCode(cname="event.data.alias")]
 		public YAML.EventAlias alias;
+		[CCode(cname="event.data.scalar")]
 		public YAML.EventScalar scalar;
+		[CCode(cname="event.data.sequence_start")]
 		public YAML.EventSequenceStart sequence_start;
+		[CCode(cname="event.data.mapping_start")]
 		public YAML.EventMappingStart mapping_start;
 	}
 
-	[CCode (has_type_id = false,
-			cname="yaml_event_t", 
-			lower_case_cprefix="yaml_event_",
-			destroy_function="yaml_event_delete")]
+	[CCode (has_type_id = false, cname="yaml_event_t", lower_case_cprefix="yaml_event_", destroy_function="yaml_event_delete")]
 	internal struct RawEvent {
 		[CCode (cname="yaml_stream_start_event_initialize")]
 		public static int stream_start_initialize(ref YAML.RawEvent event, YAML.EncodingType encoding);
@@ -230,7 +254,7 @@ namespace YAML {
 
 		[CCode (cname="yaml_scalar_event_initialize")]
 		public static int scalar_initialize(ref YAML.RawEvent event, uchar *anchor, uchar *tag, uchar *value, int length,
-		                   bool plain_implicit = true, bool quoted_implicity = true, 
+		                   bool plain_implicit = true, bool quoted_implicity = true,
 		                   YAML.ScalarStyle style = YAML.ScalarStyle.ANY_SCALAR_STYLE );
 
 		[CCode (cname="yaml_sequence_start_event_initialize")]
@@ -246,15 +270,60 @@ namespace YAML {
 		public static void clean(ref YAML.RawEvent event) {
 			event.type = YAML.EventType.NO_EVENT;
 		}
+
 		public EventType type;
-		public YAML.EventData data;
+		[CCode(cname="data.stream_start.encoding")]
+		public EncodingType stream_start_encoding;
+		[CCode(cname="data.document_start.version_directive")]
+		public YAML.VersionDirective *document_start_version_directive;
+		[CCode(cname="data.document_start.tag_directives.start")]
+		public YAML.TagDirective *document_start_tag_directives_start;
+		[CCode(cname="data.document_start.tag_directives.end")]
+		public YAML.TagDirective *document_start_tag_directives_end;
+		[CCode(cname="data.document_start.implicit")]
+		public int document_start_implicit;
+		[CCode(cname="data.document_end.implicit")]
+		public int document_end_implicit;
+		[CCode(cname="data.alias.anchor")]
+		public string alias_anchor;
+		[CCode(cname="data.scalar.anchor")]
+		public string scalar_anchor;
+		[CCode(cname="data.scalar.tag")]
+		public string scalar_tag;
+		[CCode(cname="data.scalar.value")]
+		public string scalar_value;
+		[CCode(cname="data.scalar.length")]
+		public size_t scalar_length;
+		[CCode(cname="data.scalar.plain_implicit")]
+		public int scalar_plain_implicit;
+		[CCode(cname="data.scalar.quoted_implicit")]
+		public int scalar_quoted_implicit;
+		[CCode(cname="data.scalar.style")]
+		public ScalarStyle scalar_style;
+		[CCode(cname="data.sequence_start.anchor")]
+		public string sequence_start_anchor;
+		[CCode(cname="data.sequence_start.tag")]
+		public string sequence_start_tag;
+		[CCode(cname="data.sequence_start.implicit")]
+		public int sequence_start_implicit;
+		[CCode(cname="data.sequence_start.style")]
+		public SequenceStyle sequence_start_style;
+		[CCode(cname="data.mapping_start.anchor")]
+		public string mapping_start_anchor;
+		[CCode(cname="data.mapping_start.tag")]
+		public string mapping_start_tag;
+		[CCode(cname="data.mapping_start.implicit")]
+		public int mapping_start_implicit;
+		[CCode(cname="data.mapping_start.style")]
+		public MappingStyle mapping_start_style;
+
 		public Mark start_mark;
 		public Mark end_mark;
 
 	}
 
-	/** 
-	 * The stream encoding. 
+	/**
+	 * The stream encoding.
 	 * */
 	[CCode (cname = "yaml_encoding_t", cprefix="YAML_", has_type_id = false)]
 	internal enum EncodingType {
@@ -292,8 +361,8 @@ namespace YAML {
 	}
 
 	[CCode (has_type_id = false,
-			cname="yaml_parser_t", 
-			lower_case_cprefix="yaml_parser_", 
+			cname="yaml_parser_t",
+			lower_case_cprefix="yaml_parser_",
 			destroy_function="yaml_parser_delete")]
 	internal struct Parser {
 		public YAML.ErrorType error;
@@ -336,8 +405,8 @@ namespace YAML {
 	internal delegate int WriteHandler(uchar *buffer, size_t length);
 
 	[CCode (has_type_id = false,
-			cname="yaml_emitter_t", 
-			lower_case_cprefix="yaml_emitter_", 
+			cname="yaml_emitter_t",
+			lower_case_cprefix="yaml_emitter_",
 			destroy_function="yaml_emitter_delete")]
 	internal struct Emitter {
 		public YAML.ErrorType error;

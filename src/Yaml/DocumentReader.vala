@@ -33,7 +33,7 @@ namespace Catapult.Yaml
 		public Document read_document() throws YamlError
 		{
 			ensure_document_start();
-			bool isImplicit = (raw_event.data.document_start.implicit != 0);
+			bool isImplicit = (raw_event.document_start_implicit != 0);
 			move_next();
 			Node root = read_node();
 			Document document = new Document(root, isImplicit);

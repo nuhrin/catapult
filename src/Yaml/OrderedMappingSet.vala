@@ -14,7 +14,7 @@ namespace Catapult.Yaml
 			set(new ScalarNode(null, null, key), value);
 		}
 
-		public CompareFunc<ScalarNode>? ScalarKeyCompareFunc { get; set; }
+		public CompareDataFunc<ScalarNode>? ScalarKeyCompareFunc { get; owned set; }
 
 		public Enumerable<Node> sorted_keys() {
 			return scalar_keys().concat(sequence_keys()).concat(mapping_keys());
@@ -25,7 +25,7 @@ namespace Catapult.Yaml
 				return new Enumerable<Node>(this.keys)
 					.of_type<ScalarNode>()
 					.sort(KeyAddedOrderComparison)
-					.sort(ScalarKeyCompareFunc);
+					.sort((owned)ScalarKeyCompareFunc);
 			}
 			return new Enumerable<Node>(this.keys)
 				.of_type<ScalarNode>()

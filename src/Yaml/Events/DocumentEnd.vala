@@ -15,7 +15,7 @@ namespace Catapult.Yaml.Events
 			requires(event.type == YAML.EventType.DOCUMENT_END_EVENT)
 		{
 			base.from_raw(event);
-			IsImplicit = (event.data.document_end.implicit != 0);
+			IsImplicit = (event.document_end_implicit != 0);
 		}
 		internal override int NestingIncrease { get { return -1; } }
 
