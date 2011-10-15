@@ -21,6 +21,7 @@ libcatapult_la_VALASOURCES = \
 	Enumerator.vala \
 	Error.vala \
 	IYamlObject.vala \
+	TimerBlock.vala \
 	Helpers/IndirectGenerics/IndirectBi.vala \
 	Helpers/IndirectGenerics/IndirectFactory.vala \
 	Helpers/IndirectGenerics/IndirectTri.vala \
@@ -87,7 +88,7 @@ libcatapult_la_SOURCES = \
 libcatapult_la_vala.stamp: $(libcatapult_la_VALASOURCES)
 	$(VALA_V)$(VALAC) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --pkg gee-1.0 --pkg gobject-patch --pkg config -H catapult.h --library catapult $^
 	@touch $@
- 
+
 libcatapult_la_LIBADD = \
   $(YAML_LIBS) \
   $(GLIB_LIBS) \
