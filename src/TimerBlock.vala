@@ -17,7 +17,7 @@ namespace Catapult
 
 		public void elapsed_print(string message) {
 			double time = timer.elapsed();
-			print("%s: %f seconds\n".printf(message, time * 100));
+			print("%s: %f seconds\n".printf(message, time));
 		}
 	}
 }
