@@ -30,7 +30,7 @@ namespace Catapult.Yaml
 			try {
 				var keyNode = BuildValueSupportingEntityReference(key);
 				var valueNode = BuildValueSupportingEntityReference(value);
-				node.Mappings[keyNode] = valueNode;
+				node[keyNode] = valueNode;
 			} catch (Error e) {
 				debug(e.message);
 				assert_not_reached();
@@ -38,7 +38,7 @@ namespace Catapult.Yaml
 		}
 		public void add_sequence_value(SequenceNode node, Value value) {
 			var valueNode = BuildValueAssertSupportingEntityReference(value);
-			node.Items.add(valueNode);
+			node.add(valueNode);
 		}
 
 		Node BuildValue(Value value) throws RuntimeError
@@ -67,10 +67,10 @@ namespace Catapult.Yaml
 				var sequenceNode = new SequenceNode();
 				foreach(var val in klass.values) {
 					if ((flags & val.value) == val.value)
-						sequenceNode.Items.add(new ScalarNode(null, Constants.Tag.STR, val.value_nick));
+						sequenceNode.add(new ScalarNode(null, Constants.Tag.STR, val.value_nick));
 				}
-				if (sequenceNode.Items.size == 1)
-					return sequenceNode.Items[0];
+				if (sequenceNode.item_count() == 1)
+					return sequenceNode.items().first();
 				return sequenceNode;
 			}
 			string anchor = null; // TODO: support anchors during build?
@@ -171,7 +171,7 @@ namespace Catapult.Yaml
 					var val = indirectMap.get(map, key);
 					var keyNode = BuildValueAssertSupportingEntityReference(key);
 					var valueNode = BuildValueAssertSupportingEntityReference(val);
-					mappingNode.Mappings[keyNode] = valueNode;
+					mappingNode[keyNode] = valueNode;
 				}
 				return mappingNode;
 			}
@@ -185,7 +185,7 @@ namespace Catapult.Yaml
 				var sequenceNode = new SequenceNode();
 				foreach(var value in values) {
 					var node = BuildValueAssertSupportingEntityReference(value);
-					sequenceNode.Items.add(node);
+					sequenceNode.add(node);
 				}
 				return sequenceNode;
 			}
@@ -220,7 +220,7 @@ namespace Catapult.Yaml
 				obj.get_property(property.name, ref existing_prop_value);
 				Node valueNode = null;
 				valueNode = BuildValueAssertSupportingEntityReference(existing_prop_value, obj);
-				node.Mappings[keyNode] = valueNode;
+				node[keyNode] = valueNode;
 				return true;
 			}
 			return false;

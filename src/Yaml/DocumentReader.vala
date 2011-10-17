@@ -32,6 +32,7 @@ namespace Catapult.Yaml
 
 		public Document read_document() throws YamlError
 		{
+			//var timer = new TimerBlock("DocumentReader.read_document()");
 			ensure_document_start();
 			bool isImplicit = (raw_event.document_start_implicit != 0);
 			move_next();
@@ -66,7 +67,7 @@ namespace Catapult.Yaml
 			while (raw_event.type != YAML.EventType.MAPPING_END_EVENT) {
 				var key = read_node();
 				var val = read_node();
-				mapping.Mappings[key] = val;
+				mapping[key] = val;
 			}
 			return mapping;
 		}
@@ -76,7 +77,7 @@ namespace Catapult.Yaml
 			move_next();
 			while (raw_event.type != YAML.EventType.SEQUENCE_END_EVENT) {
 				var node = read_node();
-				sequence.Items.add(node);
+				sequence.add(node);
 			}
 			return sequence;
 		}

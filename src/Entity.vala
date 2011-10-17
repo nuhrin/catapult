@@ -45,13 +45,13 @@ namespace Catapult
 		protected override Yaml.Node build_yaml_node(Yaml.NodeBuilder builder)
 		{
 			var mapping = new Yaml.MappingNode(null, this.get_tag());
-			mapping.Mappings.ScalarKeyCompareFunc = (a,b)=> {
-				if (a.Value == "name")
-					return -1;
-				else if (b.Value == "name")
-					return 1;
-				return 0;
-			};
+//~ 			mapping.Mappings.ScalarKeyCompareFunc = (a,b)=> {
+//~ 				if (a.Value == "name")
+//~ 					return -1;
+//~ 				else if (b.Value == "name")
+//~ 					return 1;
+//~ 				return 0;
+//~ 			};
 			builder.populate_object_mapping(mapping, this);
 			return mapping;
 		}

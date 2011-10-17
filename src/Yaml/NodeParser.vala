@@ -144,8 +144,8 @@ namespace Catapult.Yaml
 				key_type = IndirectGenericsHelper.Gee.Map.key_type(map);
 				value_type = IndirectGenericsHelper.Gee.Map.value_type(map);
 				var indirect_map = IndirectGenericsHelper.Gee.Map.indirect(key_type, value_type);
-				foreach(var keyNode in mapping.Mappings.keys) {
-					var valueNode = mapping.Mappings[keyNode];
+				foreach(var keyNode in mapping.keys()) {
+					var valueNode = mapping[keyNode];
 					Value key = ParseValueSupportingEntityReference(keyNode, key_type);
 					Value value = ParseValueSupportingEntityReference(valueNode, value_type);
 					indirect_map.set(map, key, value);
@@ -167,7 +167,7 @@ namespace Catapult.Yaml
 		void PopulateObjectProperties(MappingNode mapping, Object obj)
 		{
 			Type type = obj.get_type();
-			foreach(var keyNode in mapping.Mappings.scalar_keys()) {
+			foreach(var keyNode in mapping.scalar_keys()) {
 				ParamSpec property = ((ObjectClass)type.class_peek()).find_property(keyNode.Value);
 				PopulateObjectProperty(mapping, keyNode, obj, property);
 			}
@@ -180,7 +180,7 @@ namespace Catapult.Yaml
 			if ((property.flags & ParamFlags.READWRITE) == ParamFlags.READWRITE) {
 				Value existing_prop_value = Value(property.value_type);
 				obj.get_property(property.name, ref existing_prop_value);
-				var value_node = mapping.Mappings[keyNode];
+				var value_node = mapping[keyNode];
 				Value new_prop_value = ParseValueSupportingEntityReference(value_node, property.value_type, existing_prop_value, false);
 				if (new_prop_value.holds(property.value_type) == false && obj != null) {
 					bool parsed = false;
@@ -222,7 +222,7 @@ namespace Catapult.Yaml
 				}
 				element_type = IndirectGenericsHelper.Gee.Collection.element_type(collection);
 				var indirect_collection = IndirectGenericsHelper.Gee.Collection.indirect(element_type);
-				foreach(var item in sequence.Items) {
+				foreach(var item in sequence.items()) {
 					Value element = ParseValueSupportingEntityReference(item, element_type);
 					indirect_collection.add(collection, element);
 				}
@@ -230,7 +230,7 @@ namespace Catapult.Yaml
 			} else if (t.is_flags()) {
 				var flags_class = ((GLibPatch.FlagsClass)t.class_ref());
 				uint? flags = null;
-				foreach(var scalar in sequence.Items.scalars()) {
+				foreach(var scalar in sequence.scalars()) {
 					unowned GLibPatch.FlagsValue? flags_value = flags_class.get_value_by_nick(scalar.Value);
 					if (flags_value != null)
 						flags = (flags == null) ? flags_value.value : ((uint)flags) | flags_value.value;

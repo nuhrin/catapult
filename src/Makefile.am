@@ -35,7 +35,6 @@ libcatapult_la_VALASOURCES = \
 	Yaml/Enums.vala \
 	Yaml/NodeBuilder.vala \
 	Yaml/NodeParser.vala \
-	Yaml/OrderedMappingSet.vala \
 	Yaml/SequenceNode.vala \
 	Yaml/DocumentReader.vala \
 	Yaml/DocumentWriter.vala \
@@ -56,7 +55,6 @@ libcatapult_la_VALASOURCES = \
 	Yaml/Events/StreamEnd.vala \
 	Yaml/Events/StreamStart.vala \
 	Yaml/MappingNode.vala \
-	Yaml/NodeList.vala \
 	Yaml/Node.vala \
 	Yaml/ScalarNode.vala \
 	YamlObject.vala \

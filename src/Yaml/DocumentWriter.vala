@@ -66,16 +66,16 @@ namespace Catapult.Yaml
 		void write_mapping_node(MappingNode node) throws YamlError
 		{
 			emitter.emit(node.get_event());
-			foreach(var key in node.Mappings.sorted_keys()) {
+			foreach(var key in node.keys()) {
 				write_node(key);
-				write_node(node.Mappings[key]);
+				write_node(node[key]);
 			}
 			emitter.emit(new MappingEnd());
 		}
 		void write_sequence_node(SequenceNode node) throws YamlError
 		{
 			emitter.emit(node.get_event());
-			foreach(var item in node.Items)
+			foreach(var item in node.items())
 				write_node(item);
 			emitter.emit(new SequenceEnd());
 		}
