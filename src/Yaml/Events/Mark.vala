@@ -7,18 +7,18 @@ namespace Catapult.Yaml.Events
 	{
 		public Mark(size_t index = 0, size_t line = 0, size_t column = 0)
 		{
-			Index = index;
-			Line = line;
-			Column = column;
+			this.index = index;
+			this.line = line;
+			this.column = column;
 		}
 		internal Mark.from_raw(YAML.Mark mark)
 		{
-			this.Index = mark.index;
-			this.Line = mark.line;
-			this.Column = mark.column;
+			index = mark.index;
+			line = mark.line;
+			column = mark.column;
 		}
-		public size_t Index { get; private set; }
-		public size_t Line { get; private set; }
-		public size_t Column { get; private set; }
+		public size_t index { get; private set; }
+		public size_t line { get; private set; }
+		public size_t column { get; private set; }
 	}
 }

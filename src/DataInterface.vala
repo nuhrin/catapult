@@ -13,11 +13,11 @@ namespace Catapult
 			if (is_valid_foldername(root_folder) == false)
 				throw new RuntimeError.ARGUMENT("Invalid root folder: '%s'", root_folder);
 
-			RootFolder = root_folder;
+			this.root_folder = root_folder;
 			builder = new Yaml.NodeBuilder();
 			parser = new Yaml.NodeParser(this);
 		}
-		public string RootFolder { get; private set; }
+		public string root_folder { get; private set; }
 
 		public T create<T>(string? entity_id=null) throws RuntimeError requires(typeof(T).is_a(typeof(Entity)))
 		{
@@ -77,7 +77,7 @@ namespace Catapult
 
 			var document = new Yaml.DocumentReader(file).read_document();
 
-			Entity entity = (Entity)parser.parse_value_of_type(document.Root, entity_type);
+			Entity entity = (Entity)parser.parse_value_of_type(document.root, entity_type);
 			entity.i_set_id(entity_id);
 
 			return entity;
@@ -152,7 +152,7 @@ namespace Catapult
 		{
 			if (filename == "")
 				return false;
-			return !RegexHelper.NonWordCharacters.match(filename);
+			return !RegexHelper.non_word_characters.match(filename);
 			//return true;
 		}
 		static bool is_valid_foldername(string folder)
@@ -168,11 +168,11 @@ namespace Catapult
 		string get_data_folder(string folder) throws RuntimeError
 		{
 			if (folder == "")
-				return RootFolder;
+				return root_folder;
 			if (is_valid_foldername(folder) == false)
 				throw new RuntimeError.ARGUMENT("Invalid folder name: '%s'", folder);
 
-			return Path.build_filename(RootFolder, folder);
+			return Path.build_filename(root_folder, folder);
 		}
 		string get_entity_file_path(string folder, string entity_id, bool ensure_folder_exists) throws RuntimeError
 		{

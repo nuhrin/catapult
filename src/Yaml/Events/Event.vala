@@ -4,21 +4,21 @@ namespace Catapult.Yaml.Events
 {
 	public abstract class Event : Object
 	{
-		public Event(EventType type)
+		public Event(EventType event_type)
 		{
-			Type = type;
+			this.event_type = event_type;
 		}
 		internal Event.from_raw(RawEvent event)
 		{
-			Start = new Mark.from_raw(event.start_mark);
-			End = new Mark.from_raw(event.end_mark);
-			Type = (EventType)event.type;
+			start = new Mark.from_raw(event.start_mark);
+			end = new Mark.from_raw(event.end_mark);
+			event_type = (EventType)event.type;
 		}
-		public Mark Start { get; private set; }
-		public Mark End { get; private set; }
+		public Mark start { get; private set; }
+		public Mark end { get; private set; }
 
-		public EventType Type { get; private set; }
-		internal abstract int NestingIncrease { get; }
+		public EventType event_type { get; private set; }
+		internal abstract int nesting_increase { get; }
 
 		internal abstract RawEvent create_raw_event();
 
@@ -30,11 +30,11 @@ namespace Catapult.Yaml.Events
 		{
 			base(EventType.NO_EVENT);
 		}
-		internal override int NestingIncrease { get { return 0; } }
+		internal override int nesting_increase { get { return 0; } }
 		internal override RawEvent create_raw_event()
 		{
 			RawEvent event = RawEvent();
-			event.type = (YAML.EventType)Type;
+			event.type = (YAML.EventType)event_type;
 			return event;
 		}
 	}

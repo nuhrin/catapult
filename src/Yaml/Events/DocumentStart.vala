@@ -8,52 +8,52 @@ namespace Catapult.Yaml.Events
 		public DocumentStart(VersionDirective? version = null, Iterable<TagDirective>? tag_directives = null, bool implicit = true)
 		{
 			base(EventType.DOCUMENT_START);
-			Version = version;
-			TagDirectives = new ArrayList<TagDirective>();
+			this.version = version;
+			this.tag_directives = new ArrayList<TagDirective>();
 			if (tag_directives != null) {
 				foreach(var tg in tag_directives)
-					TagDirectives.add(tg);
+					this.tag_directives.add(tg);
 			}
-			IsImplicit = implicit;
+			is_implicit = implicit;
 		}
-		public VersionDirective? Version { get; private set; }
-		public ArrayList<TagDirective> TagDirectives { get; private set; }
-		public bool IsImplicit { get; private set; }
+		public VersionDirective? version { get; private set; }
+		public ArrayList<TagDirective> tag_directives { get; private set; }
+		public bool is_implicit { get; private set; }
 
 		internal DocumentStart.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.DOCUMENT_START_EVENT)
 		{
 			base.from_raw(event);
-			IsImplicit = (event.document_start_implicit != 0);
+			is_implicit = (event.document_start_implicit != 0);
 			if (event.document_start_version_directive != null) {
-				Version = VersionDirective(
+				version = VersionDirective(
 					event.document_start_version_directive.major,
 					event.document_start_version_directive.minor);
 			}
-			TagDirectives = new ArrayList<TagDirective>();
+			tag_directives = new ArrayList<TagDirective>();
 			YAML.TagDirective *tag;
 			for (tag = event.document_start_tag_directives_start;
 	             tag != event.document_start_tag_directives_end;
 				 tag ++)
 			{
-				TagDirectives.add(new TagDirective(tag.handle, tag.prefix));
+				tag_directives.add(new TagDirective(tag.handle, tag.prefix));
 			}
 		}
-		internal override int NestingIncrease { get { return 1; } }
+		internal override int nesting_increase { get { return 1; } }
 
 		internal override RawEvent create_raw_event()
 		{
 			void* version_p = null;
-			if (Version != null) {
+			if (version != null) {
 				YAML.VersionDirective version = YAML.VersionDirective() {
-					major = Version.Major,
-					minor = Version.Minor
+					major = version.major,
+					minor = version.minor
 				};
 				version_p = &version;
 			}
 			void* tags_start = null;
 			void* tags_end = null;
-			if (TagDirectives.size > 0) {
+			if (tag_directives.size > 0) {
 //				YAML.TagDirective[] tags = new YAML.TagDirective[TagDirectives.size];
 //				for(int index=0; index<TagDirectives.size; index++)
 //				{
@@ -67,7 +67,7 @@ namespace Catapult.Yaml.Events
 //				tags_end = &tags[TagDirectives.size - 1];
 			}
 			RawEvent event = {0};
-			RawEvent.document_start_initialize(ref event, version_p, tags_start, tags_end, IsImplicit);
+			RawEvent.document_start_initialize(ref event, version_p, tags_start, tags_end, is_implicit);
 			return event;
 		}
 
@@ -75,21 +75,21 @@ namespace Catapult.Yaml.Events
 		{
 			public VersionDirective(int major, int minor)
 			{
-				Major = major;
-				Minor = minor;
+				this.major = major;
+				this.minor = minor;
 			}
-			public int Major { get; private set; }
-			public int Minor { get; private set; }
+			public int major { get; private set; }
+			public int minor { get; private set; }
 		}
 		public class TagDirective
 		{
 			public TagDirective(string handle, string prefix)
 			{
-				Handle = handle;
-				Prefix = prefix;
+				this.handle = handle;
+				this.prefix = prefix;
 			}
-			public string Handle { get; private set; }
-			public string Prefix { get; private set; }
+			public string handle { get; private set; }
+			public string prefix { get; private set; }
 		}
 
 	}

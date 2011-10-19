@@ -64,7 +64,7 @@ namespace Catapult.Yaml.Events
 
 			do
 			{
-				depth = depth + current_event.NestingIncrease;
+				depth = depth + current_event.nesting_increase;
 				move_next();
 			}
 			while(depth > 0);

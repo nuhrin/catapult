@@ -9,26 +9,26 @@ namespace Catapult.Yaml.Events
 							SequenceStyle style = SequenceStyle.ANY)
 		{
 			base(anchor, tag, EventType.SEQUENCE_START);
-			IsImplicit = implicit;
-			Style = style;
+			is_implicit = implicit;
+			this.style = style;
 		}
-		public bool IsImplicit { get; private set; }
-		public override bool IsCanonical { get { return !IsImplicit; } }
-		public SequenceStyle Style { get; private set; }
+		public bool is_implicit { get; private set; }
+		public override bool is_canonical { get { return !is_implicit; } }
+		public SequenceStyle style { get; private set; }
 
 		internal SequenceStart.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.SEQUENCE_START_EVENT)
 		{
 			base.from_raw(event.sequence_start_anchor, event.sequence_start_tag, event);
-			IsImplicit = (event.sequence_start_implicit != 0);
-			Style = (SequenceStyle)event.sequence_start_style;
+			is_implicit = (event.sequence_start_implicit != 0);
+			style = (SequenceStyle)event.sequence_start_style;
 		}
-		internal override int NestingIncrease { get { return 1; } }
+		internal override int nesting_increase { get { return 1; } }
 
 		internal override RawEvent create_raw_event()
 		{
 			RawEvent event = {0};
-			RawEvent.sequence_start_initialize(ref event, (uchar*)Anchor, (uchar*)Tag, IsImplicit, (YAML.SequenceStyle)Style);
+			RawEvent.sequence_start_initialize(ref event, (uchar*)anchor, (uchar*)tag, is_implicit, (YAML.SequenceStyle)style);
 			return event;
 		}
 	}

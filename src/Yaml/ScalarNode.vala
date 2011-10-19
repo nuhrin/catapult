@@ -9,46 +9,46 @@ namespace Catapult.Yaml
 		              ScalarStyle style = ScalarStyle.ANY)
 		{
 			base(anchor, tag);
-			Value = value;
-			IsPlainImplicit = plain_implicit;
-			IsQuotedImplicit = quoted_implicit;
-			Style = style;
+			this.value = value;
+			is_plain_implicit = plain_implicit;
+			is_quoted_implicit = quoted_implicit;
+			this.style = style;
 		}
 		internal ScalarNode.from_event(Events.Scalar event) {
 			base.from_event(event);
-			Value = event.Value;
-			IsPlainImplicit = event.IsPlainImplicit;
-			IsQuotedImplicit = event.IsQuotedImplicit;
-			Style = event.Style;
+			this.value = event.value;
+			is_plain_implicit = event.is_plain_implicit;
+			is_quoted_implicit = event.is_quoted_implicit;
+			this.style = event.style;
 		}
 		internal ScalarNode.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.SCALAR_EVENT)
 		{
 			base.from_raw(event);
-			IsPlainImplicit = (event.scalar_plain_implicit != 0);
-			IsQuotedImplicit = (event.scalar_quoted_implicit != 0);
-			Value = event.scalar_value;
-			Style = (ScalarStyle)event.scalar_style;
+			value = event.scalar_value;
+			is_plain_implicit = (event.scalar_plain_implicit != 0);
+			is_quoted_implicit = (event.scalar_quoted_implicit != 0);
+			style = (ScalarStyle)event.scalar_style;
 		}
-		public string Value { get; private set; }
-		public bool IsPlainImplicit { get; private set; }
-		public bool IsQuotedImplicit { get; private set; }
-		public ScalarStyle Style { get; private set; }
-		public override bool IsCanonical { get { return !IsPlainImplicit && !IsQuotedImplicit; } }
-		public override NodeType Type { get { return NodeType.SCALAR; } }
+		public string value { get; private set; }
+		public bool is_plain_implicit { get; private set; }
+		public bool is_quoted_implicit { get; private set; }
+		public ScalarStyle style { get; private set; }
+		public override bool is_canonical { get { return !is_plain_implicit && !is_quoted_implicit; } }
+		public override NodeType node_type { get { return NodeType.SCALAR; } }
 
 		internal override Events.Event get_event() {
-			return new Events.Scalar(Anchor, Tag, Value, IsPlainImplicit, IsQuotedImplicit, Style);
+			return new Events.Scalar(anchor, tag, value, is_plain_implicit, is_quoted_implicit, style);
 		}
 
-		public new static ScalarNode Empty {
+		public new static ScalarNode empty {
 			get {
-				if (empty == null)
-					empty = new EmptyScalarNode();
-				return empty;
+				if (_empty == null)
+					_empty = new EmptyScalarNode();
+				return _empty;
 			}
 		}
-		static ScalarNode empty;
+		static ScalarNode _empty;
 	}
 	public class EmptyScalarNode : ScalarNode
 	{

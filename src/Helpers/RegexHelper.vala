@@ -2,10 +2,10 @@ namespace Catapult.Helpers
 {
 	public class RegexHelper
 	{
-		public static unowned RegexHelper NonWordCharacters { get { return get_regex(ref _nonWordChars, """[^\w]+"""); } }
+		public static unowned RegexHelper non_word_characters { get { return get_regex(ref _nonWordChars, """[^\w]+"""); } }
 		static RegexHelper _nonWordChars = null;
 
-		public static unowned RegexHelper NonAlphaNumericCharacters { get { return get_regex(ref _nonAlphaNumericChars, """^[0-9a-zA-Z_\-]+$"""); } }
+		public static unowned RegexHelper non_alpha_numeric_characters { get { return get_regex(ref _nonAlphaNumericChars, """^[0-9a-zA-Z_\-]+$"""); } }
 		static RegexHelper _nonAlphaNumericChars = null;
 
 		static unowned RegexHelper get_regex(ref RegexHelper value, string regex)
@@ -25,14 +25,14 @@ namespace Catapult.Helpers
 				error(e.message);
 			}
 		}
-		
+
 		public bool match(string? str)
 		{
 			if (str == null)
 				return false;
 			return regex.match(str);
 		}
-		
+
 		public string replace(string? str, string? replacement)
 		{
 			if (str == null || replacement == null)

@@ -40,7 +40,7 @@ namespace Catapult
 		{
 			if (name == null || name == "")
 				return "";
-			return RegexHelper.NonWordCharacters.replace(name, "").down();
+			return RegexHelper.non_word_characters.replace(name, "").down();
 		}
 		protected override Yaml.Node build_yaml_node(Yaml.NodeBuilder builder)
 		{

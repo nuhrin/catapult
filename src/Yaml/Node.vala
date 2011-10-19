@@ -18,46 +18,45 @@ namespace Catapult.Yaml
 
 		protected Node(string? anchor, string? tag)
 		{
-			if (RegexHelper.NonAlphaNumericCharacters.match(anchor))
+			if (RegexHelper.non_alpha_numeric_characters.match(anchor))
 				error("Anchor value must contain alphanumerical characters only: %s.", anchor);
 
-			Anchor = anchor;
-			Tag = tag;
+			this.anchor = anchor;
+			this.tag = tag;
 			id = next_id;
 			next_id++;
 		}
 		internal Node.from_event(Events.NodeEvent event) {
-			Anchor = event.Anchor;
-			Tag = event.Tag;
+			anchor = event.anchor;
+			tag = event.tag;
 			id = next_id;
 			next_id++;
 		}
 		internal Node.from_raw(RawEvent event)
 		{
-			Anchor = event.scalar_anchor;
-			Tag = event.scalar_tag;
+			anchor = event.scalar_anchor;
+			tag = event.scalar_tag;
 			id = next_id;
 			next_id++;
 		}
-		public string? Anchor { get; private set; }
-		public string? Tag { get; private set; }
-		public abstract bool IsCanonical { get; }
-		public abstract NodeType Type { get; }
-		public Yaml.NodeType get_node_type() { return Type; }
+		public string? anchor { get; private set; }
+		public string? tag { get; private set; }
+		public abstract bool is_canonical { get; }
+		public abstract NodeType node_type { get; }
 
 
 		internal uint id { get; private set; }
 
 		internal abstract Events.Event get_event();
 
-		public static Node Empty {
+		public static Node empty {
 			get {
-				if (empty == null)
-					empty = new EmptyNode();
-				return empty;
+				if (_empty == null)
+					_empty = new EmptyNode();
+				return _empty;
 			}
 		}
-		static Node empty;
+		static Node _empty;
 	}
 	public class EmptyNode : Node
 	{
@@ -65,8 +64,8 @@ namespace Catapult.Yaml
 		{
 			base(null, null);
 		}
-		public override bool IsCanonical { get { return false; } }
-		public override NodeType Type { get { return NodeType.NONE; } }
+		public override bool is_canonical { get { return false; } }
+		public override NodeType node_type { get { return NodeType.NONE; } }
 		internal override Events.Event get_event() { return new Events.EmptyEvent(); }
 	}
 }

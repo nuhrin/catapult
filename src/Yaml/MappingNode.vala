@@ -9,25 +9,25 @@ namespace Catapult.Yaml
 						   MappingStyle style = MappingStyle.ANY)
 		{
 			base(anchor, tag);
-			IsImplicit = implicit;
-			Style = style;
+			is_implicit = implicit;
+			this.style = style;
 		}
 		internal MappingNode.from_event(Events.MappingStart event) {
 			base.from_event(event);
-			IsImplicit = event.IsImplicit;
-			Style = event.Style;
+			is_implicit = event.is_implicit;
+			this.style = event.style;
 		}
 		internal MappingNode.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.MAPPING_START_EVENT)
 		{
 			base.from_raw(event);
-			IsImplicit = (event.mapping_start_implicit != 0);
-			Style = (MappingStyle)event.mapping_start_style;
+			is_implicit = (event.mapping_start_implicit != 0);
+			style = (MappingStyle)event.mapping_start_style;
 		}
-		public bool IsImplicit { get; private set; }
-		public MappingStyle Style { get; private set; }
-		public override bool IsCanonical { get { return !IsImplicit; } }
-		public override NodeType Type { get { return NodeType.MAPPING; } }
+		public bool is_implicit { get; private set; }
+		public MappingStyle style { get; private set; }
+		public override bool is_canonical { get { return !is_implicit; } }
+		public override NodeType node_type { get { return NodeType.MAPPING; } }
 
 		public bool has_key(Node key) { return node_mappings.has_key(key); }
 		public new Node get(Node key) { return node_mappings[key]; }
@@ -40,10 +40,10 @@ namespace Catapult.Yaml
 			this.set(new ScalarNode(null, null, key), value);
 		}
 		public Enumerable<Node> keys() { return new Enumerable<Node>(node_children.get(this)); }
-		public Enumerable<ScalarNode> scalar_keys() { return (Enumerable<ScalarNode>)keys().where(n=>n.Type == NodeType.SCALAR); }
+		public Enumerable<ScalarNode> scalar_keys() { return (Enumerable<ScalarNode>)keys().where(n=>n.node_type == NodeType.SCALAR); }
 
 		internal override Events.Event get_event() {
-			return new Events.MappingStart(Anchor, Tag, IsImplicit, Style);
+			return new Events.MappingStart(anchor, tag, is_implicit, style);
 		}
 	}
 }

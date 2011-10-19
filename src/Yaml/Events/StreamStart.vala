@@ -16,7 +16,7 @@ namespace Catapult.Yaml.Events
 		{
 			base.from_raw(event);
 		}
-		internal override int NestingIncrease { get { return 1; } }
+		internal override int nesting_increase { get { return 1; } }
 
 		internal override RawEvent create_raw_event()
 		{

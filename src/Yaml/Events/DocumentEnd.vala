@@ -7,22 +7,22 @@ namespace Catapult.Yaml.Events
 		public DocumentEnd(bool implicit)
 		{
 			base(EventType.DOCUMENT_END);
-			IsImplicit = implicit;
+			is_implicit = implicit;
 		}
-		public bool IsImplicit { get; private set; }
+		public bool is_implicit { get; private set; }
 
 		internal DocumentEnd.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.DOCUMENT_END_EVENT)
 		{
 			base.from_raw(event);
-			IsImplicit = (event.document_end_implicit != 0);
+			is_implicit = (event.document_end_implicit != 0);
 		}
-		internal override int NestingIncrease { get { return -1; } }
+		internal override int nesting_increase { get { return -1; } }
 
 		internal override RawEvent create_raw_event()
 		{
 			RawEvent event = {0};
-			RawEvent.document_end_initialize(ref event, IsImplicit);
+			RawEvent.document_end_initialize(ref event, is_implicit);
 			return event;
 		}
 	}

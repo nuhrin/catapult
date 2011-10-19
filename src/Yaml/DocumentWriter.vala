@@ -29,7 +29,7 @@ namespace Catapult.Yaml
 		{
 			ensure_stream_start();
 			emitter.emit(document.get_start_event());
-			write_node(document.Root);
+			write_node(document.root);
 			emitter.emit(document.get_end_event());
 		}
 
@@ -48,7 +48,7 @@ namespace Catapult.Yaml
 
 		void write_node(Node node) throws YamlError
 		{
-			switch(node.Type) {
+			switch(node.node_type) {
 				case NodeType.SCALAR:
 					emitter.emit(node.get_event());
 					break;

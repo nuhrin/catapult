@@ -3,36 +3,36 @@ namespace Catapult.Yaml
 {
 	public class Document : Object
 	{
-		public Document(Node root, bool isImplicit=true) {
-			IsImplicit = isImplicit;
-			Root = root;
+		public Document(Node root, bool implicit=true) {
+			is_implicit = implicit;
+			this.root = root;
 		}
 		internal Document.from_event(Node root, Events.DocumentStart event) {
-			IsImplicit = event.IsImplicit;
-			Root = root;
+			is_implicit = event.is_implicit;
+			this.root = root;
 		}
-		public bool IsImplicit { get; private set; }
-		public Node Root { get; private set; }
+		public bool is_implicit { get; private set; }
+		public Node root { get; private set; }
 
 		internal Events.DocumentStart get_start_event() {
-			return new Events.DocumentStart(null, null, IsImplicit);
+			return new Events.DocumentStart(null, null, is_implicit);
 		}
 		internal Events.DocumentEnd get_end_event() {
-			return new Events.DocumentEnd(IsImplicit);
+			return new Events.DocumentEnd(is_implicit);
 		}
 
-		public static Document Empty {
+		public static Document empty {
 			get {
-				if (empty == null)
-					empty = new EmptyDocument();
-				return empty;
+				if (_empty == null)
+					_empty = new EmptyDocument();
+				return _empty;
 			}
 		}
-		static Document empty;
+		static Document _empty;
 	}
 	public class EmptyDocument : Document {
 		internal EmptyDocument() {
-			base(ScalarNode.Empty);
+			base(ScalarNode.empty);
 		}
 	}
 }

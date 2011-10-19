@@ -30,7 +30,7 @@ namespace Catapult.Yaml
 			PopulateObjectProperties(node, obj);
 		}
 		public bool populate_object_property(MappingNode node, ScalarNode keyNode, Object obj) {
-			ParamSpec property = ((ObjectClass)obj.get_type().class_peek()).find_property(keyNode.Value);
+			ParamSpec property = ((ObjectClass)obj.get_type().class_peek()).find_property(keyNode.value);
 			return PopulateObjectProperty(node, keyNode, obj, property);
 		}
 
@@ -54,7 +54,7 @@ namespace Catapult.Yaml
 				return val;
 			}
 
-			switch(node.Type)
+			switch(node.node_type)
 			{
 				case NodeType.SCALAR:
 					return ParseScalar(node as ScalarNode, intype, default_value, use_default_for_scalar);
@@ -72,41 +72,41 @@ namespace Catapult.Yaml
 		{
 			Type t;
 			if (type == null) {
-				Type? tag_type = get_tag_type(scalar.Tag);
+				Type? tag_type = get_tag_type(scalar.tag);
 				t = (tag_type == null) ? typeof(string) : tag_type;
 			} else {
 				t = type;
 			}
 
 			Value v = Value(t);
-			if (scalar.Tag == YAML.NULL_TAG)
+			if (scalar.tag == YAML.NULL_TAG)
 				return v;
 			if (t.is_flags()) {
-				unowned GLibPatch.FlagsValue? flags_value = ((GLibPatch.FlagsClass)t.class_ref()).get_value_by_nick(scalar.Value);
+				unowned GLibPatch.FlagsValue? flags_value = ((GLibPatch.FlagsClass)t.class_ref()).get_value_by_nick(scalar.value);
 				if (flags_value != null)
 					v.set_flags(flags_value.value);
 			}
 			else if (t.is_enum()) {
-				var enum_value = ((EnumClass)type.class_ref()).get_value_by_nick(scalar.Value);
+				var enum_value = ((EnumClass)type.class_ref()).get_value_by_nick(scalar.value);
 				if (enum_value != null)
 					v.set_enum(enum_value.value);
 			}
 			else if (t == typeof(string))
-				v.set_string(scalar.Value);
+				v.set_string(scalar.value);
 			else if (t == typeof(int))
-				v.set_int(int.parse(scalar.Value));
+				v.set_int(int.parse(scalar.value));
 			else if (t == typeof(uint))
-				v.set_uint((uint)int.parse(scalar.Value));
+				v.set_uint((uint)int.parse(scalar.value));
 			else if (t == typeof(bool))
-				v.set_boolean(bool.parse(scalar.Value));
+				v.set_boolean(bool.parse(scalar.value));
 			else if (t == typeof(double))
-				v.set_double(double.parse(scalar.Value));
+				v.set_double(double.parse(scalar.value));
 			else if (t == typeof(Date))
 			{
 				Date d = Date();
-				d.set_parse(scalar.Value);
+				d.set_parse(scalar.value);
 				if (d.valid() == false) {
-					debug("Could not parse GDate from '%s'", scalar.Value);
+					debug("Could not parse GDate from '%s'", scalar.value);
 					d = Date();
 					d.set_time_t(0);
 				}
@@ -127,7 +127,7 @@ namespace Catapult.Yaml
 			} else if (type != null) {
 				t = type;
 			} else {
-				Type? tag_type = get_tag_type(mapping.Tag);
+				Type? tag_type = get_tag_type(mapping.tag);
 				t = (tag_type == null) ? typeof(HashMap) : tag_type;
 			}
 
@@ -168,13 +168,13 @@ namespace Catapult.Yaml
 		{
 			Type type = obj.get_type();
 			foreach(var keyNode in mapping.scalar_keys()) {
-				ParamSpec property = ((ObjectClass)type.class_peek()).find_property(keyNode.Value);
+				ParamSpec property = ((ObjectClass)type.class_peek()).find_property(keyNode.value);
 				PopulateObjectProperty(mapping, keyNode, obj, property);
 			}
 		}
 		bool PopulateObjectProperty(MappingNode mapping, ScalarNode keyNode, Object obj, ParamSpec? property) {
 			if (property == null) {
-				debug("Parse error: property '%s' not found on type %s", keyNode.Value, obj.get_type().name());
+				debug("Parse error: property '%s' not found on type %s", keyNode.value, obj.get_type().name());
 				return false;
 			}
 			if ((property.flags & ParamFlags.READWRITE) == ParamFlags.READWRITE) {
@@ -189,7 +189,7 @@ namespace Catapult.Yaml
 						parsed = yobj.i_apply_unhandled_value_node(value_node, property.name, this);
 					}
 					if (parsed == false) {
-						debug("Parse error: failed to parse property '%s' on type %s", keyNode.Value, obj.get_type().name());
+						debug("Parse error: failed to parse property '%s' on type %s", keyNode.value, obj.get_type().name());
 						return false;
 					}
 				} else {
@@ -207,7 +207,7 @@ namespace Catapult.Yaml
 			} else if (type != null) {
 				t = type;
 			} else {
-				Type? tag_type = get_tag_type(sequence.Tag);
+				Type? tag_type = get_tag_type(sequence.tag);
 				t = (tag_type == null) ? typeof(ArrayList) : tag_type;
 			}
 
@@ -231,7 +231,7 @@ namespace Catapult.Yaml
 				var flags_class = ((GLibPatch.FlagsClass)t.class_ref());
 				uint? flags = null;
 				foreach(var scalar in sequence.scalars()) {
-					unowned GLibPatch.FlagsValue? flags_value = flags_class.get_value_by_nick(scalar.Value);
+					unowned GLibPatch.FlagsValue? flags_value = flags_class.get_value_by_nick(scalar.value);
 					if (flags_value != null)
 						flags = (flags == null) ? flags_value.value : ((uint)flags) | flags_value.value;
 				}
@@ -252,10 +252,10 @@ namespace Catapult.Yaml
 				var scalar = node as ScalarNode;
 				if (scalar != null) {
 					try {
-						var entity = (Entity)data_interface.load_internal(scalar.Value, null, type);
+						var entity = (Entity)data_interface.load_internal(scalar.value, null, type);
 						return entity;
 					} catch(Error e) {
-						debug("Error loading %s entity id %s: %s", type.name(), scalar.Value, e.message);
+						debug("Error loading %s entity id %s: %s", type.name(), scalar.value, e.message);
 					}
 				}
 			}
