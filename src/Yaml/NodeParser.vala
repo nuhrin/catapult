@@ -28,10 +28,33 @@ namespace Catapult.Yaml
 
 		public void populate_object(MappingNode node, Object obj) {
 			PopulateObjectProperties(node, obj);
-		}
+		}		
 		public bool populate_object_property(MappingNode node, ScalarNode keyNode, Object obj) {
 			ParamSpec property = ((ObjectClass)obj.get_type().class_peek()).find_property(keyNode.value);
 			return PopulateObjectProperty(node, keyNode, obj, property);
+		}
+		public void populate_map<K,V>(MappingNode mapping, Map<K,V> map) {
+			foreach(var keyNode in mapping.keys()) {
+				K key;
+				V value;
+				if (parse_map_item<K,V>(mapping, keyNode, out key, out value) == false)
+					continue;
+				map[key] = value;
+			}
+		}
+		public bool parse_map_item<K,V>(MappingNode mapping, Node key_node, out K key, out V value) {
+			if (mapping.has_key(key_node) == true) {
+				Value keyValue = ParseValueSupportingEntityReference(key_node, typeof(K), null, false);
+				Value valueValue = ParseValueSupportingEntityReference(mapping[key_node], typeof(V), null, false);
+				if (keyValue.holds(typeof(K)) && valueValue.holds(typeof(V))) {
+					key = ValueHelper.extract_value<K>(keyValue);
+					value = ValueHelper.extract_value<V>(valueValue);
+					return true;
+				}				
+			}
+			key = null;
+			value = null;
+			return false;
 		}
 
 
@@ -148,7 +171,8 @@ namespace Catapult.Yaml
 					var valueNode = mapping[keyNode];
 					Value key = ParseValueSupportingEntityReference(keyNode, key_type);
 					Value value = ParseValueSupportingEntityReference(valueNode, value_type);
-					indirect_map.set(map, key, value);
+					if (key.holds(key_type) && value.holds(value_type))
+						indirect_map.set(map, key, value);
 				}
 				v.set_object(map);
 			} else if (t.is_object()) {
@@ -224,7 +248,8 @@ namespace Catapult.Yaml
 				var indirect_collection = IndirectGenericsHelper.Gee.Collection.indirect(element_type);
 				foreach(var item in sequence.items()) {
 					Value element = ParseValueSupportingEntityReference(item, element_type);
-					indirect_collection.add(collection, element);
+					if (element.holds(element_type))
+						indirect_collection.add(collection, element);
 				}
 				v.set_object(collection);
 			} else if (t.is_flags()) {
