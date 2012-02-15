@@ -26,7 +26,16 @@ namespace Catapult.Yaml
 		public bool add_object_mapping(MappingNode node, Object obj, ParamSpec property) {
 			return AddObjectPropertyMapping(node, obj, property);
 		}
-		public void add_mapping(MappingNode node, Value key, Value value) {
+		public void populate_mapping<K,V>(MappingNode node, Map<K,V> map) {
+			foreach(var entry in map.entries)
+				add_mapping<K,V>(node, entry.key, entry.value);
+		}
+		public void add_mapping<K,V>(MappingNode node, K key, V value) {
+			Value keyValue = ValueHelper.populate_value<K>(key);
+			Value valueValue = ValueHelper.populate_value<V>(value);
+			add_mapping_values(node, keyValue, valueValue);
+		}
+		public void add_mapping_values(MappingNode node, Value key, Value value) {
 			try {
 				var keyNode = BuildValueSupportingEntityReference(key);
 				var valueNode = BuildValueSupportingEntityReference(value);
