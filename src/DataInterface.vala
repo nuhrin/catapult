@@ -7,6 +7,7 @@ namespace Catapult
 	{
 		Yaml.NodeBuilder builder;
 		Yaml.NodeParser parser;
+		HashMap<Type,EntityProvider> provider_hash;
 
 		public DataInterface(string root_folder) throws RuntimeError
 		{
@@ -31,26 +32,38 @@ namespace Catapult
 			return (T)e;
 		}
 
-		public Enumerable<T> load_all<T>() throws RuntimeError, YamlError, FileError requires(typeof(T).is_a(typeof(Entity)))
+		public Enumerable<T> load_all<T>(bool throw_on_error=true) throws RuntimeError, YamlError, FileError requires(typeof(T).is_a(typeof(Entity)))
 		{
 			return load_all_of_type(typeof(T)).of_type<T>();
 		}
-		public Enumerable<Entity> load_all_of_type(Type entity_type) throws RuntimeError, YamlError, FileError requires(entity_type.is_a(typeof(Entity)))
+		public Enumerable<Entity> load_all_of_type(Type entity_type, bool throw_on_error=true) throws RuntimeError, YamlError, FileError requires(entity_type.is_a(typeof(Entity)))
 		{
 			string type_name = entity_type.name();
 			string data_folder = get_data_folder(type_name);
 			Dir d;
 			try {
 				d = Dir.open(data_folder);
-			} catch (FileError ex) {
-				print("FileError: %s\n", ex.message);
+			} catch (FileError e) {
+				if (throw_on_error)
+					throw e;
+				debug("FileError: %s", e.message);
 				return Enumerable.empty<Entity>();
 			}
 
 			ArrayList<Entity> entities = new ArrayList<Entity>();
 			string filename;
 			while ((filename = d.read_name()) != null) {
-				entities.add(load_internal(filename, type_name, entity_type));
+				try {
+					entities.add(load_internal(filename, type_name, entity_type));
+				} catch(RuntimeError e) {
+					if (throw_on_error)
+						throw e;
+					debug("RuntimeError: %s", e.message);					
+				} catch(YamlError e) {
+					if (throw_on_error)
+						throw e;
+					debug("YamlError: %s", e.message);					
+				}
 			}
 
 			return new Enumerable<Entity>(entities);
@@ -60,10 +73,17 @@ namespace Catapult
 		{
 			return (T)load_internal(entity_id, data_folder, typeof(T));
 		}
-		internal Entity load_internal(string entity_id, string? data_folder, Type entity_type) throws RuntimeError, FileError, YamlError
+		internal Entity load_internal(string entity_id, string? data_folder, Type entity_type) throws RuntimeError, YamlError
 		{
-			if (is_valid_entity_id(entity_id) == false)
-				throw new RuntimeError.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
+			//if (is_valid_entity_id(entity_id) == false)
+			//	throw new RuntimeError.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
+
+			if (has_entity_provider(entity_type) == true) {
+				var e = provider_hash[entity_type].i_get_entity(entity_id);
+				if (e == null)
+					throw new RuntimeError.ARGUMENT("%s entity not found: %s", entity_type.name(), entity_id);
+				return e;
+			}
 
 			string folder = (data_folder != null) ? data_folder : entity_type.name();
 
@@ -82,47 +102,7 @@ namespace Catapult
 
 			return entity;
 		}
-
-//		internal class DataLoadInterface<T>
-//		{
-//			static HashMap<Type, DataLoadInterface> instances;
-//			public static DataLoadInterface<T> instance<T>() {
-//				if (instances == null)
-//					instances = new HashMap<Type, DataLoadInterface>();
-//				if (instances.has_key(typeof(T)))
-//					return instances[typeof(T)];
-//
-//				var instance = new DataLoadInterface<T>();
-//				instances[typeof(T)] = instance;
-//				return instance;
-//			}
-//			public Enumerable<T> load_all(DataInterface di) throws RuntimeError, FileError, YamlError
-//			{
-//				string folder = typeof(T).name();
-//				string data_folder = di.get_data_folder(folder);
-//				if (FileUtils.test(data_folder, FileTest.EXISTS) == false)
-//					return Enumerable.empty<T>();
-//
-//				Type entity_type = typeof(T);
-//				YieldEnumeratorPopulate<T> populate = p=> {
-//					Dir d;
-//					try {
-//						d = Dir.open(data_folder);
-//					} catch (FileError ex) {
-//						return;
-//					}
-//
-//					string filename;
-//					while ((filename = d.read_name()) != null) {
-//						Value v = Value(entity_type);
-//						v.set_object(di.load_internal(filename, data_folder, entity_type));
-//						p.yield_value(v);
-//					}
-//				};
-//				return Enumerable.yielding<T>(populate);
-//			}
-//		}
-
+		
 		public void save(Entity entity, string? entity_id=null, string? data_folder=null) throws YamlError, RuntimeError, FileError
 		{
 			string id = entity_id;
@@ -147,12 +127,35 @@ namespace Catapult
 			FileUtils.set_contents(filepath, yaml + "\n");
 			entity.i_set_id(id);
 		}
+		public void remove(Entity entity) throws RuntimeError, Error
+		{
+			if (entity.id == null || entity.id == "")
+				throw new RuntimeError.ARGUMENT("Invalid attempt to delete unsaved %s entity.");
+			string data_folder = entity.get_type().name();
+			string filepath = get_entity_file_path(data_folder, entity.id, true);
+			if (FileUtils.test(filepath, FileTest.EXISTS) == false)
+				throw new RuntimeError.FILE("%s entity '%s' not found for deletion.", entity.get_type().name(), entity.id);
+			var file = File.new_for_path(filepath);
+			file.delete();
+		}
 
+		public void register_entity_provider<T>(EntityProvider<T> provider) {
+			if (provider_hash == null)
+				provider_hash = new HashMap<Type,EntityProvider>();
+			provider_hash[typeof(T)] = provider;
+		}
+		public EntityProvider? get_provider(Type type) {
+			return (has_entity_provider(type)) ? provider_hash[type] : null;
+		}
+		bool has_entity_provider(Type type) {
+			return (provider_hash != null && provider_hash.has_key(type));
+		}
+		
 		static bool is_valid_filename(string filename)
 		{
 			if (filename == "")
 				return false;
-			return !RegexHelper.non_word_characters.match(filename);
+			return !RegexHelper.non_filename_characters.match(filename);
 			//return true;
 		}
 		static bool is_valid_foldername(string folder)

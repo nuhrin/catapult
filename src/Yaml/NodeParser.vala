@@ -277,10 +277,20 @@ namespace Catapult.Yaml
 				var scalar = node as ScalarNode;
 				if (scalar != null) {
 					try {
+						var entity_provider = data_interface.get_provider(type);
+						if (entity_provider != null) {
+							var e = entity_provider.i_get_entity(scalar.value);
+							if (e == null)
+								return Value(typeof(Fail));
+							Value v = Value(type);
+							v.take_object(e);
+							return v;
+						}
 						var entity = (Entity)data_interface.load_internal(scalar.value, null, type);
 						return entity;
 					} catch(Error e) {
 						debug("Error loading %s entity id %s: %s", type.name(), scalar.value, e.message);
+						return Value(typeof(Fail));
 					}
 				}
 			}

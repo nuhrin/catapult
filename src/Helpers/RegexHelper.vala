@@ -5,6 +5,10 @@ namespace Catapult.Helpers
 		public static unowned RegexHelper non_word_characters { get { return get_regex(ref _nonWordChars, """[^\w]+"""); } }
 		static RegexHelper _nonWordChars = null;
 
+		public static unowned RegexHelper non_filename_characters { get { return get_regex(ref _nonFilenameChars, """[^\w\.-]+"""); } }
+		static RegexHelper _nonFilenameChars = null;
+
+
 		public static unowned RegexHelper non_alpha_numeric_characters { get { return get_regex(ref _nonAlphaNumericChars, """^[0-9a-zA-Z_\-]+$"""); } }
 		static RegexHelper _nonAlphaNumericChars = null;
 

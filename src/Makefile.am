@@ -4,6 +4,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 AM_CPPFLAGS = \
   $(GLIB_CFLAGS) \
+  $(GIO_CFLAGS) \
   $(GEE_CFLAGS) \
   $(NULL)
 
@@ -16,6 +17,7 @@ lib_LTLIBRARIES = \
 libcatapult_la_VALASOURCES = \
 	DataInterface.vala \
 	Entity.vala \
+	EntityProvider.vala \
 	Enumerable.vala \
 	Error.vala \
 	IYamlObject.vala \
@@ -81,12 +83,13 @@ libcatapult_la_SOURCES = \
   $(NULL)
 
 libcatapult_la_vala.stamp: $(libcatapult_la_VALASOURCES)
-	$(VALA_V)$(VALAC) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --pkg gee-0.8 --pkg gobject-patch --pkg config --pkg libyaml -H catapult.h --library catapult $^
+	$(VALA_V)$(VALAC) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --pkg gio-2.0 --pkg gee-0.8 --pkg gobject-patch --pkg config --pkg libyaml -H catapult.h --library catapult $^
 	@touch $@
 
 libcatapult_la_LIBADD = \
   $(YAML_LIBS) \
   $(GLIB_LIBS) \
+  $(GIO_LIBS) \
   $(GEE_LIBS) \
   $(NULL)
 
