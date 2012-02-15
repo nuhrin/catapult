@@ -36,6 +36,13 @@ namespace Catapult.Yaml
 			node_mappings.set(key, value);
 		}
 
+		public Node? get_scalar(string key) {
+			foreach(var scalar_key in scalar_keys()) {
+				if (scalar_key.value == key)
+					return get(scalar_key);
+			}
+			return null;			
+		}
 		public void set_scalar(string key, Node value) {
 			this.set(new ScalarNode(null, null, key), value);
 		}
