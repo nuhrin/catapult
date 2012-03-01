@@ -10,6 +10,10 @@ namespace Catapult
 			di = new DataInterface(root_folder);
 		}
 		
+		public void register_entity_provider<T>(EntityProvider<T> provider) {
+			di.register_entity_provider<T>(provider);
+		}
+		
 		protected abstract Entity? get_entity(string entity_id);		
 		internal Entity? i_get_entity(string entity_id) { return get_entity(entity_id); }		
 		
