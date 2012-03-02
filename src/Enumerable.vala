@@ -16,9 +16,11 @@ namespace Catapult
 			empties[typeof(G)] = empty;
 			return empty;
 		}
-//		public static Enumerable<G> yielding<G>(YieldEnumeratorPopulate<G> populate_delegate) {
-//			return new Enumerable<G>.from_iterator(new YieldEnumerator<G>(populate_delegate));
-//		}
+		
+		public static Enumerable<G> unfold<G>(owned UnfoldFunc<G> unfold_func) {
+			return new Enumerable<G>(new UnfoldingIterable<G>((owned)unfold_func));
+		}
+
 		Type elementType;
 		protected Iterable<G>? iterable;
 		public Enumerable(Iterable<G> iterable) {
@@ -101,13 +103,10 @@ namespace Catapult
 			if (col != null)
 				return col.size;
 			var iter = iterator();
-			int count = 1;
-			while(iter.has_next()) {
-				if (iter.next() == false)
-					return count;
-				else
-					count++;
-			}
+			int count = 0;
+			while(iter.next())
+				count++;
+			
 			return count;
 		}
 
@@ -189,6 +188,15 @@ namespace Catapult
 		MapFunc<A,G> selector;
 		public override Iterator<A> iterator() { return iterable.map<A>(selector); }
 	}
+	public class EnumerableStream<G,A> : Enumerable<A>
+	{
+		internal EnumerableStream(Iterable<G> iterable, owned StreamFunc<G,A> streamer) {
+			base(iterable);
+			this.streamer = (owned)streamer;
+		}
+		StreamFunc<G,A> streamer;
+		public override Iterator<A> iterator() { return iterable.stream<A>((owned)streamer); }
+	}
 	public class EnumerableConcat<G> : Enumerable<G>
 	{
 		internal EnumerableConcat(Iterable<G> iterable, Iterable<G> other_iterable) {
@@ -208,5 +216,23 @@ namespace Catapult
 					return null;
 			}));
 		}
+	}
+	class UnfoldingIterable<G> : Object, Traversable<G>, Iterable<G>
+	{
+		Type elementType;
+		UnfoldFunc<G> unfold_func;
+		public UnfoldingIterable(owned UnfoldFunc<G> unfold_func) {
+			this.unfold_func = (owned)unfold_func;
+			this.elementType = typeof(G);
+		}
+
+		public Type element_type { get { return elementType; } }
+		public Iterator<G> iterator() { return Iterator.unfold<G>((owned)unfold_func); }
+		
+		// Traversable<G> implementation
+		public void foreach(ForallFunc<G> f) { iterator().foreach(f); }
+		public Iterator<A> stream<A>(owned StreamFunc<G,A> f) { return iterator().stream<A>((owned)f); }
+		public Iterator<G> filter(owned Predicate<G> f) { return iterator().filter((owned)f); }
+		public Iterator<G> chop(int offset, int length = -1) { return iterator().chop(offset, length); }
 	}
 }
