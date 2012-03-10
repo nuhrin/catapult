@@ -2,23 +2,33 @@ namespace Catapult.Helpers
 {
 	public class RegexHelper
 	{
-		public static unowned RegexHelper non_word_characters { get { return get_regex(ref _nonWordChars, """[^\w]+"""); } }
+		public static unowned RegexHelper non_word_characters { 
+			get { 
+				if (_nonWordChars == null)
+					_nonWordChars = new RegexHelper("""[^\w]+""");
+				return _nonWordChars;
+			}
+		}				
 		static RegexHelper _nonWordChars = null;
 
-		public static unowned RegexHelper non_filename_characters { get { return get_regex(ref _nonFilenameChars, """[^\w\.-]+"""); } }
+		public static unowned RegexHelper non_filename_characters { 
+			get { 
+				if (_nonFilenameChars == null)
+					_nonFilenameChars = new RegexHelper("""[^\w\.-]+""");
+				return _nonFilenameChars;
+			}
+		}
 		static RegexHelper _nonFilenameChars = null;
 
 
-		public static unowned RegexHelper non_alpha_numeric_characters { get { return get_regex(ref _nonAlphaNumericChars, """^[0-9a-zA-Z_\-]+$"""); } }
-		static RegexHelper _nonAlphaNumericChars = null;
-
-		static unowned RegexHelper get_regex(ref RegexHelper value, string regex)
-		{
-			if (value == null)
-				value = new RegexHelper(regex);
-			return value;
+		public static unowned RegexHelper non_alpha_numeric_characters { 
+			get { 
+				if (_nonAlphaNumericChars == null)
+					_nonAlphaNumericChars = new RegexHelper("""^[0-9a-zA-Z_\-]+$""");
+				return _nonAlphaNumericChars;
+			}
 		}
-
+		static RegexHelper _nonAlphaNumericChars = null;
 
 		Regex regex;
 		public RegexHelper(string regex)
