@@ -1,0 +1,18 @@
+catapult 0.3.0
+==============
+* add EntityProvider and DataInterface.remove()
+* add NodeParser.populate_map<K,V>(), parse_map_item<K,V>()
+* add NodeBuilder.populate_mapping<K,V>(), add_mapping<K,V>()
+* use lowercase property names like a good boy
+
+catapult 0.2.0
+==============
+* refactor yaml parsing for speed
+* add Enumerable.any(), Enumerable.any_where(), OrderedMappingSet.set_scalar()
+* add IYamlObject.build_unhandled_value_node() and IYamlObject.apply_unhandled_value_node()
+* support values containing pointers to objects in NodeBuilder.BuildValue()
+* refactorings and bug fixes, update vala/libgee
+
+catapult 0.1.0
+==============
+* initial release
