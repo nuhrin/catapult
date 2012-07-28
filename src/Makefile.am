@@ -2,10 +2,21 @@ NULL =
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+if USE_LOCAL_YAML
+LOCAL_YAML_CFLAGS = \
+  -I../libyaml \
+  $(NULL)
+LOCAL_YAML_HEADERS_EXTRA = \
+  ../libyaml/yaml.h
+  $(NULL)
+endif
+
+
 AM_CPPFLAGS = \
   $(GLIB_CFLAGS) \
   $(GIO_CFLAGS) \
   $(GEE_CFLAGS) \
+  $(LOCAL_YAML_CFLAGS) \
   $(NULL)
 
 BUILT_SOURCES = libcatapult_la_vala.stamp
@@ -63,7 +74,7 @@ libcatapult_la_VALASOURCES = \
 	$(NULL)
 
 if USE_LOCAL_YAML
-YAML_SOURCES = \
+LOCAL_YAML_SOURCES = \
 	../libyaml/yaml_private.h \
 	../libyaml/api.c \
 	../libyaml/reader.c \
@@ -77,7 +88,7 @@ YAML_SOURCES = \
 endif
 
 libcatapult_la_SOURCES = \
-  $(YAML_SOURCES) \
+  $(LOCAL_YAML_SOURCES) \
   libcatapult_la_vala.stamp \
   $(libcatapult_la_VALASOURCES:.vala=.c) \
   $(NULL)
@@ -102,6 +113,7 @@ catapultincludedir = $(includedir)/catapult
 
 catapultinclude_HEADERS = \
   catapult.h \
+  $(LOCAL_YAML_HEADERS_EXTRA) \
   $(NULL)
 
 vapidir = $(datadir)/vala/vapi

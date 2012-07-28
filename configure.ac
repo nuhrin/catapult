@@ -9,32 +9,22 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AM_MAINTAINER_MODE
 
+# Add config arguments.
+AC_ARG_ENABLE(local_libyaml, AS_HELP_STRING([--enable-local-libyaml], [Enable use of local libyaml]), enable_local_libyaml=$enableval, enable_local_libyaml=maybe)
+
+
 # Checks for programs.
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_DISABLE_STATIC
 LT_INIT
 
-AM_PROG_VALAC([0.11.0])
+AM_PROG_VALAC([0.14.0])
 AC_SUBST(VALAC)
 AC_SUBST(VALAFLAGS)
 
-AC_SEARCH_LIBS([yaml_emitter_emit], [yaml], [use_local_yaml=no], [use_local_yaml=yes])
-if test "$use_local_yaml" = "yes"; then
-	AC_DEFINE(YAML_VERSION_MAJOR, 0, [Define the major version number.])
-	AC_DEFINE(YAML_VERSION_MINOR, 1, [Define the minor version number.])
-	AC_DEFINE(YAML_VERSION_PATCH, 2, [Define the patch version number.])
-	AC_DEFINE(YAML_VERSION_STRING, "0.1.2", [Define the version string.])
-	AC_HEADER_STDC
-	AC_CHECK_HEADERS([stdlib.h])
-	AC_C_CONST
-	AC_TYPE_SIZE_T
-else
-	YAML_LIBS=$LIBS
-	AC_SUBST(YAML_LIBS)
-fi
-AM_CONDITIONAL(USE_LOCAL_YAML, test x$use_local_yaml = xyes)
 
+# Checks for packages.
 GLIB_REQUIRED=2.16.0
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED)
 AC_SUBST(GLIB_CFLAGS)
@@ -48,14 +38,27 @@ PKG_CHECK_MODULES(GEE, gee-0.8 >= $GEE_REQUIRED)
 AC_SUBST(GEE_CFLAGS)
 AC_SUBST(GEE_LIBS)
 
-AC_ARG_ENABLE(doc, AS_HELP_STRING([--enable-doc], [Enable documentation generation]), enable_doc=$enableval, enable_doc=no)
-AM_CONDITIONAL(ENABLE_DOC, test x$enable_doc = xyes)
 
-AS_IF([test "x$enable_doc" != xno],
-  [AC_PATH_PROG(VALADOC, valadoc, :)
-   AC_SUBST(VALADOC)
-   AS_IF([test "$VALADOC" = :],
-    [AC_MSG_ERROR([valadoc not found])])])
+# Check for system libyaml,  if appropriate
+AS_IF([test "x$enable_local_libyaml" == xmaybe], 
+		[AC_SEARCH_LIBS([yaml_emitter_emit], [yaml], [enable_local_libyaml=no], [enable_local_libyaml=yes])],
+      [test "x$enable_local_libyaml" == xno], 
+		[AC_SEARCH_LIBS([yaml_emitter_emit], [yaml],, [AC_MSG_ERROR([libyaml not found])])])
+
+# Setup libyaml
+AS_IF([test "x$enable_local_libyaml" = xyes],
+	[AC_DEFINE(YAML_VERSION_MAJOR, 0, [Define the major version number.])
+	  AC_DEFINE(YAML_VERSION_MINOR, 1, [Define the minor version number.])
+	  AC_DEFINE(YAML_VERSION_PATCH, 2, [Define the patch version number.])
+	  AC_DEFINE(YAML_VERSION_STRING, "0.1.2", [Define the version string.])
+	  AC_HEADER_STDC
+	  AC_CHECK_HEADERS([stdlib.h])
+	  AC_C_CONST
+	  AC_TYPE_SIZE_T],
+	[YAML_LIBS=$LIBS
+	  AC_SUBST(YAML_LIBS)])
+AM_CONDITIONAL(USE_LOCAL_YAML, test x$enable_local_libyaml = xyes)
+
 
 
 AC_CONFIG_FILES([
