@@ -30,6 +30,8 @@ stamp-h1
 .tarball-version
 .version
 
+doc/catapult/
+
 src/catapult.vapi
 
 *~
