@@ -22,7 +22,7 @@ AM_PROG_CC_C_O
 AC_DISABLE_STATIC
 LT_INIT
 
-AM_PROG_VALAC([0.14.0])
+AM_PROG_VALAC([0.17.3])
 AC_SUBST(VALAC)
 AC_SUBST(VALAFLAGS)
 
@@ -38,7 +38,7 @@ AS_IF([test "x$enable_devhelp" != xno],
 
 
 # Checks for packages.
-GLIB_REQUIRED=2.16.0
+GLIB_REQUIRED=2.18.0
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
@@ -82,4 +82,5 @@ AC_CONFIG_FILES([
 	doc/Makefile
 	vapi/Makefile
 ])
+
 AC_OUTPUT
