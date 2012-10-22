@@ -46,10 +46,8 @@ PKG_CHECK_MODULES(GIO, gio-2.0 >= $GLIB_REQUIRED)
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
-GEE_REQUIRED=0.7.2
-PKG_CHECK_MODULES(GEE, gee-0.8 >= $GEE_REQUIRED)
-AC_SUBST(GEE_CFLAGS)
-AC_SUBST(GEE_LIBS)
+# Check for libgee superproject, then system
+GEE_SEARCH
 
 
 # Check for system libyaml,  if appropriate

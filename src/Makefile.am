@@ -94,7 +94,8 @@ libcatapult_la_SOURCES = \
   $(NULL)
 
 libcatapult_la_vala.stamp: $(libcatapult_la_VALASOURCES)
-	$(VALA_V)$(VALAC) $(VALAFLAGS) -C --vapidir $(srcdir)/../vapi --pkg gobject-2.0 --pkg gio-2.0 --pkg gee-0.8 --pkg gobject-patch --pkg config --pkg libyaml -H catapult.h --library catapult $^
+	$(VALA_V)$(VALAC) $(VALAFLAGS) -C $(GEE_VALAFLAGS) --vapidir $(srcdir)/../vapi \
+		--pkg gobject-2.0 --pkg gio-2.0 --pkg gee-0.8 --pkg gobject-patch --pkg config --pkg libyaml -H catapult.h --library catapult $^
 	@touch $@
 
 libcatapult_la_LIBADD = \
