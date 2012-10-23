@@ -2,30 +2,26 @@ NULL =
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-if USE_LOCAL_YAML
-LOCAL_YAML_CFLAGS = \
-  -I../libyaml \
-  $(NULL)
-LOCAL_YAML_HEADERS_EXTRA = \
-  ../libyaml/yaml.h
-  $(NULL)
-endif
-
-
-AM_CPPFLAGS = \
-  $(GLIB_CFLAGS) \
-  $(GIO_CFLAGS) \
-  $(GEE_CFLAGS) \
-  $(LOCAL_YAML_CFLAGS) \
-  $(NULL)
-
-BUILT_SOURCES = libcatapult_la_vala.stamp
-
 lib_LTLIBRARIES = \
   libcatapult.la
   $(NULL)
 
-libcatapult_la_VALASOURCES = \
+if USE_LOCAL_YAML
+LOCAL_YAML_SOURCES = \
+	../libyaml/yaml_private.h \
+	../libyaml/api.c \
+	../libyaml/reader.c \
+	../libyaml/scanner.c \
+	../libyaml/parser.c \
+	../libyaml/loader.c \
+	../libyaml/writer.c \
+	../libyaml/emitter.c \
+	../libyaml/dumper.c \
+	$(NULL)
+endif
+
+libcatapult_la_SOURCES = \
+	$(LOCAL_YAML_SOURCES) \
 	DataInterface.vala \
 	Entity.vala \
 	EntityProvider.vala \
@@ -73,30 +69,26 @@ libcatapult_la_VALASOURCES = \
 	YamlObject.vala \
 	$(NULL)
 
+libcatapult_la_VALAFLAGS = \
+	-H catapult.h --vapi catapult.vapi --vapidir $(srcdir)/../vapi \
+	--pkg gobject-2.0 --pkg gio-2.0 --pkg gee-0.8 --pkg gobject-patch --pkg config --pkg libyaml \
+	--library catapult \
+	$(GEE_VALAFLAGS) \
+	$(VALAFLAGS) \
+	$(NULL)
+
 if USE_LOCAL_YAML
-LOCAL_YAML_SOURCES = \
-	../libyaml/yaml_private.h \
-	../libyaml/api.c \
-	../libyaml/reader.c \
-	../libyaml/scanner.c \
-	../libyaml/parser.c \
-	../libyaml/loader.c \
-	../libyaml/writer.c \
-	../libyaml/emitter.c \
-	../libyaml/dumper.c \
+LOCAL_YAML_CFLAGS = \
+	-I../libyaml \
 	$(NULL)
 endif
 
-libcatapult_la_SOURCES = \
-  $(LOCAL_YAML_SOURCES) \
-  libcatapult_la_vala.stamp \
-  $(libcatapult_la_VALASOURCES:.vala=.c) \
+libcatapult_la_CPPFLAGS = \
+  $(GLIB_CFLAGS) \
+  $(GIO_CFLAGS) \
+  $(GEE_CFLAGS) \
+  $(LOCAL_YAML_CFLAGS) \
   $(NULL)
-
-libcatapult_la_vala.stamp: $(libcatapult_la_VALASOURCES)
-	$(VALA_V)$(VALAC) $(VALAFLAGS) -C $(GEE_VALAFLAGS) --vapidir $(srcdir)/../vapi \
-		--pkg gobject-2.0 --pkg gio-2.0 --pkg gee-0.8 --pkg gobject-patch --pkg config --pkg libyaml -H catapult.h --library catapult $^
-	@touch $@
 
 libcatapult_la_LIBADD = \
   $(YAML_LIBS) \
@@ -105,12 +97,13 @@ libcatapult_la_LIBADD = \
   $(GEE_LIBS) \
   $(NULL)
 
-#libgee_la_LDFLAGS = \
-#  -version-info $(LIBGEE_LT_VERSION) \
-#  -no-undefined \
-#  $(NULL)
-
 catapultincludedir = $(includedir)/catapult
+
+if USE_LOCAL_YAML
+LOCAL_YAML_HEADERS_EXTRA = \
+	../libyaml/yaml.h \
+	$(NULL)
+endif
 
 catapultinclude_HEADERS = \
   catapult.h \
@@ -123,11 +116,7 @@ dist_vapi_DATA = \
   catapult.vapi \
   $(NULL)
 
-EXTRA_DIST = $(libcatapult_la_VALASOURCES) catapult.vapi libcatapult_la_vala.stamp
-
-MAINTAINERCLEANFILES = \
+CLEANFILES = \
   catapult.vapi \
-  catapult.h \
-  $(libcatapult_la_VALASOURCES:.vala=.c) \
   $(NULL)
 
