@@ -29,15 +29,11 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 	{
 		public static Type key_type(Map obj)
 		{
-			Value prop_value = Value(typeof(Type));
-			(obj as Object).get_property("key-type", ref prop_value);
-			return prop_value.get_gtype();
+			return obj.key_type;
 		}
 		public static Type value_type(Map obj)
 		{
-			Value prop_value = Value(typeof(Type));
-			(obj as Object).get_property("value-type", ref prop_value);
-			return prop_value.get_gtype();
+			return obj.value_type;
 		}
 
 		public new Map create(Type type) requires(type.is_a(typeof(Map)))

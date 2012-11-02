@@ -51,15 +51,13 @@ namespace Catapult
 			this.elementType = typeof(G);
 		}
 
-		public Type element_type { get { return elementType; } }
+		// Iterable<G> implementation
 		public virtual Iterator<G> iterator() { return iterable.iterator(); }
 
 		// Traversable<G> implementation
-		public void foreach(ForallFunc<G> f) { iterator().foreach(f); }
-		public Iterator<A> stream<A>(owned StreamFunc<G,A> f) { return iterator().stream<A>((owned)f); }
-		public Iterator<G> filter(owned Predicate<G> f) { return iterator().filter((owned)f); }
-		public Iterator<G> chop(int offset, int length = -1) { return iterator().chop(offset, length); }
-
+		public Type element_type { get { return elementType; } }
+		public bool foreach(ForallFunc<G> f) { return iterator().foreach(f); }
+		
 		public Enumerable<G> where(owned Predicate<G> predicate) { return new EnumerableWhere<G>(this, (owned)predicate); }
 		public Enumerable<A> select<A>(owned MapFunc<A,G> selector) { return new EnumerableSelect<A,G>(this, (owned)selector); }
 		public Enumerable<G> concat(Iterable<G> other) { return new EnumerableConcat<G>(this, other); }
@@ -249,13 +247,11 @@ namespace Catapult
 			this.elementType = typeof(G);
 		}
 
-		public Type element_type { get { return elementType; } }
+		// Iterable<G> implementation
 		public Iterator<G> iterator() { return Iterator.unfold<G>((owned)unfold_func); }
 		
 		// Traversable<G> implementation
-		public void foreach(ForallFunc<G> f) { iterator().foreach(f); }
-		public Iterator<A> stream<A>(owned StreamFunc<G,A> f) { return iterator().stream<A>((owned)f); }
-		public Iterator<G> filter(owned Predicate<G> f) { return iterator().filter((owned)f); }
-		public Iterator<G> chop(int offset, int length = -1) { return iterator().chop(offset, length); }
+		public Type element_type { get { return elementType; } }		
+		public bool foreach(ForallFunc<G> f) { return iterator().foreach(f); }
 	}
 }

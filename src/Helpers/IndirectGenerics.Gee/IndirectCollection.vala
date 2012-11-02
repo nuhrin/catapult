@@ -29,9 +29,7 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 	{
 		public static Type element_type(Collection obj)
 		{
-			Value prop_value = Value(typeof(Type));
-			(obj as Object).get_property("element-type", ref prop_value);
-			return prop_value.get_gtype();
+			return obj.element_type;
 		}
 
 		public new Collection create(Type type) requires(type.is_a(typeof(Collection)))
