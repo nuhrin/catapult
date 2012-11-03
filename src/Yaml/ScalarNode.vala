@@ -27,17 +27,17 @@ namespace Catapult.Yaml
 {
 	public class ScalarNode : Node
 	{
-		public ScalarNode(string? anchor, string? tag, string value,
+		public ScalarNode(string value, string? tag = null, 
 		              bool plain_implicit = true, bool quoted_implicit = false,
 		              ScalarStyle style = ScalarStyle.ANY)
 		{
-			base(anchor, tag);
+			base(tag);
 			this.value = value;
 			is_plain_implicit = plain_implicit;
 			is_quoted_implicit = quoted_implicit;
 			this.style = style;
 		}
-		internal ScalarNode.from_event(Events.Scalar event) {
+		internal ScalarNode.from_event(Scalar event) {
 			base.from_event(event);
 			this.value = event.value;
 			is_plain_implicit = event.is_plain_implicit;
@@ -60,11 +60,11 @@ namespace Catapult.Yaml
 		public override bool is_canonical { get { return !is_plain_implicit && !is_quoted_implicit; } }
 		public override NodeType node_type { get { return NodeType.SCALAR; } }
 
-		internal override Events.Event get_event() {
-			return new Events.Scalar(anchor, tag, value, is_plain_implicit, is_quoted_implicit, style);
+		internal override Event get_event() {
+			return new Scalar(null, tag, value, is_plain_implicit, is_quoted_implicit, style);
 		}
 
-		public new static ScalarNode empty {
+		internal new static ScalarNode empty {
 			get {
 				if (_empty == null)
 					_empty = new EmptyScalarNode();
@@ -73,10 +73,10 @@ namespace Catapult.Yaml
 		}
 		static ScalarNode _empty;
 	}
-	public class EmptyScalarNode : ScalarNode
+	internal class EmptyScalarNode : ScalarNode
 	{
 		internal EmptyScalarNode() {
-			base(null, null, "");
+			base("");
 		}
 	}
 }

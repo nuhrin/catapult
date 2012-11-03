@@ -23,13 +23,13 @@
  
 using Gee;
 
-namespace Catapult.Helpers.IndirectGenerics
+namespace Catapult
 {
-	public class IndirectFactory
+	internal class IndirectFactory
 	{
 		static HashMap<string, IndirectUni> _unis;
 		static HashMap<string, IndirectBi> _bis;
-		static HashMap<string, IndirectTri> _tris;
+//~ 		static HashMap<string, IndirectTri> _tris;
 
 		public static T get_uni<T>(Type a_type)
 		{
@@ -56,18 +56,18 @@ namespace Catapult.Helpers.IndirectGenerics
 			_bis[key] = bi;
 			return (T)bi;
 		}
-		public static T get_tri<T>(Type a_type, Type b_type, Type c_type)
-		{
-			if (_tris == null)
-				_tris = new HashMap<string, IndirectTri>();
-			string key = typeof(T).name() + a_type.name() + b_type.name() + c_type.name();
-			if (_tris.has_key(key))
-				return (T)_tris[key];
-
-			IndirectTri tri = IndirectTri.create<T>(a_type, b_type, c_type);
-			_tris[key] = tri;
-			return (T)tri;
-		}
+//~ 		public static T get_tri<T>(Type a_type, Type b_type, Type c_type)
+//~ 		{
+//~ 			if (_tris == null)
+//~ 				_tris = new HashMap<string, IndirectTri>();
+//~ 			string key = typeof(T).name() + a_type.name() + b_type.name() + c_type.name();
+//~ 			if (_tris.has_key(key))
+//~ 				return (T)_tris[key];
+//~ 
+//~ 			IndirectTri tri = IndirectTri.create<T>(a_type, b_type, c_type);
+//~ 			_tris[key] = tri;
+//~ 			return (T)tri;
+//~ 		}
 	}
 
 }

@@ -24,9 +24,9 @@
 using YAML;
 using Gee;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class DocumentStart : Event
+	internal class DocumentStart : Event
 	{
 		public DocumentStart(VersionDirective? version = null, Iterable<TagDirective>? tag_directives = null, bool implicit = true)
 		{

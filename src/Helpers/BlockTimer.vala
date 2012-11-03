@@ -1,4 +1,4 @@
-/* SequenceEnd.vala
+/* BlockTimer.vala
  * 
  * Copyright (C) 2012 nuhrin
  * 
@@ -21,29 +21,31 @@
  *      nuhrin <nuhrin@oceanic.to>
  */
  
-using YAML;
 
-namespace Catapult.Yaml
+namespace Catapult.Helpers
 {
-	internal class SequenceEnd : Event
+	// {
+	// 		var timer = new BlockTimer("block completed");
+	//		...
+	// }
+	//
+	// prints "block completed: x.xxxxxx seconds"
+	public class BlockTimer
 	{
-		public SequenceEnd()
-		{
-			base(EventType.SEQUENCE_END);
+		GLib.Timer timer;
+		string? message;
+		public BlockTimer(string? done_message=null) {
+			message = done_message;
+			timer = new GLib.Timer();
+		}
+		~BlockTimer() {
+			if (message != null)
+				elapsed_print(message);
 		}
 
-		internal SequenceEnd.from_raw(RawEvent event)
-			requires(event.type == YAML.EventType.SEQUENCE_END_EVENT)
-		{
-			base.from_raw(event);
-		}
-		internal override int nesting_increase { get { return -1; } }
-
-		internal override RawEvent create_raw_event()
-		{
-			RawEvent event = {0};
-			RawEvent.sequence_end_initialize(ref event);
-			return event;
+		public void elapsed_print(string message) {
+			double time = timer.elapsed();
+			print("%s: %f seconds\n".printf(message, time));
 		}
 	}
 }

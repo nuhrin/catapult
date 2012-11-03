@@ -1,4 +1,4 @@
-/* TimerBlock.vala
+/* IndirectEnumerable.vala
  * 
  * Copyright (C) 2012 nuhrin
  * 
@@ -21,26 +21,20 @@
  *      nuhrin <nuhrin@oceanic.to>
  */
  
-
+using Gee;
+ 
 namespace Catapult
 {
-	// intended for 'using (new TimerBlock(...)) { ... }' syntax, though not sure that's supported...
-	public class TimerBlock
+	internal class IndirectEnumerable<A> : IndirectIterable<A>
 	{
-		GLib.Timer timer;
-		string? message;
-		public TimerBlock(string? done_message=null) {
-			message = done_message;
-			timer = new GLib.Timer();
+		public Collection create_collection_obj() {
+			return new ArrayList<A>();
 		}
-		~TimerBlock() {
-			if (message != null)
-				elapsed_print(message);
-		}
-
-		public void elapsed_print(string message) {
-			double time = timer.elapsed();
-			print("%s: %f seconds\n".printf(message, time));
-		}
+		
+		public void change_basis(Enumerable enumerable, Iterable new_basis) {
+			assert_correct_type("change_basis, enumerable", "element", enumerable.element_type);
+			assert_correct_type("change_basis, new_basis", "element", new_basis.element_type);
+			((Enumerable<A>)enumerable).iterable = (Iterable<A>)new_basis;
+		}		
 	}
 }

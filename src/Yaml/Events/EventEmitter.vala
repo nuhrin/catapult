@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class EventEmitter
+	internal class EventEmitter
 	{
 		Emitter emitter;
 		unowned StringBuilder sb;
@@ -65,30 +65,30 @@ namespace Catapult.Yaml.Events
 			}
 		}
 
-		public void set_encoding(EncodingType encoding)
-		{
-			emitter.set_encoding((YAML.EncodingType)encoding);
-		}
-		public void set_canonical(bool canonical)
-		{
-			emitter.set_canonical(canonical);
-		}
-		public void set_indent(int indent)
-		{
-			emitter.set_indent(indent);
-		}
-		public void set_width(int width)
-		{
-			emitter.set_width(width);
-		}
-		public void set_unicode(bool unicode)
-		{
-			emitter.set_unicode(unicode);
-		}
-		public void set_break(BreakType @break)
-		{
-			emitter.set_break((YAML.BreakType)@break);
-		}
+//~ 		public void set_encoding(EncodingType encoding)
+//~ 		{
+//~ 			emitter.set_encoding((YAML.EncodingType)encoding);
+//~ 		}
+//~ 		public void set_canonical(bool canonical)
+//~ 		{
+//~ 			emitter.set_canonical(canonical);
+//~ 		}
+//~ 		public void set_indent(int indent)
+//~ 		{
+//~ 			emitter.set_indent(indent);
+//~ 		}
+//~ 		public void set_width(int width)
+//~ 		{
+//~ 			emitter.set_width(width);
+//~ 		}
+//~ 		public void set_unicode(bool unicode)
+//~ 		{
+//~ 			emitter.set_unicode(unicode);
+//~ 		}
+//~ 		public void set_break(BreakType @break)
+//~ 		{
+//~ 			emitter.set_break((YAML.BreakType)@break);
+//~ 		}
 
 		private int emit_to_string_builder_handler(uchar *buffer, size_t length) {
 			sb.append_len((string)buffer, (ssize_t)length);

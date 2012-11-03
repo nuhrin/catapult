@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class StreamStart : Event
+	internal class StreamStart : Event
 	{
 		public StreamStart(EncodingType encoding = EncodingType.ANY_ENCODING)
 		{

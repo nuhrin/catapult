@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class SequenceStart : NodeEvent
+	internal class SequenceStart : NodeEvent
 	{
 		public SequenceStart(string? anchor=null, string? tag=null,
 							bool implicit = true,

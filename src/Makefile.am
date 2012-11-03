@@ -28,20 +28,21 @@ libcatapult_la_SOURCES = \
 	Enumerable.vala \
 	Error.vala \
 	IYamlObject.vala \
-	TimerBlock.vala \
 	Helpers/IndirectGenerics/IndirectBi.vala \
+	Helpers/IndirectGenerics/IndirectEnumerable.vala \
 	Helpers/IndirectGenerics/IndirectFactory.vala \
-	Helpers/IndirectGenerics/IndirectTri.vala \
 	Helpers/IndirectGenerics/IndirectUni.vala \
 	Helpers/IndirectGenerics.Gee/IndirectCollection.vala \
-	Helpers/IndirectGenerics.Gee/IndirectList.vala \
+	Helpers/IndirectGenerics.Gee/IndirectIterable.vala \
 	Helpers/IndirectGenerics.Gee/IndirectMap.vala \
 	Helpers/IndirectGenericsHelper.vala \
+	Helpers/BlockTimer.vala \
 	Helpers/RegexHelper.vala \
 	Helpers/ValueHelper.vala \
 	Yaml/Constants.vala \
 	Yaml/Document.vala \
 	Yaml/Enums.vala \
+	Yaml/Functions.vala \
 	Yaml/NodeBuilder.vala \
 	Yaml/NodeParser.vala \
 	Yaml/SequenceNode.vala \
@@ -52,7 +53,6 @@ libcatapult_la_SOURCES = \
 	Yaml/Events/DocumentStart.vala \
 	Yaml/Events/EventEmitter.vala \
 	Yaml/Events/EventEnums.vala \
-	Yaml/Events/EventReader.vala \
 	Yaml/Events/Event.vala \
 	Yaml/Events/MappingEnd.vala \
 	Yaml/Events/MappingStart.vala \

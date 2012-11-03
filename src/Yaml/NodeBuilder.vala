@@ -22,7 +22,6 @@
  */
  
 using Gee;
-using Catapult.Helpers;
 
 namespace Catapult.Yaml
 {
@@ -32,45 +31,57 @@ namespace Catapult.Yaml
 			Value val = ValueHelper.populate_value<T>(value);
 			return build_value(val);
 		}
-
 		public Node build_value(Value value) {
 			return BuildValueAssert(value);
 		}
-
 		public Node build_yaml_object(IYamlObject yaml_object) {
 			return yaml_object.i_build_yaml_node(this);
 		}
-		public MappingNode build_object_mapping(Object obj) {
-			return BuildObjectMapping(obj);
+		
+		public MappingNode populate_mapping_with_object_properties(Object obj, MappingNode? mapping = null) {
+			var mappingNode = mapping ?? new MappingNode();
+			PopulateObjectMapping(mappingNode, obj);
+			return mappingNode;
 		}
-		public void populate_object_mapping(MappingNode node, Object obj) {
-			PopulateObjectMapping(node, obj);
+		public MappingNode populate_mapping_with_map_items(Map map, MappingNode? mapping = null) {
+			var mappingNode = mapping ?? new MappingNode();
+			var indirect = IndirectGenericsHelper.Gee.Map.indirect(map);
+			Value[] keys = indirect.get_keys(map);
+			foreach (Value key in keys) {
+				Value value = indirect.get(map, key);
+				add_item_to_mapping(key, value, mappingNode);
+			}
+			return mappingNode;			
 		}
-		public bool add_object_mapping(MappingNode node, Object obj, ParamSpec property) {
-			return AddObjectPropertyMapping(node, obj, property);
+		public SequenceNode populate_sequence_with_items(Iterable iterable, SequenceNode? sequence = null) {
+			var values = IndirectGenericsHelper.Gee.Iterable.get_values(iterable);
+			return populate_sequence_with_values(values, sequence);
 		}
-		public void populate_mapping<K,V>(MappingNode node, Map<K,V> map) {
-			foreach(var entry in map.entries)
-				add_mapping<K,V>(node, entry.key, entry.value);
+		public SequenceNode populate_sequence_with_values(Value[] values, SequenceNode? sequence = null) {
+			var sequenceNode = sequence ?? new SequenceNode();
+			foreach(var value in values) {
+				var valueNode = BuildValueAssertSupportingEntityReference(value);
+				sequence.add(valueNode);
+			}
+			return sequenceNode;
 		}
-		public void add_mapping<K,V>(MappingNode node, K key, V value) {
-			Value keyValue = ValueHelper.populate_value<K>(key);
-			Value valueValue = ValueHelper.populate_value<V>(value);
-			add_mapping_values(node, keyValue, valueValue);
+		
+		public bool add_object_property_to_mapping(Object obj, string property_name, MappingNode mapping) {
+			return AddObjectPropertyMapping(mapping, obj, property_name);
 		}
-		public void add_mapping_values(MappingNode node, Value key, Value value) {
+		public void add_item_to_mapping(Value key, Value value, MappingNode mapping) {
 			try {
 				var keyNode = BuildValueSupportingEntityReference(key);
 				var valueNode = BuildValueSupportingEntityReference(value);
-				node[keyNode] = valueNode;
+				mapping[keyNode] = valueNode;
 			} catch (Error e) {
 				debug(e.message);
 				assert_not_reached();
 			}
 		}
-		public void add_sequence_value(SequenceNode node, Value value) {
+		public void add_value_to_sequence(Value value, SequenceNode sequence) {
 			var valueNode = BuildValueAssertSupportingEntityReference(value);
-			node.add(valueNode);
+			sequence.add(valueNode);
 		}
 
 		Node BuildValue(Value value) throws RuntimeError
@@ -99,13 +110,12 @@ namespace Catapult.Yaml
 				var sequenceNode = new SequenceNode();
 				foreach(var val in klass.values) {
 					if ((flags & val.value) == val.value)
-						sequenceNode.add(new ScalarNode(null, Constants.Tag.STR, val.value_nick));
+						sequenceNode.add(new ScalarNode(val.value_nick, Constants.Tag.STR));
 				}
 				if (sequenceNode.item_count() == 1)
 					return sequenceNode.items().first();
 				return sequenceNode;
 			}
-			string anchor = null; // TODO: support anchors during build?
 			string tag = Constants.Tag.STR;
 			string str_value = null;
 			if (type.is_enum())
@@ -175,7 +185,7 @@ namespace Catapult.Yaml
 			}
 
 			if (str_value != null)
-				return new ScalarNode(anchor, tag, str_value);
+				return new ScalarNode(str_value, tag);
 
 			return BuildNull();
 		}
@@ -190,37 +200,12 @@ namespace Catapult.Yaml
 			Type type = obj.get_type();
 
 			// if mapping, build that
-			if (type.is_a(typeof(Map))) {
-				Map map = obj as Map;
-				Type key_type = IndirectGenericsHelper.Gee.Map.key_type(map);
-				Type value_type = IndirectGenericsHelper.Gee.Map.value_type(map);
-				var indirectMap = IndirectGenericsHelper.Gee.Map.indirect(key_type, value_type);
-				var keys = indirectMap.get_keys(map);
-
-				var mappingNode = new MappingNode();
-				foreach(var key in keys)
-				{
-					var val = indirectMap.get(map, key);
-					var keyNode = BuildValueAssertSupportingEntityReference(key);
-					var valueNode = BuildValueAssertSupportingEntityReference(val);
-					mappingNode[keyNode] = valueNode;
-				}
-				return mappingNode;
-			}
+			if (type.is_a(typeof(Map)))
+				return populate_mapping_with_map_items(obj as Map, new MappingNode());							
 
 			// if sequence, build that
-			if (type.is_a(typeof(Collection))) {
-				Collection collection = obj as Collection;
-				Type element_type = IndirectGenericsHelper.Gee.Collection.element_type(collection);
-				var values = IndirectGenericsHelper.Gee.Collection.indirect(element_type).get_values(collection);
-
-				var sequenceNode = new SequenceNode();
-				foreach(var value in values) {
-					var node = BuildValueAssertSupportingEntityReference(value);
-					sequenceNode.add(node);
-				}
-				return sequenceNode;
-			}
+			if (type.is_a(typeof(Iterable)))
+				return populate_sequence_with_items(obj as Iterable, new SequenceNode());							
 
 			// build object mapping
 			return BuildObjectMapping(obj);
@@ -228,7 +213,7 @@ namespace Catapult.Yaml
 
 		Node BuildNull()
 		{
-			return new ScalarNode(null, Constants.Tag.NULL, "", false, false, ScalarStyle.PLAIN);
+			return new ScalarNode("", Constants.Tag.NULL, false, false, ScalarStyle.PLAIN);
 		}
 
 		MappingNode BuildObjectMapping(Object obj)
@@ -242,20 +227,30 @@ namespace Catapult.Yaml
 			unowned ObjectClass klass = obj.get_class();
 	    	var properties = klass.list_properties();
 	    	foreach(var prop in properties)
-				AddObjectPropertyMapping(node, obj, prop);
+				AddObjectParamSpecMapping(node, obj, prop);
 		}
-		bool AddObjectPropertyMapping(MappingNode node, Object obj, ParamSpec property)
+		bool AddObjectParamSpecMapping(MappingNode node, Object obj, ParamSpec property)
 		{
 			if ((property.flags & ParamFlags.READWRITE) == ParamFlags.READWRITE) {
 				var keyNode = BuildValueAssert(property.name);
 				Value existing_prop_value = Value(property.value_type);
 				obj.get_property(property.name, ref existing_prop_value);
-				Node valueNode = null;
-				valueNode = BuildValueAssertSupportingEntityReference(existing_prop_value, obj);
-				node[keyNode] = valueNode;
+				node[keyNode] = BuildValueAssertSupportingEntityReference(existing_prop_value, obj);
 				return true;
 			}
 			return false;
+		}
+		bool AddObjectPropertyMapping(MappingNode node, Object obj, string propertyName)
+		{
+			unowned ObjectClass klass = obj.get_class();
+			var property = klass.find_property(propertyName);
+			if (property == null)
+				return false;
+			var keyNode = BuildValueAssert(property.name);
+			Value existing_prop_value = Value(property.value_type);
+			obj.get_property(property.name, ref existing_prop_value);
+			node[keyNode] = BuildValueAssertSupportingEntityReference(existing_prop_value, obj);
+			return true;
 		}
 
 		Node BuildValueSupportingEntityReference(Value value) throws RuntimeError
@@ -297,3 +292,4 @@ namespace Catapult.Yaml
 		}
 	}
 }
+

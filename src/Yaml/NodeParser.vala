@@ -22,49 +22,30 @@
  */
  
 using Gee;
-using Catapult.Helpers;
 
 namespace Catapult.Yaml
 {
 	public class NodeParser
 	{
 		DataInterface data_interface;
-		public NodeParser(DataInterface data_interface) {
+		public NodeParser() { }
+		internal NodeParser.with_data_interface(DataInterface data_interface) {
 			this.data_interface = data_interface;
 		}
 
-		public T parse<T>(Node node, T default_value)
-		{
+		public T parse<T>(Node node, T default_value) {
 			Value? inval = null;
 			if (default_value != null)
 				inval = ValueHelper.populate_value<T>(default_value);
 			Value v = ParseValue(node, typeof(T), inval);
 			return ValueHelper.extract_value<T>(v);
 		}
-
 		public Value parse_value(Node node, Value? default_value=null) {
 			return (default_value == null)
 				? ParseValue(node)
 				: ParseValue(node, null, default_value);
 		}
 		public Value parse_value_of_type(Node node, Type type, Value? default_value=null) { return ParseValue(node, type, default_value); }
-
-		public void populate_object(MappingNode node, Object obj) {
-			PopulateObjectProperties(node, obj);
-		}		
-		public bool populate_object_property(MappingNode node, ScalarNode keyNode, Object obj) {
-			ParamSpec property = ((ObjectClass)obj.get_type().class_peek()).find_property(keyNode.value);
-			return PopulateObjectProperty(node, keyNode, obj, property);
-		}
-		public void populate_map<K,V>(MappingNode mapping, Map<K,V> map) {
-			foreach(var keyNode in mapping.keys()) {
-				K key;
-				V value;
-				if (parse_map_item<K,V>(mapping, keyNode, out key, out value) == false)
-					continue;
-				map[key] = value;
-			}
-		}
 		public bool parse_map_item<K,V>(MappingNode mapping, Node key_node, out K key, out V value) {
 			if (mapping.has_key(key_node) == true) {
 				Value keyValue = ParseValueSupportingEntityReference(key_node, typeof(K), null, false);
@@ -79,7 +60,57 @@ namespace Catapult.Yaml
 			value = null;
 			return false;
 		}
-
+		
+		public void populate_object_properties_from_mapping(Object obj, MappingNode? mapping) {
+			if (mapping == null)
+				return;
+			PopulateObjectProperties(obj, mapping);
+		}
+		public void populate_map_from_mapping(Map map, MappingNode? mapping) {
+			if (mapping == null)
+				return;
+			map.clear();
+			var key_type = map.key_type;
+			var	value_type = map.value_type;				
+			var indirect_map = IndirectGenericsHelper.Gee.Map.indirect(map);
+			foreach(var keyNode in mapping.keys()) {
+				var valueNode = mapping[keyNode];
+				Value key = ParseValueSupportingEntityReference(keyNode, key_type);
+				Value value = ParseValueSupportingEntityReference(valueNode, value_type);
+				if (key.holds(key_type) && value.holds(value_type))
+					indirect_map.set(map, key, value);
+			}
+		}
+		public void populate_collection_from_sequence(Collection collection, SequenceNode? sequence) {
+			if (sequence == null)
+				return;			
+			collection.clear();
+			var indirect_collection = IndirectGenericsHelper.Gee.Collection.indirect(collection);
+			Type element_type = collection.element_type;
+			foreach(var item in sequence.items()) {
+				Value element = ParseValueSupportingEntityReference(item, element_type);
+				if (element.holds(element_type))
+					indirect_collection.add(collection, element);
+			}
+		}
+		public void populate_enumerable_from_sequence(Enumerable enumerable, SequenceNode? sequence) {
+			var indirect = IndirectGenericsHelper.Enumerable.indirect(enumerable);
+			Collection collection = indirect.create_collection_obj();
+			populate_collection_from_sequence(collection, sequence);
+			indirect.change_basis(enumerable, collection);
+		}
+		
+		public bool set_object_property(Object obj, string property_name, Node value_node) {
+			var property = ((ObjectClass)obj.get_type().class_peek()).find_property(property_name);
+			return PopulateObjectProperty(obj, property_name, property, value_node);
+		}
+		public bool set_object_property_from_mapping(Object obj, string property_name, MappingNode mapping) {
+			var value_node = mapping.get_scalar(property_name);
+			if (value_node == null)
+				return false;
+			return set_object_property(obj, property_name, value_node);
+		}
+		
 
 		Value ParseValue(Node node, Type? type=null, Value? default_value=null, bool use_default_for_scalar=true) {
 			Type? intype = type;
@@ -114,8 +145,7 @@ namespace Catapult.Yaml
 			return default_value;
 		}
 
-		Value ParseScalar(ScalarNode scalar, Type? type=null, Value? default_value=null, bool use_default=true)
-		{
+		Value ParseScalar(ScalarNode scalar, Type? type=null, Value? default_value=null, bool use_default=true) {
 			Type t;
 			if (type == null) {
 				Type? tag_type = get_tag_type(scalar.tag);
@@ -165,8 +195,7 @@ namespace Catapult.Yaml
 		}
 		class Fail {}
 
-		Value ParseMapping(MappingNode mapping, Type? type=null, Value? default_value=null)
-		{
+		Value ParseMapping(MappingNode mapping, Type? type=null, Value? default_value=null) {
 			Type t;
 			if (default_value != null) {
 				t = default_value.type();
@@ -181,28 +210,18 @@ namespace Catapult.Yaml
 
 			if (t.is_a(typeof(Map))) {
 				Map map = (default_value != null) ? (Map)default_value.get_object() : null;
-				Type key_type;
-				Type value_type;
 				if (map == null) {
 					debug("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
 					assert_not_reached();
 				}
-				key_type = IndirectGenericsHelper.Gee.Map.key_type(map);
-				value_type = IndirectGenericsHelper.Gee.Map.value_type(map);
-				var indirect_map = IndirectGenericsHelper.Gee.Map.indirect(key_type, value_type);
-				foreach(var keyNode in mapping.keys()) {
-					var valueNode = mapping[keyNode];
-					Value key = ParseValueSupportingEntityReference(keyNode, key_type);
-					Value value = ParseValueSupportingEntityReference(valueNode, value_type);
-					if (key.holds(key_type) && value.holds(value_type))
-						indirect_map.set(map, key, value);
-				}
+				map.clear();
+				populate_map_from_mapping(map, mapping);
 				v.set_object(map);
 			} else if (t.is_object()) {
 				Object obj = (default_value == null)
 					? Object.new(t)
 					: default_value.get_object();
-				PopulateObjectProperties(mapping, obj);
+				PopulateObjectProperties(obj, mapping);
 				v.set_object(obj);
 			} else {
 				debug("Unsupported mapping type: %s", t.name());
@@ -211,23 +230,21 @@ namespace Catapult.Yaml
 
 			return v;
 		}
-		void PopulateObjectProperties(MappingNode mapping, Object obj)
-		{
+		void PopulateObjectProperties(Object obj, MappingNode mapping) {
 			Type type = obj.get_type();
 			foreach(var keyNode in mapping.scalar_keys()) {
-				ParamSpec property = ((ObjectClass)type.class_peek()).find_property(keyNode.value);
-				PopulateObjectProperty(mapping, keyNode, obj, property);
+				var property = ((ObjectClass)type.class_peek()).find_property(keyNode.value);
+				PopulateObjectProperty(obj, keyNode.value, property, mapping[keyNode]);
 			}
 		}
-		bool PopulateObjectProperty(MappingNode mapping, ScalarNode keyNode, Object obj, ParamSpec? property) {
+		bool PopulateObjectProperty(Object obj, string property_name, ParamSpec? property, Node value_node) {
 			if (property == null) {
-				debug("Parse error: property '%s' not found on type %s", keyNode.value, obj.get_type().name());
+				debug("Parse error: property '%s' not found on type %s", property_name, obj.get_type().name());
 				return false;
 			}
 			if ((property.flags & ParamFlags.READWRITE) == ParamFlags.READWRITE) {
 				Value existing_prop_value = Value(property.value_type);
 				obj.get_property(property.name, ref existing_prop_value);
-				var value_node = mapping[keyNode];
 				Value new_prop_value = ParseValueSupportingEntityReference(value_node, property.value_type, existing_prop_value, false);
 				if (new_prop_value.holds(property.value_type) == false && obj != null) {
 					bool parsed = false;
@@ -236,7 +253,7 @@ namespace Catapult.Yaml
 						parsed = yobj.i_apply_unhandled_value_node(value_node, property.name, this);
 					}
 					if (parsed == false) {
-						debug("Parse error: failed to parse property '%s' on type %s", keyNode.value, obj.get_type().name());
+						debug("Parse error: failed to parse property '%s' on type %s", property_name, obj.get_type().name());
 						return false;
 					}
 				} else {
@@ -246,8 +263,8 @@ namespace Catapult.Yaml
 			}
 			return false;
 		}
-		Value ParseSequence(SequenceNode sequence, Type? type=null, Value? default_value=null)
-		{
+		
+		Value ParseSequence(SequenceNode sequence, Type? type=null, Value? default_value=null) {
 			Type t;
 			if (default_value != null) {
 				t = default_value.type();
@@ -260,20 +277,21 @@ namespace Catapult.Yaml
 
 			Value v = Value(t);
 
-			if (t.is_a(typeof(Collection))) {
+			if (t.is_a(typeof(Enumerable))) {
+				Enumerable enumerable = (default_value != null) ? (Enumerable)default_value.get_object() : null;
+				if (enumerable == null) {
+					debug("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
+					assert_not_reached();
+				}
+				populate_enumerable_from_sequence(enumerable, sequence);
+				v.set_object(enumerable);
+			} else if (t.is_a(typeof(Collection))) {
 				Collection collection = (default_value != null) ? (Collection)default_value.get_object() : null;
-				Type element_type;
 				if (collection == null) {
 					debug("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
 					assert_not_reached();
 				}
-				element_type = IndirectGenericsHelper.Gee.Collection.element_type(collection);
-				var indirect_collection = IndirectGenericsHelper.Gee.Collection.indirect(element_type);
-				foreach(var item in sequence.items()) {
-					Value element = ParseValueSupportingEntityReference(item, element_type);
-					if (element.holds(element_type))
-						indirect_collection.add(collection, element);
-				}
+				populate_collection_from_sequence(collection, sequence);
 				v.set_object(collection);
 			} else if (t.is_flags()) {
 				var flags_class = ((GLibPatch.FlagsClass)t.class_ref());
@@ -293,9 +311,8 @@ namespace Catapult.Yaml
 			return v;
 		}
 
-		Value ParseValueSupportingEntityReference(Node node, Type? type=null, Value? default_value=null, bool use_default_for_scalar=true)
-		{
-			if (type != null && type.is_a(typeof(Entity)))
+		Value ParseValueSupportingEntityReference(Node node, Type? type=null, Value? default_value=null, bool use_default_for_scalar=true) {
+			if (type != null && type.is_a(typeof(Entity)) && data_interface != null)
 			{
 				var scalar = node as ScalarNode;
 				if (scalar != null) {
@@ -319,35 +336,5 @@ namespace Catapult.Yaml
 			}
 			return ParseValue(node, type, default_value, use_default_for_scalar);
 		}
-
-		public static Type? get_tag_type(string tag)
-		{
-			if (tagTypeMappings.has_key(tag) == true)
-				return (Type?)tagTypeMappings[tag];
-			if (predefinedTypes.has_key(tag) == true)
-				return (Type?)predefinedTypes[tag];
-
-			return null;
-		}
-
-		public static void SetTypeTag(Type type, string tag)
-		{
-			tagTypeMappings[tag] = type;
-		}
-
-		static HashMap<string, Type> tagTypeMappings;
-		static HashMap<string, Type> predefinedTypes;
-		static construct {
-			tagTypeMappings = new HashMap<string, Type>();
-
-			predefinedTypes = new HashMap<string, Type>();
-			predefinedTypes.set(YAML.MAP_TAG, typeof(HashMap));
-			predefinedTypes.set(YAML.SEQ_TAG, typeof(ArrayList));
-			predefinedTypes.set(YAML.BOOL_TAG, typeof(bool));
-			predefinedTypes.set(YAML.FLOAT_TAG, typeof(double));
-			predefinedTypes.set(YAML.INT_TAG, typeof(int));
-			predefinedTypes.set(YAML.STR_TAG, typeof(string));
-		}
-
 	}
 }

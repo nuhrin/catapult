@@ -27,8 +27,7 @@ namespace Catapult
 	{
 		PARSE,
 		EMIT,
-		EVENT_TYPE,
-		INTERNAL
+		EVENT_TYPE
 	}
 	public errordomain RuntimeError
 	{

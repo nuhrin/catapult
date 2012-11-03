@@ -27,9 +27,14 @@ namespace Catapult
 	{
 		protected virtual string get_yaml_tag() { return ""; }
 
-		protected abstract Yaml.Node build_yaml_node(Yaml.NodeBuilder builder);
+		protected virtual Yaml.Node build_yaml_node(Yaml.NodeBuilder builder) {
+			return builder.populate_mapping_with_object_properties(this, new Yaml.MappingNode(this.get_tag()));
+		}
 		protected virtual Yaml.Node? build_unhandled_value_node(Yaml.NodeBuilder builder, Value value) { return null; }
-		protected abstract bool apply_yaml_node(Yaml.Node node, Yaml.NodeParser parser);
+		
+		protected virtual void apply_yaml_node(Yaml.Node node, Yaml.NodeParser parser) {
+			parser.populate_object_properties_from_mapping(this, node as Yaml.MappingNode);
+		}
 		protected virtual bool apply_unhandled_value_node(Yaml.Node node, string property_name, Yaml.NodeParser parser) { return false; }
 	}
 }

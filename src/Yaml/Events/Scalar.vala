@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class Scalar : NodeEvent
+	internal class Scalar : NodeEvent
 	{
 		public Scalar(string? anchor, string? tag, string value,
 		              bool plain_implicit = true, bool quoted_implicit = false,
@@ -43,10 +43,10 @@ namespace Catapult.Yaml.Events
 		public ScalarStyle style { get; private set; }
 		public override bool is_canonical { get { return !is_plain_implicit && !is_quoted_implicit; } }
 
-		public override string to_string()
-		{
-			return "[Scalar, value: %s]".printf(value);
-		}
+//~ 		public override string to_string()
+//~ 		{
+//~ 			return "[Scalar, value: %s]".printf(value);
+//~ 		}
 
 		internal Scalar.from_raw(RawEvent event)
 			requires(event.type == YAML.EventType.SCALAR_EVENT)

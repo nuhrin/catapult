@@ -21,9 +21,9 @@
  *      nuhrin <nuhrin@oceanic.to>
  */
  
-namespace Catapult.Helpers
+namespace Catapult
 {
-	public class ValueHelper
+	internal class ValueHelper
 	{
 		public static Value populate_value<T>(T val) {
 			Type type = typeof(T);

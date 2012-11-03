@@ -27,15 +27,15 @@ namespace Catapult.Yaml
 {
 	public class SequenceNode : Node
 	{
-		public SequenceNode(string? anchor=null, string? tag=null,
+		public SequenceNode(string? tag = null,
 							bool implicit = true,
 							SequenceStyle style = SequenceStyle.ANY)
 		{
-			base(anchor, tag);
+			base(tag);
 			is_implicit = implicit;
 			this.style = style;
 		}
-		internal SequenceNode.from_event(Events.SequenceStart event) {
+		internal SequenceNode.from_event(SequenceStart event) {
 			base.from_event(event);
 			is_implicit = event.is_implicit;
 			style = event.style;
@@ -68,8 +68,8 @@ namespace Catapult.Yaml
 		public Enumerable<SequenceNode> sequences() {
 			return (Enumerable<SequenceNode>)items().where(n=>n.node_type == NodeType.SEQUENCE);
 		}
-		internal override Events.Event get_event() {
-			return new Events.SequenceStart(anchor, tag, is_implicit, style);
+		internal override Event get_event() {
+			return new SequenceStart(null, tag, is_implicit, style);
 		}
 
 	}

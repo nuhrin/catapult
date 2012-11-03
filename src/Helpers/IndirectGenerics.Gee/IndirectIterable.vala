@@ -1,4 +1,4 @@
-/* SequenceEnd.vala
+/* IndirectIterable.vala
  * 
  * Copyright (C) 2012 nuhrin
  * 
@@ -21,29 +21,31 @@
  *      nuhrin <nuhrin@oceanic.to>
  */
  
-using YAML;
+using Gee;
 
-namespace Catapult.Yaml
+namespace Catapult
 {
-	internal class SequenceEnd : Event
-	{
-		public SequenceEnd()
+	internal class IndirectIterable<A> : IndirectUni<A>
+	{		
+		public Value[] get_values(Iterable obj)
 		{
-			base(EventType.SEQUENCE_END);
-		}
+			assert_correct_type("add", "element", obj.element_type);
+			var iterable = (obj as Iterable<A>);
+			ValueArray values = new ValueArray(0);
+			var type = typeof(A);
+			foreach(A item in iterable) {
+				Value typed_value = Value(type);
+				if (type == typeof(string))
+					typed_value.take_string((string)item);
+				else if (type.is_object())
+					typed_value.take_object((Object)item);
+				else
+					typed_value = ValueHelper.populate_value<A>(item);
 
-		internal SequenceEnd.from_raw(RawEvent event)
-			requires(event.type == YAML.EventType.SEQUENCE_END_EVENT)
-		{
-			base.from_raw(event);
-		}
-		internal override int nesting_increase { get { return -1; } }
+				values.append(typed_value);
+			}
 
-		internal override RawEvent create_raw_event()
-		{
-			RawEvent event = {0};
-			RawEvent.sequence_end_initialize(ref event);
-			return event;
+			return values.values;
 		}
 	}
 }

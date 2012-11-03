@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class MappingEnd : Event
+	internal class MappingEnd : Event
 	{
 		public MappingEnd()
 		{

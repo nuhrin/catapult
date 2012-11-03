@@ -22,40 +22,46 @@
  */
  
 using Gee;
-using Catapult.Helpers.IndirectGenerics;
-using Catapult.Helpers.IndirectGenerics.Gee;
 
-namespace Catapult.Helpers
+namespace Catapult
 {
-	public class IndirectGenericsHelper
+	internal class IndirectGenericsHelper
 	{
+		public class Enumerable 
+		{
+			public static IndirectEnumerable indirect(global::Catapult.Enumerable enumerable) {
+				return IndirectFactory.get_uni<IndirectEnumerable>(enumerable.element_type);
+			}
+		}
 		public class Gee
 		{
 			public class Map
 			{
-				public static Type key_type(global::Gee.Map obj) { return IndirectMap.key_type(obj); }
-				public static Type value_type(global::Gee.Map obj) { return IndirectMap.value_type(obj); }
-				public static IndirectMap indirect(Type key_type, Type value_type)
-				{
-					return IndirectFactory.get_bi<IndirectMap>(key_type, value_type);
+				public static IndirectMap indirect(global::Gee.Map map) {
+					return IndirectFactory.get_bi<IndirectMap>(map.key_type, map.value_type);
+				}
+			}
+			public class Iterable
+			{
+				public static IndirectIterable indirect(global::Gee.Iterable iterable) {
+					return IndirectFactory.get_uni<IndirectIterable>(iterable.element_type);
+				}
+				public static Value[] get_values(global::Gee.Iterable iterable) {
+					return Iterable.indirect(iterable).get_values(iterable);
 				}
 			}
 			public class Collection
 			{
-				public static Type element_type(global::Gee.Collection obj) { return IndirectCollection.element_type(obj); }
-				public static IndirectCollection indirect(Type element_type)
-				{
-					return IndirectFactory.get_uni<IndirectCollection>(element_type);
+				public static IndirectCollection indirect(global::Gee.Collection collection) {
+					return IndirectFactory.get_uni<IndirectCollection>(collection.element_type);
 				}
 			}
-			public class List
-			{
-				public static Type element_type(global::Gee.List obj) { return IndirectCollection.element_type(obj); }
-				public static IndirectCollection indirect(Type element_type)
-				{
-					return IndirectFactory.get_uni<IndirectList>(element_type);
-				}
-			}
+//~ 			public class List
+//~ 			{
+//~ 				public static IndirectCollection indirect(global::Gee.List list) {
+//~ 					return IndirectFactory.get_uni<IndirectList>(list.element_type);
+//~ 				}
+//~ 			}
 		}
 
 	}

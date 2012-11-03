@@ -24,9 +24,9 @@
 using YAML;
 using Catapult.Helpers;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class AnchorAlias : Event
+	internal class AnchorAlias : Event
 	{
 		public AnchorAlias(string anchor)
 		{

@@ -22,7 +22,6 @@
  */
  
 using Gee;
-using Catapult.Helpers;
 
 namespace Catapult
 {
@@ -44,23 +43,20 @@ namespace Catapult
 			return new Enumerable<G>(new UnfoldingIterable<G>((owned)unfold_func));
 		}
 
-		Type elementType;
-		protected Iterable<G>? iterable;
+		internal Iterable<G>? iterable;
 		public Enumerable(Iterable<G> iterable) {
 			this.iterable = iterable;
-			this.elementType = typeof(G);
 		}
 
 		// Iterable<G> implementation
 		public virtual Iterator<G> iterator() { return iterable.iterator(); }
 
 		// Traversable<G> implementation
-		public Type element_type { get { return elementType; } }
 		public bool foreach(ForallFunc<G> f) { return iterator().foreach(f); }
 		
-		public Enumerable<G> where(owned Predicate<G> predicate) { return new EnumerableWhere<G>(this, (owned)predicate); }
-		public Enumerable<A> select<A>(owned MapFunc<A,G> selector) { return new EnumerableSelect<A,G>(this, (owned)selector); }
-		public Enumerable<G> concat(Iterable<G> other) { return new EnumerableConcat<G>(this, other); }
+		public Enumerable<G> where(owned Predicate<G> predicate) { return (Enumerable<G>)new EnumerableWhere<G>(this, (owned)predicate); }
+		public Enumerable<A> select<A>(owned MapFunc<A,G> selector) { return (Enumerable<G>)new EnumerableSelect<A,G>(this, (owned)selector); }
+		public Enumerable<G> concat(Iterable<G> other) { return (Enumerable<G>)new EnumerableConcat<G>(this, other); }
 
 		public Enumerable<A> of_type<A>() {
 			Type resultType = typeof(A);
@@ -191,36 +187,36 @@ namespace Catapult
 		//Value get_real_value(Value v) { return v; }
 	}
 
-	public class EnumerableWhere<G> : Enumerable<G>
+	class EnumerableWhere<G> : Enumerable<G>
 	{
-		internal EnumerableWhere(Iterable<G> iterable, owned Predicate<G> predicate) {
+		public EnumerableWhere(Iterable<G> iterable, owned Predicate<G> predicate) {
 			base(iterable);
 			this.predicate = (owned)predicate;
 		}
 		Predicate<G> predicate;
 		public override Iterator<G> iterator() { return this.iterable.filter((owned)predicate); }
 	}
-	public class EnumerableSelect<A,G> : Enumerable<A>
+	class EnumerableSelect<A,G> : Enumerable<A>
 	{
-		internal EnumerableSelect(Iterable<G> iterable, owned MapFunc<A,G> selector) {
+		public EnumerableSelect(Iterable<G> iterable, owned MapFunc<A,G> selector) {
 			base(iterable);
 			this.selector = (owned)selector;
 		}
 		MapFunc<A,G> selector;
 		public override Iterator<A> iterator() { return iterable.map<A>(selector); }
 	}
-	public class EnumerableStream<G,A> : Enumerable<A>
+	class EnumerableStream<G,A> : Enumerable<A>
 	{
-		internal EnumerableStream(Iterable<G> iterable, owned StreamFunc<G,A> streamer) {
+		public EnumerableStream(Iterable<G> iterable, owned StreamFunc<G,A> streamer) {
 			base(iterable);
 			this.streamer = (owned)streamer;
 		}
 		StreamFunc<G,A> streamer;
 		public override Iterator<A> iterator() { return iterable.stream<A>((owned)streamer); }
 	}
-	public class EnumerableConcat<G> : Enumerable<G>
+	class EnumerableConcat<G> : Enumerable<G>
 	{
-		internal EnumerableConcat(Iterable<G> iterable, Iterable<G> other_iterable) {
+		public EnumerableConcat(Iterable<G> iterable, Iterable<G> other_iterable) {
 			base(iterable);
 			this.other_iterable = other_iterable;
 		}
@@ -240,18 +236,15 @@ namespace Catapult
 	}
 	class UnfoldingIterable<G> : Object, Traversable<G>, Iterable<G>
 	{
-		Type elementType;
 		UnfoldFunc<G> unfold_func;
 		public UnfoldingIterable(owned UnfoldFunc<G> unfold_func) {
 			this.unfold_func = (owned)unfold_func;
-			this.elementType = typeof(G);
 		}
 
 		// Iterable<G> implementation
 		public Iterator<G> iterator() { return Iterator.unfold<G>((owned)unfold_func); }
 		
 		// Traversable<G> implementation
-		public Type element_type { get { return elementType; } }		
 		public bool foreach(ForallFunc<G> f) { return iterator().foreach(f); }
 	}
 }

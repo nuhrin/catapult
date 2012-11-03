@@ -28,15 +28,14 @@ namespace Catapult.Yaml
 {
 	public class MappingNode : Node
 	{
-		public MappingNode(string? anchor = null, string? tag = null,
-						   bool implicit = true,
+		public MappingNode(string? tag = null, bool implicit = true,
 						   MappingStyle style = MappingStyle.ANY)
 		{
-			base(anchor, tag);
+			base(tag);
 			is_implicit = implicit;
 			this.style = style;
 		}
-		internal MappingNode.from_event(Events.MappingStart event) {
+		internal MappingNode.from_event(MappingStart event) {
 			base.from_event(event);
 			is_implicit = event.is_implicit;
 			this.style = event.style;
@@ -68,13 +67,13 @@ namespace Catapult.Yaml
 			return null;			
 		}
 		public void set_scalar(string key, Node value) {
-			this.set(new ScalarNode(null, null, key), value);
+			this.set(new ScalarNode(key), value);
 		}
 		public Enumerable<Node> keys() { return new Enumerable<Node>(node_children.get(this)); }
 		public Enumerable<ScalarNode> scalar_keys() { return (Enumerable<ScalarNode>)keys().where(n=>n.node_type == NodeType.SCALAR); }
 
-		internal override Events.Event get_event() {
-			return new Events.MappingStart(anchor, tag, is_implicit, style);
+		internal override Event get_event() {
+			return new MappingStart(null, tag, is_implicit, style);
 		}
 	}
 }

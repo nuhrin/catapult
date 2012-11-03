@@ -23,9 +23,9 @@
  
 using Gee;
 
-namespace Catapult.Helpers.IndirectGenerics.Gee
+namespace Catapult
 {
-	public class IndirectList<A> : IndirectCollection<A>
+	internal class IndirectList<A> : IndirectCollection<A>
 	{
 		public new global::Gee.List create(Type type) requires(type.is_a(typeof(global::Gee.List)))
 		{

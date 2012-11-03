@@ -21,9 +21,9 @@
  *      nuhrin <nuhrin@oceanic.to>
  */
  
-namespace Catapult.Helpers.IndirectGenerics
+namespace Catapult
 {
-	public abstract class IndirectUni<A> : Object
+	internal abstract class IndirectUni<A> : Object
 	{
 		public static IndirectUni create<T>(Type a_type)
 		{
@@ -32,7 +32,19 @@ namespace Catapult.Helpers.IndirectGenerics
 
 			Parameter[] params = new Parameter[1];
 			params[0] = Parameter() { name = "a-type", value = a_type_value };
-			return Object.newv(typeof(T), params) as IndirectUni;
+			
+			var result = Object.newv(typeof(T), params) as IndirectUni;
+			result._a_type = a_type;
+			return result;
+		}
+		Type _a_type;
+		
+		protected void assert_correct_type(string* context_method, string* a_type_name, Type a_type) {
+			if (a_type != _a_type) {
+				error("%s.%s: expected %s type '%s', got '%s'.", 
+					this.get_type().name(), context_method, a_type_name,
+					a_type.name(), typeof(A).name());
+			}			
 		}
 	}
 }

@@ -23,7 +23,7 @@
  
 namespace Catapult.Yaml
 {
-	public class Constants
+	internal class Constants
 	{
 		public class Tag
 		{

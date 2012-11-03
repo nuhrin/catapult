@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public abstract class Event : Object
+	internal abstract class Event : Object
 	{
 		public Event(EventType event_type)
 		{
@@ -45,9 +45,9 @@ namespace Catapult.Yaml.Events
 
 		internal abstract RawEvent create_raw_event();
 
-		public virtual string to_string() { return "[%s]".printf(this.get_type().name().replace("CatapultYamlEvents", "")); }
+//~ 		public virtual string to_string() { return "[%s]".printf(this.get_type().name().replace("CatapultYamlEvents", "")); }
 	}
-	public class EmptyEvent : Event
+	internal class EmptyEvent : Event
 	{
 		public EmptyEvent()
 		{

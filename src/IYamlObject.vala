@@ -25,9 +25,8 @@ namespace Catapult
 {
 	public interface IYamlObject : Object
 	{
-		protected abstract string get_yaml_tag();
-		internal string? get_tag()
-		{
+		protected virtual string get_yaml_tag() { return ""; }
+		internal string? get_tag() {
 			string tag = get_yaml_tag();
 			if (tag != "")
 			{
@@ -38,16 +37,20 @@ namespace Catapult
 			return null;
 		}
 
-		protected abstract Yaml.Node build_yaml_node(Yaml.NodeBuilder builder);
+		protected virtual Yaml.Node build_yaml_node(Yaml.NodeBuilder builder) {
+			return builder.populate_mapping_with_object_properties(this, new Yaml.MappingNode(this.get_tag()));
+		}
 		internal Yaml.Node i_build_yaml_node(Yaml.NodeBuilder builder) { return build_yaml_node(builder); }
 
-		protected abstract Yaml.Node? build_unhandled_value_node(Yaml.NodeBuilder builder, Value value);
+		protected virtual Yaml.Node? build_unhandled_value_node(Yaml.NodeBuilder builder, Value value) { return null; }		
 		internal Yaml.Node? i_build_unhandled_value_node(Yaml.NodeBuilder builder, Value value) { return build_unhandled_value_node(builder, value); }
 
-		protected abstract bool apply_yaml_node(Yaml.Node node, Yaml.NodeParser parser);
-		internal bool i_apply_yaml_node(Yaml.Node node, Yaml.NodeParser parser) { return apply_yaml_node(node, parser); }
+		protected virtual void apply_yaml_node(Yaml.Node node, Yaml.NodeParser parser) {
+			parser.populate_object_properties_from_mapping(this, node as Yaml.MappingNode);
+		}
+		internal void i_apply_yaml_node(Yaml.Node node, Yaml.NodeParser parser) { apply_yaml_node(node, parser); }
 
-		protected abstract bool apply_unhandled_value_node(Yaml.Node node, string property_name, Yaml.NodeParser parser);
+		protected virtual bool apply_unhandled_value_node(Yaml.Node node, string property_name, Yaml.NodeParser parser) { return false; }
 		internal bool i_apply_unhandled_value_node(Yaml.Node node, string property_name, Yaml.NodeParser parser) { return apply_unhandled_value_node(node, property_name, parser); }
 	}
 }

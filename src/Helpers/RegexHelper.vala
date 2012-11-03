@@ -25,7 +25,7 @@ namespace Catapult.Helpers
 {
 	public class RegexHelper
 	{
-		public static unowned RegexHelper non_word_characters { 
+		internal static unowned RegexHelper non_word_characters { 
 			get { 
 				if (_nonWordChars == null)
 					_nonWordChars = new RegexHelper("""[^\w]+""");
@@ -34,7 +34,7 @@ namespace Catapult.Helpers
 		}				
 		static RegexHelper _nonWordChars = null;
 
-		public static unowned RegexHelper non_filename_characters { 
+		internal static unowned RegexHelper non_filename_characters { 
 			get { 
 				if (_nonFilenameChars == null)
 					_nonFilenameChars = new RegexHelper("""[^\w\.-]+""");
@@ -44,7 +44,7 @@ namespace Catapult.Helpers
 		static RegexHelper _nonFilenameChars = null;
 
 
-		public static unowned RegexHelper non_alpha_numeric_characters { 
+		internal static unowned RegexHelper non_alpha_numeric_characters { 
 			get { 
 				if (_nonAlphaNumericChars == null)
 					_nonAlphaNumericChars = new RegexHelper("""^[0-9a-zA-Z_\-]+$""");

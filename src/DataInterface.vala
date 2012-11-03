@@ -26,7 +26,7 @@ using Catapult.Helpers;
 
 namespace Catapult
 {
-	public class DataInterface : Object
+	public class DataInterface
 	{
 		Yaml.NodeBuilder builder;
 		Yaml.NodeParser parser;
@@ -39,25 +39,31 @@ namespace Catapult
 
 			this.root_folder = root_folder;
 			builder = new Yaml.NodeBuilder();
-			parser = new Yaml.NodeParser(this);
+			parser = new Yaml.NodeParser.with_data_interface(this);
 		}
 		public string root_folder { get; private set; }
 
-		public T create<T>(string? entity_id=null) throws RuntimeError requires(typeof(T).is_a(typeof(Entity)))
+		public E create<E>(string? entity_id=null) throws RuntimeError requires(typeof(E).is_a(typeof(Entity)))
 		{
 			if (entity_id == null)
-				return (T)Object.new(typeof(T));
+				return (E)Object.new(typeof(E));
 
 			if (is_valid_entity_id(entity_id) == false)
 				throw new RuntimeError.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
-			Entity e = Object.new(typeof(T)) as Entity;
+			Entity e = Object.new(typeof(E)) as Entity;
 			e.i_set_id(entity_id);
-			return (T)e;
+			return (E)e;
 		}
 
-		public Enumerable<T> load_all<T>(bool throw_on_error=true) throws RuntimeError, YamlError, FileError requires(typeof(T).is_a(typeof(Entity)))
+		public E load<E>(string entity_id, string? data_folder=null) throws RuntimeError, YamlError, FileError
+			requires(typeof(E).is_a(typeof(Entity)))
 		{
-			return load_all_of_type(typeof(T)).of_type<T>();
+			return (E)load_internal(entity_id, data_folder, typeof(E));
+		}
+		
+		public Enumerable<E> load_all<E>(bool throw_on_error=true) throws RuntimeError, YamlError, FileError requires(typeof(E).is_a(typeof(Entity)))
+		{
+			return load_all_of_type(typeof(E)).of_type<E>();
 		}
 		public Enumerable<Entity> load_all_of_type(Type entity_type, bool throw_on_error=true) throws RuntimeError, YamlError, FileError requires(entity_type.is_a(typeof(Entity)))
 		{
@@ -91,11 +97,7 @@ namespace Catapult
 
 			return new Enumerable<Entity>(entities);
 		}
-		public T load<T>(string entity_id, string? data_folder=null) throws RuntimeError, YamlError, FileError
-			requires(typeof(T).is_a(typeof(Entity)))
-		{
-			return (T)load_internal(entity_id, data_folder, typeof(T));
-		}
+		
 		internal Entity load_internal(string entity_id, string? data_folder, Type entity_type) throws RuntimeError, YamlError
 		{
 			//if (is_valid_entity_id(entity_id) == false)
@@ -162,10 +164,10 @@ namespace Catapult
 			file.delete();
 		}
 
-		public void register_entity_provider<T>(EntityProvider<T> provider) {
+		public void register_entity_provider<E>(EntityProvider<E> provider) {
 			if (provider_hash == null)
 				provider_hash = new HashMap<Type,EntityProvider>();
-			provider_hash[typeof(T)] = provider;
+			provider_hash[typeof(E)] = provider;
 		}
 		public EntityProvider? get_provider(Type type) {
 			return (has_entity_provider(type)) ? provider_hash[type] : null;

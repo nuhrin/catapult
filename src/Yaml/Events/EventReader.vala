@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class EventReader
+	internal class EventReader
 	{
 		Parser parser;
 		RawEvent raw_event;

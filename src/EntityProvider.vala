@@ -23,7 +23,7 @@
  
 namespace Catapult
 {
-	public abstract class EntityProvider<E> : Object
+	public abstract class EntityProvider<E>
 	{
 		DataInterface di;
 		protected EntityProvider(string root_folder) throws RuntimeError
@@ -32,11 +32,7 @@ namespace Catapult
 				error("Type E (%s) is not an Entity type.", typeof(E).name());
 			di = new DataInterface(root_folder);
 		}
-		
-		public void register_entity_provider<T>(EntityProvider<T> provider) {
-			di.register_entity_provider<T>(provider);
-		}
-		
+				
 		protected abstract Entity? get_entity(string entity_id);		
 		internal Entity? i_get_entity(string entity_id) { return get_entity(entity_id); }		
 		
@@ -57,5 +53,8 @@ namespace Catapult
 			di.remove((Entity)entity);
 		}
 		
+		protected void register_entity_provider<G>(EntityProvider<G> provider) {
+			di.register_entity_provider<G>(provider);
+		}		
 	}
 }

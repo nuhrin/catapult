@@ -22,11 +22,10 @@
  */
  
 using YAML;
-using Catapult.Helpers;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class Mark
+	internal class Mark
 	{
 		public Mark(size_t index = 0, size_t line = 0, size_t column = 0)
 		{

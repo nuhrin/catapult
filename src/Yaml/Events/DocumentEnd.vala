@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class DocumentEnd : Event
+	internal class DocumentEnd : Event
 	{
 		public DocumentEnd(bool implicit)
 		{

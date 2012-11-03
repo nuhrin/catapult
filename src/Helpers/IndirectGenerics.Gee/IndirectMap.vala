@@ -23,46 +23,20 @@
  
 using Gee;
 
-namespace Catapult.Helpers.IndirectGenerics.Gee
+namespace Catapult
 {
-	public class IndirectMap<A,B> : IndirectBi<A,B>
+	internal class IndirectMap<A,B> : IndirectBi<A,B>
 	{
-		public static Type key_type(Map obj)
-		{
-			return obj.key_type;
-		}
-		public static Type value_type(Map obj)
-		{
-			return obj.value_type;
-		}
-
-		public new Map create(Type type) requires(type.is_a(typeof(Map)))
-		{
-			if (type == typeof(HashMap))
-				return new HashMap<A,B>();
-			else if (type == typeof(TreeMap))
-				return new TreeMap<A,B>();
-			else if (type == typeof(AbstractMap))
-				return new HashMap<A,B>();
-			else if (type == typeof(Map))
-				return new HashMap<A,B>();
-
-			assert_not_reached();
-		}
-
 		public new void set(Map obj, Value key, Value value)
 		{
+			assert_correct_map_types("set", obj);
 			A k = ValueHelper.extract_value<A>(key);
 			B v = ValueHelper.extract_value<B>(value);
 			(obj as Map<A,B>).set(k, v);
 		}
-		public bool has_key(Map obj, Value key)
-		{
-			A k = ValueHelper.extract_value<A>(key);
-			return (obj as Map<A,B>).has_key(k);
-		}
 		public new Value get(Map obj, Value key)
 		{
+			assert_correct_map_types("get", obj);
 			A k = ValueHelper.extract_value<A>(key);
 			B v = (obj as Map<A,B>).get(k);
 			var type = typeof(B);
@@ -75,9 +49,9 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 				typed_value = ValueHelper.populate_value<A>(v);
 			return typed_value;
 		}
-
 		public Value[] get_keys(Map obj)
 		{
+			assert_correct_map_types("get_keys", obj);
 			var map = (obj as Map<A,B>);
 			Value[] values = new Value[map.size];
 			int index = 0;
@@ -97,5 +71,29 @@ namespace Catapult.Helpers.IndirectGenerics.Gee
 			}
 			return values;
 		}
+		
+		protected void assert_correct_map_types(string* context_method, Map obj) {
+			assert_correct_types(context_method, "key", obj.key_type, "value", obj.value_type);			
+		}
+		// other methods not currently used
+//~ 		public new Map create(Type type) requires(type.is_a(typeof(Map)))
+//~ 		{
+//~ 			if (type == typeof(HashMap))
+//~ 				return new HashMap<A,B>();
+//~ 			else if (type == typeof(TreeMap))
+//~ 				return new TreeMap<A,B>();
+//~ 			else if (type == typeof(AbstractMap))
+//~ 				return new HashMap<A,B>();
+//~ 			else if (type == typeof(Map))
+//~ 				return new HashMap<A,B>();
+//~ 
+//~ 			assert_not_reached();
+//~ 		}
+//~ 
+//~ 		public bool has_key(Map obj, Value key)
+//~ 		{
+//~ 			A k = ValueHelper.extract_value<A>(key);
+//~ 			return (obj as Map<A,B>).has_key(k);
+//~ 		}
 	}
 }

@@ -21,9 +21,9 @@
  *      nuhrin <nuhrin@oceanic.to>
  */
  
-namespace Catapult.Helpers.IndirectGenerics
+namespace Catapult
 {
-	public abstract class IndirectBi<A,B> : Object
+	internal abstract class IndirectBi<A,B> : Object
 	{
 		public static IndirectBi create<T>(Type a_type, Type b_type)
 		{
@@ -35,7 +35,26 @@ namespace Catapult.Helpers.IndirectGenerics
 			Parameter[] params = new Parameter[2];
 			params[0] = Parameter() { name = "a-type", value = a_type_value };
 			params[1] = Parameter() { name = "b-type", value = b_type_value };
-			return Object.newv(typeof(T), params) as IndirectBi;
+			
+			var result = Object.newv(typeof(T), params) as IndirectBi;
+			result._a_type = a_type;
+			result._b_type = b_type;
+			return result;
 		}
+		Type _a_type;
+		Type _b_type;
+		
+		protected void assert_correct_types(string* context_method, string* a_type_name, Type a_type, string* b_type_name, Type b_type) {
+			if (a_type != _a_type) {
+				error("%s.%s: expected %s type '%s', got '%s'.", 
+					this.get_type().name(), context_method, a_type_name,
+					a_type.name(), typeof(A).name());
+			}
+			if (b_type != _b_type) {
+				error("%s.%s: expected %s type '%s', got '%s'.", 
+					this.get_type().name(), context_method, b_type_name,
+					b_type.name(), typeof(B).name());
+			}			
+		}		
 	}
 }

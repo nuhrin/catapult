@@ -22,7 +22,6 @@
  */
  
 using Gee;
-using Catapult.Yaml.Events;
 using YAML;
 
 namespace Catapult.Yaml
@@ -55,7 +54,6 @@ namespace Catapult.Yaml
 
 		public Document read_document() throws YamlError
 		{
-			//var timer = new TimerBlock("DocumentReader.read_document()");
 			ensure_document_start();
 			bool isImplicit = (raw_event.document_start_implicit != 0);
 			move_next();

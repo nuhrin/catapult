@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class MappingStart : NodeEvent
+	internal class MappingStart : NodeEvent
 	{
 		public MappingStart(string? anchor = null, string? tag = null,
 							bool implicit = true,

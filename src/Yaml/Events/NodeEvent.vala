@@ -24,9 +24,9 @@
 using YAML;
 using Catapult.Helpers;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public abstract class NodeEvent : Event
+	internal abstract class NodeEvent : Event
 	{
 		protected NodeEvent(string? anchor, string? tag, EventType type)
 		{

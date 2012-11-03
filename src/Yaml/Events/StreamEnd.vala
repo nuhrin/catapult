@@ -23,9 +23,9 @@
  
 using YAML;
 
-namespace Catapult.Yaml.Events
+namespace Catapult.Yaml
 {
-	public class StreamEnd : Event
+	internal class StreamEnd : Event
 	{
 		public StreamEnd()
 		{

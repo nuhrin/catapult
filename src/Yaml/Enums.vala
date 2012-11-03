@@ -23,12 +23,16 @@
  
 
 namespace Catapult.Yaml
-{
-
-	public enum MappingStyle {
-		ANY,
-		BLOCK,
-		FLOW
+{	
+	public enum EncodingType {
+		/* Let the parser choose the encoding. */
+		ANY_ENCODING,
+		/* The default UTF-8 encoding. */
+		UTF8_ENCODING,
+		/* The UTF-16-LE encoding with BOM. */
+		UTF16LE_ENCODING,
+		/* The UTF-16-BE encoding with BOM. */
+		UTF16BE_ENCODING
 	}
 
 	public enum NodeType {
@@ -48,6 +52,12 @@ namespace Catapult.Yaml
 	}
 
 	public enum SequenceStyle{
+		ANY,
+		BLOCK,
+		FLOW
+	}
+
+	public enum MappingStyle {
 		ANY,
 		BLOCK,
 		FLOW
