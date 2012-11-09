@@ -1,9 +1,10 @@
 catapult 0.3.0
 ==============
+* add Devhelp documentation generation
 * add EntityProvider and DataInterface.remove()
-* add NodeParser.populate_map<K,V>(), parse_map_item<K,V>()
-* add NodeBuilder.populate_mapping<K,V>(), add_mapping<K,V>()
-* use lowercase property names like a good boy
+* add convenience methods to NodeBuilder and NodeParser
+* clean up API anomolies
+* bug and build fixes
 
 catapult 0.2.0
 ==============

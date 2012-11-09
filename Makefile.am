@@ -57,6 +57,7 @@ CLEANFILES = \
 	$(NULL)
 
 EXTRA_DIST = \
+	README.md \
 	catapult.pc.in \
 	.version \
 	build-aux/git-version-gen \
