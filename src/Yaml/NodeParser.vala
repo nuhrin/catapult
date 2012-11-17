@@ -182,7 +182,7 @@ namespace Catapult.Yaml
 				Date d = Date();
 				d.set_parse(scalar.value);
 				if (d.valid() == false) {
-					debug("Could not parse GDate from '%s'", scalar.value);
+					warning("Could not parse GDate from '%s'", scalar.value);
 					d = Date();
 					d.set_time_t(0);
 				}
@@ -211,7 +211,7 @@ namespace Catapult.Yaml
 			if (t.is_a(typeof(Map))) {
 				Map map = (default_value != null) ? (Map)default_value.get_object() : null;
 				if (map == null) {
-					debug("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
+					warning("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
 					assert_not_reached();
 				}
 				map.clear();
@@ -224,7 +224,7 @@ namespace Catapult.Yaml
 				PopulateObjectProperties(obj, mapping);
 				v.set_object(obj);
 			} else {
-				debug("Unsupported mapping type: %s", t.name());
+				warning("Unsupported mapping type: %s", t.name());
 				assert_not_reached();
 			}
 
@@ -239,7 +239,7 @@ namespace Catapult.Yaml
 		}
 		bool PopulateObjectProperty(Object obj, string property_name, ParamSpec? property, Node value_node) {
 			if (property == null) {
-				debug("Parse error: property '%s' not found on type %s", property_name, obj.get_type().name());
+				warning("Parse error: property '%s' not found on type %s", property_name, obj.get_type().name());
 				return false;
 			}
 			if ((property.flags & ParamFlags.READWRITE) == ParamFlags.READWRITE) {
@@ -253,7 +253,7 @@ namespace Catapult.Yaml
 						parsed = yobj.i_apply_unhandled_value_node(value_node, property.name, this);
 					}
 					if (parsed == false) {
-						debug("Parse error: failed to parse property '%s' on type %s", property_name, obj.get_type().name());
+						warning("Parse error: failed to parse property '%s' on type %s", property_name, obj.get_type().name());
 						return false;
 					}
 				} else {
@@ -280,7 +280,7 @@ namespace Catapult.Yaml
 			if (t.is_a(typeof(Enumerable))) {
 				Enumerable enumerable = (default_value != null) ? (Enumerable)default_value.get_object() : null;
 				if (enumerable == null) {
-					debug("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
+					warning("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
 					assert_not_reached();
 				}
 				populate_enumerable_from_sequence(enumerable, sequence);
@@ -288,7 +288,7 @@ namespace Catapult.Yaml
 			} else if (t.is_a(typeof(Collection))) {
 				Collection collection = (default_value != null) ? (Collection)default_value.get_object() : null;
 				if (collection == null) {
-					debug("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
+					warning("No instance of generic type %s given. Element type cannot be determined without an instance.", t.name());
 					assert_not_reached();
 				}
 				populate_collection_from_sequence(collection, sequence);
@@ -304,7 +304,7 @@ namespace Catapult.Yaml
 				if (flags != null)
 					v.set_flags(flags);
 			} else {
-				debug("Unsupported sequence type: %s", t.name());
+				warning("Unsupported sequence type: %s", t.name());
 				assert_not_reached();
 			}
 
@@ -329,7 +329,7 @@ namespace Catapult.Yaml
 						var entity = (Entity)data_interface.load_internal(scalar.value, null, type);
 						return entity;
 					} catch(Error e) {
-						debug("Error loading %s entity id %s: %s", type.name(), scalar.value, e.message);
+						warning("Error loading %s entity id %s: %s", type.name(), scalar.value, e.message);
 						return Value(typeof(Fail));
 					}
 				}

@@ -75,7 +75,7 @@ namespace Catapult.Yaml
 				var valueNode = BuildValueSupportingEntityReference(value);
 				mapping[keyNode] = valueNode;
 			} catch (Error e) {
-				debug(e.message);
+				warning(e.message);
 				assert_not_reached();
 			}
 		}
@@ -270,7 +270,7 @@ namespace Catapult.Yaml
 			try {
 				return BuildValue(value);
 			} catch (Error e) {
-				debug(e.message);
+				warning(e.message);
 				assert_not_reached();
 			}
 		}
@@ -286,7 +286,7 @@ namespace Catapult.Yaml
 							return node;
 					}
 				}
-				debug(e.message);
+				warning(e.message);
 				assert_not_reached();
 			}
 		}

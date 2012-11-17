@@ -75,7 +75,7 @@ namespace Catapult
 			} catch (FileError e) {
 				if (throw_on_error)
 					throw e;
-				debug("FileError: %s", e.message);
+				warning("FileError: %s", e.message);
 				return Enumerable.empty<Entity>();
 			}
 
@@ -87,11 +87,11 @@ namespace Catapult
 				} catch(RuntimeError e) {
 					if (throw_on_error)
 						throw e;
-					debug("RuntimeError: %s", e.message);					
+					warning("RuntimeError: %s", e.message);					
 				} catch(YamlError e) {
 					if (throw_on_error)
 						throw e;
-					debug("YamlError: %s", e.message);					
+					warning("YamlError: %s", e.message);					
 				}
 			}
 
