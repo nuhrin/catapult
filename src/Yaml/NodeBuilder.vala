@@ -246,11 +246,7 @@ namespace Catapult.Yaml
 			var property = klass.find_property(propertyName);
 			if (property == null)
 				return false;
-			var keyNode = BuildValueAssert(property.name);
-			Value existing_prop_value = Value(property.value_type);
-			obj.get_property(property.name, ref existing_prop_value);
-			node[keyNode] = BuildValueAssertSupportingEntityReference(existing_prop_value, obj);
-			return true;
+			return AddObjectParamSpecMapping(node, obj, property);
 		}
 
 		Node BuildValueSupportingEntityReference(Value value) throws RuntimeError
