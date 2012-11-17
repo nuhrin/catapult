@@ -31,7 +31,9 @@ namespace Catapult
 			if (typeof(E).is_a(typeof(Entity)) == false)
 				error("Type E (%s) is not an Entity type.", typeof(E).name());
 			di = new DataInterface(root_folder);
+			parser = di.get_parser();
 		}
+		protected Yaml.NodeParser parser { get; private set; }
 				
 		protected abstract Entity? get_entity(string entity_id);		
 		internal Entity? i_get_entity(string entity_id) { return get_entity(entity_id); }		
@@ -46,15 +48,30 @@ namespace Catapult
 		}
 		protected void save(E entity, string? entity_id=null, string? data_folder=null) throws YamlError, RuntimeError, FileError
 		{
-			di.save((Entity)entity, entity_id, data_folder);
+			di.save((Entity)entity, entity_id, data_folder ?? typeof(E).name());
 		}
 		protected void remove(E entity) throws RuntimeError, Error
 		{
 			di.remove((Entity)entity);
-		}
+		}				
 		
 		protected void register_entity_provider<G>(EntityProvider<G> provider) {
 			di.register_entity_provider<G>(provider);
 		}		
+		
+		protected Enumerable<string> get_ids() throws RuntimeError, FileError
+		{
+			return di.get_entity_ids(typeof(E));
+		}
+		protected Yaml.Document load_document(string entity_id, string? data_folder=null) throws RuntimeError, YamlError
+		{
+			return di.load_entity_document(entity_id, data_folder, typeof(E));
+		}
+		protected void apply_yaml_node(E entity, Yaml.Node node) {
+			((Entity)entity).i_apply_yaml_node(node, parser);
+		}
+		protected void set_id(E entity, string id) {
+			((Entity)entity).i_set_id(id);
+		}
 	}
 }

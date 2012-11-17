@@ -98,36 +98,6 @@ namespace Catapult
 			return new Enumerable<Entity>(entities);
 		}
 		
-		internal Entity load_internal(string entity_id, string? data_folder, Type entity_type) throws RuntimeError, YamlError
-		{
-			//if (is_valid_entity_id(entity_id) == false)
-			//	throw new RuntimeError.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
-
-			if (has_entity_provider(entity_type) == true) {
-				var e = provider_hash[entity_type].i_get_entity(entity_id);
-				if (e == null)
-					throw new RuntimeError.ARGUMENT("%s entity not found: %s", entity_type.name(), entity_id);
-				return e;
-			}
-
-			string folder = (data_folder != null) ? data_folder : entity_type.name();
-
-			string entity_file = get_entity_file_path(folder, entity_id, false);
-			if (FileUtils.test(entity_file, FileTest.EXISTS) == false)
-				throw new RuntimeError.FILE("%s '%s' not found.", entity_type.name(), entity_id);
-
-			var file = FileStream.open(entity_file, "r");
-			if (file == null)
-				throw new RuntimeError.FILE("File not found: %s", entity_file);
-
-			var document = new Yaml.DocumentReader(file).read_document();
-
-			Entity entity = (Entity)parser.parse_value_of_type(document.root, entity_type);
-			entity.i_set_id(entity_id);
-
-			return entity;
-		}
-		
 		public void save(Entity entity, string? entity_id=null, string? data_folder=null) throws YamlError, RuntimeError, FileError
 		{
 			string id = entity_id;
@@ -172,6 +142,56 @@ namespace Catapult
 		public EntityProvider? get_provider(Type type) {
 			return (has_entity_provider(type)) ? provider_hash[type] : null;
 		}
+				
+		internal Yaml.NodeParser get_parser() { return parser; }
+		internal Entity load_internal(string entity_id, string? data_folder, Type entity_type) throws RuntimeError, YamlError
+		{
+			//if (is_valid_entity_id(entity_id) == false)
+			//	throw new RuntimeError.ARGUMENT("Invalid Entity ID: '%s'", entity_id);
+
+			if (has_entity_provider(entity_type) == true) {
+				var e = provider_hash[entity_type].i_get_entity(entity_id);
+				if (e == null)
+					throw new RuntimeError.ARGUMENT("%s entity not found: %s", entity_type.name(), entity_id);
+				return e;
+			}
+			
+			var document = load_entity_document(entity_id, data_folder, entity_type);
+			
+			Entity entity = (Entity)parser.parse_value_of_type(document.root, entity_type);
+			entity.i_set_id(entity_id);
+
+			return entity;
+		}
+		internal Yaml.Document load_entity_document(string entity_id, string? data_folder, Type entity_type) throws RuntimeError, YamlError
+		{
+			string folder = (data_folder != null) ? data_folder : entity_type.name();
+
+			string entity_file = get_entity_file_path(folder, entity_id, false);
+			if (FileUtils.test(entity_file, FileTest.EXISTS) == false)
+				throw new RuntimeError.FILE("%s '%s' not found.", entity_type.name(), entity_id);
+
+			var file = FileStream.open(entity_file, "r");
+			if (file == null)
+				throw new RuntimeError.FILE("File not found: %s", entity_file);
+
+			return new Yaml.DocumentReader(file).read_document();
+		}
+		internal Enumerable<string> get_entity_ids(Type entity_type) throws RuntimeError, FileError
+		{
+			string type_name = entity_type.name();
+			string data_folder = get_data_folder(type_name);
+			Dir d = Dir.open(data_folder);
+						
+			ArrayList<string> ids = new ArrayList<string>();
+			string filename;
+			while ((filename = d.read_name()) != null) {
+				ids.add(filename);
+			}
+			
+			return new Enumerable<string>(ids);
+		}
+		
 		bool has_entity_provider(Type type) {
 			return (provider_hash != null && provider_hash.has_key(type));
 		}
