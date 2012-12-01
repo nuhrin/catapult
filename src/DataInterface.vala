@@ -122,11 +122,12 @@ namespace Catapult
 			FileUtils.set_contents(filepath, yaml + "\n");
 			entity.i_set_id(id);
 		}
-		public void remove(Entity entity) throws RuntimeError, Error
+		public void remove(Entity entity, string? data_folder=null) throws RuntimeError, Error
 		{
 			if (entity.id == null || entity.id == "")
 				throw new RuntimeError.ARGUMENT("Invalid attempt to delete unsaved %s entity.");
-			string data_folder = entity.get_type().name();
+			if (data_folder == null)
+				data_folder = entity.get_type().name();
 			string filepath = get_entity_file_path(data_folder, entity.id, true);
 			if (FileUtils.test(filepath, FileTest.EXISTS) == false)
 				throw new RuntimeError.FILE("%s entity '%s' not found for deletion.", entity.get_type().name(), entity.id);

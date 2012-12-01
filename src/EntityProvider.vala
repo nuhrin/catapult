@@ -50,9 +50,9 @@ namespace Catapult
 		{
 			di.save((Entity)entity, entity_id, data_folder ?? typeof(E).name());
 		}
-		protected void remove(E entity) throws RuntimeError, Error
+		protected void remove(E entity, string? data_folder=null) throws RuntimeError, Error
 		{
-			di.remove((Entity)entity);
+			di.remove((Entity)entity, data_folder ?? typeof(E).name());
 		}				
 		
 		protected void register_entity_provider<G>(EntityProvider<G> provider) {
