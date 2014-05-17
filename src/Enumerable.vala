@@ -127,7 +127,7 @@ namespace Catapult
 			return count;
 		}
 
-		public Enumerable<G> sort(owned CompareDataFunc<G> compare)
+		public Enumerable<G> sort(owned CompareDataFunc<G>? compare=null)
 		{
 			var list = new ArrayList<G>();
 			foreach(var item in this)
