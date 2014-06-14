@@ -15,7 +15,6 @@ SUBDIRS = \
   $(NULL)
 
 DIST_SUBDIRS = \
-  libyaml \
   doc \
   src \
   vapi \

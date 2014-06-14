@@ -8,15 +8,15 @@ lib_LTLIBRARIES = \
 
 if USE_LOCAL_YAML
 LOCAL_YAML_SOURCES = \
-	../libyaml/yaml_private.h \
-	../libyaml/api.c \
-	../libyaml/reader.c \
-	../libyaml/scanner.c \
-	../libyaml/parser.c \
-	../libyaml/loader.c \
-	../libyaml/writer.c \
-	../libyaml/emitter.c \
-	../libyaml/dumper.c \
+	libyaml/yaml_private.h \
+	libyaml/api.c \
+	libyaml/reader.c \
+	libyaml/scanner.c \
+	libyaml/parser.c \
+	libyaml/loader.c \
+	libyaml/writer.c \
+	libyaml/emitter.c \
+	libyaml/dumper.c \
 	$(NULL)
 endif
 
@@ -70,7 +70,7 @@ libcatapult_la_SOURCES = \
 	$(NULL)
 
 libcatapult_la_VALAFLAGS = \
-	-H catapult.h --vapi catapult.vapi --vapidir $(srcdir)/../vapi \
+	-H catapult.h --vapi catapult.vapi --vapidir ../vapi \
 	--pkg gobject-2.0 --pkg gio-2.0 --pkg gee-0.8 --pkg gobject-patch --pkg config --pkg libyaml \
 	--library catapult \
 	$(GEE_VALAFLAGS) \
@@ -79,11 +79,11 @@ libcatapult_la_VALAFLAGS = \
 
 if USE_LOCAL_YAML
 LOCAL_YAML_CFLAGS = \
-	-I../libyaml \
+	-I$(srcdir)/libyaml \
 	$(NULL)
 endif
 
-libcatapult_la_CPPFLAGS = \
+AM_CPPFLAGS = \
   $(GLIB_CFLAGS) \
   $(GIO_CFLAGS) \
   $(GEE_CFLAGS) \
@@ -101,7 +101,7 @@ catapultincludedir = $(includedir)/catapult
 
 if USE_LOCAL_YAML
 LOCAL_YAML_HEADERS_EXTRA = \
-	../libyaml/yaml.h \
+	libyaml/yaml.h \
 	$(NULL)
 endif
 
@@ -115,6 +115,11 @@ vapidir = $(datadir)/vala/vapi
 dist_vapi_DATA = \
   catapult.vapi \
   $(NULL)
+
+EXTRA_DIST = \
+	libyaml/LICENSE \
+	libyaml/README \
+	$(NULL)
 
 CLEANFILES = \
   catapult.vapi \

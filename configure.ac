@@ -75,7 +75,6 @@ AM_CONDITIONAL(USE_LOCAL_YAML, test x$enable_local_libyaml = xyes)
 AC_CONFIG_FILES([
 	catapult.pc
 	Makefile
-	libyaml/Makefile
 	src/Makefile
 	doc/Makefile
 	vapi/Makefile
