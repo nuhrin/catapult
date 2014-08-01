@@ -38,6 +38,15 @@ namespace Catapult
 			empties[typeof(G)] = empty;
 			return empty;
 		}
+		public static Enumerable<G> single<G>(G item) {
+			bool done = false;
+			return new Enumerable<G>(new UnfoldingIterable<G>(()=> {
+				if (done)
+					return null;
+				done = true;
+				return new Lazy<G>.from_value(item);
+			}));
+		}
 		
 		public static Enumerable<G> unfold<G>(owned UnfoldFunc<G> unfold_func) {
 			return new Enumerable<G>(new UnfoldingIterable<G>((owned)unfold_func));
@@ -57,6 +66,8 @@ namespace Catapult
 		public Enumerable<G> where(owned Predicate<G> predicate) { return (Enumerable<G>)new EnumerableWhere<G>(this, (owned)predicate); }
 		public Enumerable<A> select<A>(owned MapFunc<A,G> selector) { return (Enumerable<G>)new EnumerableSelect<A,G>(this, (owned)selector); }
 		public Enumerable<G> concat(Iterable<G> other) { return (Enumerable<G>)new EnumerableConcat<G>(this, other); }
+		public Enumerable<G> append(G item) { return concat(Enumerable.single<G>(item)); }
+		public Enumerable<G> prepend(G item) { return Enumerable.single<G>(item).concat(this); }
 
 		public Enumerable<A> of_type<A>() {
 			Type resultType = typeof(A);
