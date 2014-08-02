@@ -38,18 +38,11 @@ namespace Catapult
 			empties[typeof(G)] = empty;
 			return empty;
 		}
-		public static Enumerable<G> single<G>(G item) {
-			bool done = false;
-			return new Enumerable<G>(new UnfoldingIterable<G>(()=> {
-				if (done)
-					return null;
-				done = true;
-				return new Lazy<G>.from_value(item);
-			}));
-		}
-		
-		public static Enumerable<G> unfold<G>(owned UnfoldFunc<G> unfold_func) {
-			return new Enumerable<G>(new UnfoldingIterable<G>((owned)unfold_func));
+		public static Enumerable<G> single<G>(G item) { 
+			return new Enumerable<G>(new SingleIterable<G>(item));			
+		}		
+		public static Enumerable<G> unfold<G>(owned UnfoldFunc<G> unfold_func, Lazy<G>? current=null) {
+			return new Enumerable<G>(new UnfoldingIterable<G>((owned)unfold_func, current));
 		}
 
 		internal Iterable<G>? iterable;
@@ -248,12 +241,36 @@ namespace Catapult
 	class UnfoldingIterable<G> : Object, Traversable<G>, Iterable<G>
 	{
 		UnfoldFunc<G> unfold_func;
-		public UnfoldingIterable(owned UnfoldFunc<G> unfold_func) {
+		Lazy<G>? current;
+		public UnfoldingIterable(owned UnfoldFunc<G> unfold_func, Lazy<G>? current=null) {
 			this.unfold_func = (owned)unfold_func;
+			this.current = current;
 		}
 
 		// Iterable<G> implementation
-		public Iterator<G> iterator() { return Iterator.unfold<G>((owned)unfold_func); }
+		public Iterator<G> iterator() { return Iterator.unfold<G>((owned)unfold_func, current); }
+		
+		// Traversable<G> implementation
+		public bool foreach(ForallFunc<G> f) { return iterator().foreach(f); }
+	}
+	class SingleIterable<G> : Object, Traversable<G>, Iterable<G>
+	{
+		G item;
+		public SingleIterable(G item) {
+			this.item = item;
+		}
+
+		// Iterable<G> implementation
+		public Iterator<G> iterator() { 
+			bool done = false;
+			var value = new Lazy<G>.from_value(item);
+			return Iterator.unfold<G>(()=> {
+				if (done)
+					return null;
+				done = true;
+				return value;
+			}, value); 
+		}
 		
 		// Traversable<G> implementation
 		public bool foreach(ForallFunc<G> f) { return iterator().foreach(f); }
