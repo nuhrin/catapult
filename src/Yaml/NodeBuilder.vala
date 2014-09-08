@@ -235,10 +235,15 @@ namespace Catapult.Yaml
 				var keyNode = BuildValueAssert(property.name);
 				Value existing_prop_value = Value(property.value_type);
 				obj.get_property(property.name, ref existing_prop_value);
+				if (IsDefaultValue(existing_prop_value) == true)
+					return false; // don't add property containing the default value for its type 
 				node[keyNode] = BuildValueAssertSupportingEntityReference(existing_prop_value, obj);
 				return true;
 			}
 			return false;
+		}
+		bool IsDefaultValue(Value val) {
+			return (val.strdup_contents() == Value(val.type()).strdup_contents());
 		}
 		bool AddObjectPropertyMapping(MappingNode node, Object obj, string propertyName)
 		{
