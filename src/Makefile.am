@@ -39,6 +39,7 @@ libcatapult_la_SOURCES = \
 	Helpers/BlockTimer.vala \
 	Helpers/RegexHelper.vala \
 	Helpers/ValueHelper.vala \
+	PredicateChain.vala \
 	Yaml/Constants.vala \
 	Yaml/Document.vala \
 	Yaml/Enums.vala \
